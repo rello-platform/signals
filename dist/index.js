@@ -1,3 +1,21 @@
+// src/signal-priority.ts
+var SIGNAL_PRIORITY_RANK = {
+  LOW: 1,
+  MEDIUM: 2,
+  HIGH: 3,
+  CRITICAL: 4
+};
+function meetsMinPriority(signalPriority, minPolicy) {
+  return SIGNAL_PRIORITY_RANK[signalPriority] >= SIGNAL_PRIORITY_RANK[minPolicy];
+}
+var SIGNAL_PRIORITIES = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+var SIGNAL_PRIORITY_SET = new Set(
+  SIGNAL_PRIORITIES
+);
+function isSignalPriority(value) {
+  return typeof value === "string" && SIGNAL_PRIORITY_SET.has(value);
+}
+
 // src/schemas/open-house-hub.ts
 import { z } from "zod";
 var ohhAttendeeDataSchema = z.object({
@@ -95,8 +113,12 @@ var pfpComplianceConfigChangedDataSchema = z5.object({
   pfp_change_summary: z5.string().nullable().optional()
 });
 export {
+  SIGNAL_PRIORITIES,
+  SIGNAL_PRIORITY_RANK,
   hhLeadIntakeDataSchema,
   hsLeadMagnetSubmittedDataSchema,
+  isSignalPriority,
+  meetsMinPriority,
   ohhAttendeeDataSchema,
   ohhAttendeeMarkedForPfpPreapprovalDataSchema,
   pfpComplianceConfigChangedDataSchema,

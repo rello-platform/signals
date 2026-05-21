@@ -1,5 +1,13 @@
 export type { SignalType } from "./signal-type.js";
 
+export {
+  SIGNAL_PRIORITIES,
+  SIGNAL_PRIORITY_RANK,
+  isSignalPriority,
+  meetsMinPriority,
+} from "./signal-priority.js";
+export type { SignalPriority } from "./signal-priority.js";
+
 // OHH
 export * from "./schemas/open-house-hub.js";
 // HS
