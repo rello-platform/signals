@@ -15,7 +15,7 @@ import 'zod';
  * - `home_scout.lead_intake` ❌ (underscore-form slug — legacy drift class)
  * - `home-scout.lead-magnet.submitted` ❌ (kebab in verb segment — forbidden)
  */
-type SignalType = "open-house-hub.attendee_marked_for_pfp_preapproval" | "home-scout.lead_magnet_submitted" | "harvest-home.lead_intake" | "report-engine.report_ready" | "pathfinder-pro.export.queued" | "pathfinder-pro.export.in_flight" | "pathfinder-pro.export.success" | "pathfinder-pro.export.failed" | "pathfinder-pro.export.permanently_failed" | "pathfinder-pro.compliance.gate_blocked" | "pathfinder-pro.compliance.config_changed";
+type SignalType = "open-house-hub.attendee_marked_for_pfp_preapproval" | "home-scout.lead_magnet_submitted" | "harvest-home.lead_intake" | "report-engine.report_ready" | "pathfinder-pro.export.queued" | "pathfinder-pro.export.in_flight" | "pathfinder-pro.export.success" | "pathfinder-pro.export.failed" | "pathfinder-pro.export.permanently_failed" | "pathfinder-pro.compliance.gate_blocked" | "pathfinder-pro.compliance.config_changed" | "rello.nurture_escalate_injected" | "rello.nurture_escalate_deduped" | "rello.nurture_escalate_injection_failed";
 
 /**
  * Canonical SignalPriority namespace for the Rello platform.

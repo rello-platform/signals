@@ -25,6 +25,10 @@ export type SignalType =
   | "pathfinder-pro.export.permanently_failed"
   // PFP compliance family (D3 2026-05-13)
   | "pathfinder-pro.compliance.gate_blocked"
-  | "pathfinder-pro.compliance.config_changed";
+  | "pathfinder-pro.compliance.config_changed"
+  // Rello nurture escalate family (P1-5 2026-05-21)
+  | "rello.nurture_escalate_injected"
+  | "rello.nurture_escalate_deduped"
+  | "rello.nurture_escalate_injection_failed";
 
 // Per BPB §SLUG-AUTH §1: only canonical hyphen-slug form. New entries grow via PR.
