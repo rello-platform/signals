@@ -124,7 +124,7 @@ declare function isSignalPriority(value: unknown): value is SignalPriority;
  * `checkpoint.*`). No global keys are seeded in Wave A (they arrive with the
  * Wave C keyspace absorption).
  */
-type ExactCanonicalSignalType = "open-house-hub.attendee_marked_for_pfp_preapproval" | "home-scout.lead_magnet_submitted" | "harvest-home.lead_intake" | "report-engine.report_ready" | "pathfinder-pro.export.queued" | "pathfinder-pro.export.in_flight" | "pathfinder-pro.export.success" | "pathfinder-pro.export.failed" | "pathfinder-pro.export.permanently_failed" | "pathfinder-pro.compliance.gate_blocked" | "pathfinder-pro.compliance.config_changed" | "rello.nurture_escalate_injected" | "rello.nurture_escalate_deduped" | "rello.nurture_escalate_injection_failed";
+type ExactCanonicalSignalType = "open-house-hub.attendee_marked_for_pfp_preapproval" | "home-scout.lead_magnet_submitted" | "harvest-home.lead_intake" | "report-engine.report_ready" | "pathfinder-pro.export.queued" | "pathfinder-pro.export.in_flight" | "pathfinder-pro.export.success" | "pathfinder-pro.export.failed" | "pathfinder-pro.export.permanently_failed" | "pathfinder-pro.compliance.gate_blocked" | "pathfinder-pro.compliance.config_changed" | "rello.nurture_escalate_injected" | "rello.nurture_escalate_deduped" | "rello.nurture_escalate_injection_failed" | "newsletter-studio.email_complained" | "newsletter-studio.email_unsubscribed" | "newsletter-studio.email_bounced";
 declare const FAMILY_BRAND: unique symbol;
 /**
  * A canonical signal type that matched a registered `SignalTypeFamily` prefix

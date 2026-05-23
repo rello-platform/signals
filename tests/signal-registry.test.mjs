@@ -15,8 +15,8 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed canonical types (14 — the full src/signal-type.ts union; docs label '13', a known miscount)", () => {
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 14);
+  it("holds the seed (14) + Wave-B Newsletter-Studio email lifecycle (3) = 17 canonical types", () => {
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 17);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -143,6 +143,30 @@ describe("normalizeSignalType — seeded forms fold to canonical (non-null)", ()
       "pathfinder-pro.compliance.gate_blocked",
     );
   });
+  it("Wave-B: newsletter_studio.email_* (receiver-prefixed underscore) → canonical hyphen slug", () => {
+    assert.equal(
+      normalizeSignalType("newsletter_studio.email_complained"),
+      "newsletter-studio.email_complained",
+    );
+    assert.equal(
+      normalizeSignalType("newsletter_studio.email_unsubscribed"),
+      "newsletter-studio.email_unsubscribed",
+    );
+    assert.equal(
+      normalizeSignalType("newsletter_studio.email_bounced"),
+      "newsletter-studio.email_bounced",
+    );
+  });
+  it("§2.1 bare compliance. alias → pathfinder-pro.compliance. (PFP bare domain emit)", () => {
+    assert.equal(
+      normalizeSignalType("compliance.config_changed"),
+      "pathfinder-pro.compliance.config_changed",
+    );
+    assert.equal(
+      normalizeSignalType("compliance.gate_blocked"),
+      "pathfinder-pro.compliance.gate_blocked",
+    );
+  });
   it("family fold: scout→home-scout slug + hyphen→underscore verb (cta_clicked family)", () => {
     assert.equal(
       normalizeSignalType("scout.cta_clicked.book-a-call"),
@@ -184,7 +208,7 @@ describe("normalizeSignalType — not-yet-seeded forms → null (Wave A boundary
   it("pfp.scenario_created → pathfinder-pro.scenario_created not in 13 seed → null", () => {
     assert.equal(normalizeSignalType("pfp.scenario_created"), null);
   });
-  it("harvest_home.email_complained not seeded (arrives Wave B) → null", () => {
+  it("harvest_home.email_complained → null (HH does not emit email_* — illustrative bug form only; the real Wave-B seed is newsletter-studio.*)", () => {
     assert.equal(normalizeSignalType("harvest_home.email_complained"), null);
   });
 });
@@ -218,22 +242,49 @@ describe("DEPRECATED_SIGNALTYPE_PREFIX_ALIASES", () => {
     );
     assert.equal(DEPRECATED_SIGNALTYPE_PREFIX_ALIASES["mlo."].deprecated, true);
   });
+  it("maps bare compliance. → pathfinder-pro.compliance. (Wave B; PFP bare domain emit, no-regression read-bridge)", () => {
+    assert.equal(
+      DEPRECATED_SIGNALTYPE_PREFIX_ALIASES["compliance."].to,
+      "pathfinder-pro.compliance.",
+    );
+    assert.equal(
+      DEPRECATED_SIGNALTYPE_PREFIX_ALIASES["compliance."].deprecated,
+      true,
+    );
+  });
 });
 
 // ── isGoalShiftSignal (Wave-B fix primitive) ────────────────────────────────
 describe("isGoalShiftSignal", () => {
   it("returns false only for registered + goalShiftSemantics:false (compliance)", () => {
     assert.equal(isGoalShiftSignal("pathfinder-pro.compliance.gate_blocked"), false);
-    assert.equal(isGoalShiftSignal("pfp.compliance.config_changed"), false); // alias-folded
+    assert.equal(isGoalShiftSignal("pfp.compliance.config_changed"), false); // pfp. alias-folded
+    assert.equal(isGoalShiftSignal("compliance.config_changed"), false); // bare compliance. alias-folded (Wave B)
+  });
+  it("Wave-B FIX: receiver-prefixed newsletter_studio.email_* → false (the live bug form)", () => {
+    // Pre-Wave-B these fell through `inferNurtureGoal`'s bare-name set to
+    // HOME_PURCHASE → spurious blocked_no_matching_campaign rows (DISCOVERED-
+    // NURTURE-GOAL-INFER-IGNORES-SPOKE-PREFIXED-SIGNAL-TYPES-260521). Now
+    // normalize→registered→goalShiftSemantics:false short-circuits them.
+    assert.equal(isGoalShiftSignal("newsletter_studio.email_complained"), false);
+    assert.equal(isGoalShiftSignal("newsletter_studio.email_unsubscribed"), false);
+    assert.equal(isGoalShiftSignal("newsletter_studio.email_bounced"), false);
+    // canonical hyphen form resolves identically
+    assert.equal(isGoalShiftSignal("newsletter-studio.email_complained"), false);
   });
   it("returns true for registered goal-shifting types", () => {
     assert.equal(isGoalShiftSignal("report-engine.report_ready"), true);
     assert.equal(isGoalShiftSignal("harvest_home.lead_intake"), true);
   });
-  it("fails open (true) for unregistered / unknown types", () => {
+  it("fails open (true) for unregistered / unknown types + the __milo_compose__ sentinel", () => {
+    // HH does not emit email_* — this illustrative form is unregistered, so it
+    // fail-opens true (correct: nothing emits it into the gate).
     assert.equal(isGoalShiftSignal("harvest_home.email_complained"), true);
     assert.equal(isGoalShiftSignal("totally-unknown.thing"), true);
     assert.equal(isGoalShiftSignal(null), true);
+    // The Milo compose-time sentinel MUST fail open so resolveNurtureGoal still
+    // runs lead-state inference (byte-identical to today). SPEC §8 decision 9.
+    assert.equal(isGoalShiftSignal("__milo_compose__"), true);
   });
 });
 
@@ -249,8 +300,8 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 13 (14 seed − 1 forensic)", () => {
-    assert.equal(listActiveSignalTypes().length, 13);
+  it("active count = 16 (17 total − 1 forensic; +3 Wave-B newsletter-studio email lifecycle, all active)", () => {
+    assert.equal(listActiveSignalTypes().length, 16);
   });
 });
 

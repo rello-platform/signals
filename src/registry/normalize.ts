@@ -56,6 +56,18 @@ export const DEPRECATED_SIGNALTYPE_PREFIX_ALIASES: Readonly<
 > = {
   "pfp.": { to: "pathfinder-pro.", deprecated: true },
   "mlo.": { to: "the-drumbeat.mlo.", deprecated: true },
+  // `compliance.` is a bare PFP domain prefix (the `mlo.` precedent): PFP emits
+  // `compliance.config_changed` BARE (`PathfinderPro admin/compliance/config/
+  // route.ts:323`, SURFACE-MAP §1.6) and — since it already contains a dot —
+  // the receiver does NOT namespace-prefix it, so it persists as the bare
+  // domain form, which `normalizeSlug` can't fold (`compliance` is not a slug).
+  // Per §2.1 a bare domain prefix is never first-class; it canonicalizes under
+  // its emitting spoke's slug → `pathfinder-pro.compliance.<verb>` (the
+  // registered `goalShiftSemantics:false` family). This preserves the
+  // pre-Wave-B `NON_GOAL_SHIFT_SIGNAL_PREFIXES = ['compliance.']` exclusion that
+  // Wave B removes from `nurture-goals` (no-regression read-bridge; retired
+  // Wave E once the receiver canonicalizes at ingest in Wave D).
+  "compliance.": { to: "pathfinder-pro.compliance.", deprecated: true },
   // `drumbeat.` is handled by normalizeSlug (drumbeat→the-drumbeat); no entry.
 };
 

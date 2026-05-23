@@ -201,6 +201,55 @@ var EXACT_REGISTRY = {
     // escalate.ts:~320 caller-hint
     goalShiftSemantics: false,
     lifecycle: "active"
+  },
+  // ── Newsletter-Studio — email lifecycle (Wave B) ──
+  // The live `inferNurtureGoal` bug: NS emits these BARE
+  // (`Newsletter-Studio/src/lib/signals/emitter.ts:16-18 @ 3714bfc`); Rello's
+  // `/api/signals/batch` receiver namespace-prefixes the bare form with the
+  // underscore source-app (`batch/route.ts` `appSource.replace(/-/g,"_")`),
+  // persisting `newsletter_studio.email_complained` — which the pre-Wave-B
+  // `inferNurtureGoal` bare-name exclusion set never matched, so the signal
+  // fell through to HOME_PURCHASE and wrote a spurious
+  // `blocked_no_matching_campaign` audit row (DISCOVERED-NURTURE-GOAL-INFER-
+  // IGNORES-SPOKE-PREFIXED-SIGNAL-TYPES-260521). Registered here
+  // `goalShiftSemantics:false` so `isGoalShiftSignal(normalizeSignalType(x))`
+  // short-circuits the prefixed form. NS is the SOLE emitter of these three
+  // (verified P-4: no HH/other-spoke emitter), so the canonical form is the
+  // `newsletter-studio.*` hyphen-slug; the bug-doc's illustrative
+  // `harvest_home.email_complained` is NOT a real emit.
+  "newsletter-studio.email_complained": {
+    type: "newsletter-studio.email_complained",
+    weight: 9,
+    // Rello constants.ts:36/37 (bare + newsletter_studio.* prefixed)
+    category: "NEGATIVE",
+    // constants.ts:384/385 — spam complaint, relationship damage
+    priority: "HIGH",
+    // constants.ts:674/675 — agent must know immediately
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_unsubscribed": {
+    type: "newsletter-studio.email_unsubscribed",
+    // NO Rello constants.ts row (falls to silent DEFAULT_WEIGHT=3 /
+    // DEFAULT_CATEGORY="BEHAVIORAL" today). Seeded at a sensible NEGATIVE
+    // value (opt-out = relationship withdrawal); flagged for Wave C explicit
+    // classification in the close companion. goalShiftSemantics:false is the
+    // load-bearing axis for Wave B.
+    weight: 6,
+    category: "NEGATIVE",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_bounced": {
+    type: "newsletter-studio.email_bounced",
+    // NO Rello constants.ts row (falls to silent DEFAULT today). Seeded as
+    // low-weight ENGAGEMENT (deliverability telemetry, not lead intent);
+    // flagged for Wave C in the close companion. goalShiftSemantics:false is
+    // the load-bearing axis for Wave B.
+    weight: 3,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: false,
+    lifecycle: "active"
   }
 };
 var AUDIT_FAMILIES = APP_SLUGS.map((slug) => ({
@@ -255,7 +304,19 @@ var GLOBAL_PREFIXES = [
 ];
 var DEPRECATED_SIGNALTYPE_PREFIX_ALIASES = {
   "pfp.": { to: "pathfinder-pro.", deprecated: true },
-  "mlo.": { to: "the-drumbeat.mlo.", deprecated: true }
+  "mlo.": { to: "the-drumbeat.mlo.", deprecated: true },
+  // `compliance.` is a bare PFP domain prefix (the `mlo.` precedent): PFP emits
+  // `compliance.config_changed` BARE (`PathfinderPro admin/compliance/config/
+  // route.ts:323`, SURFACE-MAP §1.6) and — since it already contains a dot —
+  // the receiver does NOT namespace-prefix it, so it persists as the bare
+  // domain form, which `normalizeSlug` can't fold (`compliance` is not a slug).
+  // Per §2.1 a bare domain prefix is never first-class; it canonicalizes under
+  // its emitting spoke's slug → `pathfinder-pro.compliance.<verb>` (the
+  // registered `goalShiftSemantics:false` family). This preserves the
+  // pre-Wave-B `NON_GOAL_SHIFT_SIGNAL_PREFIXES = ['compliance.']` exclusion that
+  // Wave B removes from `nurture-goals` (no-regression read-bridge; retired
+  // Wave E once the receiver canonicalizes at ingest in Wave D).
+  "compliance.": { to: "pathfinder-pro.compliance.", deprecated: true }
   // `drumbeat.` is handled by normalizeSlug (drumbeat→the-drumbeat); no entry.
 };
 function warnUnrecognized(raw) {

@@ -53,7 +53,15 @@ export type ExactCanonicalSignalType =
   // Rello nurture escalate family
   | "rello.nurture_escalate_injected"
   | "rello.nurture_escalate_deduped"
-  | "rello.nurture_escalate_injection_failed";
+  | "rello.nurture_escalate_injection_failed"
+  // Newsletter-Studio email lifecycle — non-goal-shift (Wave B; the live
+  // `inferNurtureGoal` bug). NS emits these BARE (`src/lib/signals/emitter.ts`
+  // @ 3714bfc); Rello `/api/signals/batch` receiver-prefixes to
+  // `newsletter_studio.*`, normalized here to canonical hyphen. Registered
+  // `goalShiftSemantics:false` so the registry-driven gate short-circuits them.
+  | "newsletter-studio.email_complained"
+  | "newsletter-studio.email_unsubscribed"
+  | "newsletter-studio.email_bounced";
 
 declare const FAMILY_BRAND: unique symbol;
 
