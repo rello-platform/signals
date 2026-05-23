@@ -9,4 +9,7 @@ export default defineConfig({
   clean: true,
   target: "es2020",
   outDir: "dist",
+  // Emit the cross-language keyset (dist/signal-registry-keyset.json) after the
+  // JS/d.ts bundles land — it imports the built dist/index.js. SPEC §5 / §7-A.
+  onSuccess: "node scripts/emit-keyset.mjs",
 });
