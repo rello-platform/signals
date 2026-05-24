@@ -2273,25 +2273,38 @@ var EXACT_REGISTRY = {
     tier: "telemetry",
     lifecycle: "active"
   },
+  // PHASE-B1B reclassification: B1's premise (these are platform ops monitors
+  // DISTINCT from a Layer-3 lead-engagement `call_completed`) was WRONG. The
+  // only emit sites are lead-engagement signals — `calls.ts:505`
+  // ("…for cross-app consumption (Milo, Newsletter Studio)") and
+  // `retry-engine.ts:239`, both `source:"voice"` with a `leadId`. Rello's
+  // local classifier corroborates: `constants.ts:39` `call_completed:7` +
+  // `constants.ts:387` `call_completed:"ENGAGEMENT"`. So these are weight-7
+  // ENGAGEMENT, NOT telemetry — leaving them at the SYSTEM/w1 floor demotes a
+  // real engagement signal (breaks call-completion nurture weighting +
+  // scoring + the Milo/NS cross-app consumption). `call_*` is not in the
+  // NON_GOAL_SHIFT set (`compliance.` only) → goalShiftSemantics:true.
+  // `call_exhausted` has no constants row; classed ENGAGEMENT/w7 per the
+  // DISCOVERED recommended fix (it is the lead-domain inverse of
+  // `call_completed`, same urgency band). The bare→`rello.call_*` emit-flip +
+  // constants re-key is the held B2 follow-on (now unblocked).
+  // Resolves DISCOVERED-B1-RELLO-CALL-SIGNALS-MISCLASSIFIED-TELEMETRY-VS-
+  // ENGAGEMENT-260524.
   "rello.call_completed": {
     type: "rello.call_completed",
-    // The bare `call_completed` constants row (weight 7 / ENGAGEMENT,
-    // constants.ts:39/387) is the Layer-3 lead-engagement key the receiver
-    // keys on — a DISTINCT canonical type from this `rello.`-namespaced
-    // operational call-outcome monitor (emitted src/lib/conversations/
-    // calls.ts:505). Bucketed as monitoring by Kelly → telemetry floor.
-    weight: 1,
-    category: "SYSTEM",
-    goalShiftSemantics: false,
-    tier: "telemetry",
+    weight: 7,
+    // constants.ts:39
+    category: "ENGAGEMENT",
+    // constants.ts:387
+    goalShiftSemantics: true,
     lifecycle: "active"
   },
   "rello.call_exhausted": {
     type: "rello.call_exhausted",
-    weight: 1,
-    category: "SYSTEM",
-    goalShiftSemantics: false,
-    tier: "telemetry",
+    weight: 7,
+    // no constants row; ENGAGEMENT/w7 per DISCOVERED (lead-domain inverse of call_completed)
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
     lifecycle: "active"
   },
   "rello.pe_enrichment": {
@@ -2316,6 +2329,38 @@ var EXACT_REGISTRY = {
     category: "SYSTEM",
     goalShiftSemantics: false,
     tier: "telemetry",
+    lifecycle: "active"
+  },
+  // ── PHASE-B1B corrections (v0.7.1) ──
+  // Real inbound-email LEAD-ENGAGEMENT signal, emitted BARE-DOTTED
+  // `email.received` (`Rello src/trigger/jobs/email-sync.ts:626,893`,
+  // category:"ENGAGEMENT" weight:1.0). `email.` is not a slug, so this is a
+  // global first-class key (`email.` added to GLOBAL_PREFIXES). The receiver
+  // does NOT namespace-prefix already-dotted forms → the live emit resolves
+  // with NO emit-flip owed. weight/category mirror the emit-site caller-hints
+  // (no Rello constants.ts row). goalShiftSemantics:true — an inbound email is
+  // genuine lead engagement; `email.` is not in the NON_GOAL_SHIFT set.
+  "email.received": {
+    type: "email.received",
+    weight: 1,
+    // email-sync.ts:626/893 caller-hint
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // Real Rello-internal BEHAVIORAL signal, emitted BARE/dotless
+  // `ticket_created` (`journeyStepStalled.ts:439` + `support/
+  // inbound-email.ts:185`, category:"BEHAVIORAL" weight:5). Dotless →
+  // normalizeSignalType returns null (no slug to fold), so the bare key can
+  // never resolve. Registered as the canonical `rello.ticket_created`; the
+  // bare→`rello.ticket_created` emit-flip is a B2-style follow-on (OWED — both
+  // emit sites + any consumers flip in lockstep, like the 7 ops flips in B2).
+  "rello.ticket_created": {
+    type: "rello.ticket_created",
+    weight: 5,
+    // journeyStepStalled.ts:439 / inbound-email.ts:185 caller-hint
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
     lifecycle: "active"
   },
   "daily_plan.item_injected": {
@@ -2581,7 +2626,14 @@ var GLOBAL_PREFIXES = [
   "agent.",
   "rate.",
   "data.",
-  "daily_plan."
+  "daily_plan.",
+  // PHASE-B1B: `email.received` is a real inbound-email engagement signal
+  // emitted bare-dotted (`Rello email-sync.ts:626,893`). `email` is not a
+  // `@rello-platform/slugs` slug (normalizeSlug returns null), so — like
+  // `agent.`/`rate.`/`data.` — it cannot be slug-folded and must match here as
+  // a global first-class namespace. The receiver leaves already-dotted forms
+  // un-prefixed, so the live emit resolves directly (no emit-flip owed).
+  "email."
 ];
 var DEPRECATED_SIGNALTYPE_PREFIX_ALIASES = {
   "pfp.": { to: "pathfinder-pro.", deprecated: true },

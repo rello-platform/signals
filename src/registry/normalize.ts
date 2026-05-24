@@ -43,6 +43,13 @@ const GLOBAL_PREFIXES = [
   "rate.",
   "data.",
   "daily_plan.",
+  // PHASE-B1B: `email.received` is a real inbound-email engagement signal
+  // emitted bare-dotted (`Rello email-sync.ts:626,893`). `email` is not a
+  // `@rello-platform/slugs` slug (normalizeSlug returns null), so — like
+  // `agent.`/`rate.`/`data.` — it cannot be slug-folded and must match here as
+  // a global first-class namespace. The receiver leaves already-dotted forms
+  // un-prefixed, so the live emit resolves directly (no emit-flip owed).
+  "email.",
 ] as const;
 
 /**

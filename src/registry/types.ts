@@ -372,7 +372,21 @@ export type ExactCanonicalSignalType =
   | "agent.action_skipped"
   | "rate.alert_triggered"
   | "signal.credits.purchased"
-  | "data.stale";
+  | "data.stale"
+  // PHASE-B1B (v0.7.1) — corrections to the B1 bucket-3/bucket-4 pass.
+  // `email.received` is a real inbound-email LEAD-ENGAGEMENT signal (emitted
+  // `Rello src/trigger/jobs/email-sync.ts:626,893` with category:"ENGAGEMENT",
+  // weight:1.0). It is dotted-bare (`email.` is not a slug → normalizeSlug
+  // returns null) so it MUST be a global first-class key (`email.` added to
+  // GLOBAL_PREFIXES); the receiver does not namespace-prefix already-dotted
+  // forms, so the live emit resolves with NO emit-flip owed.
+  | "email.received"
+  // `ticket_created` is a real Rello-internal BEHAVIORAL signal (emitted
+  // `journeyStepStalled.ts:439` + `support/inbound-email.ts:185`, weight 5).
+  // Emitted BARE/dotless → normalizeSignalType("ticket_created") returns null
+  // (no slug to fold). Registered as the canonical `rello.ticket_created`; the
+  // bare→`rello.ticket_created` emit-flip is a B2-style follow-on (owed).
+  | "rello.ticket_created";
 
 declare const FAMILY_BRAND: unique symbol;
 

@@ -18,11 +18,14 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) = 296 canonical types", () => {
+  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) = 298 canonical types", () => {
     // v0.6.0 KEYSPACE-SEED: 17 (Wave A/B) + 250 emitted canonical types.
     // PHASE-B1 (v0.7.0): +29 build-guard violation-list types
     // (bucket 3 = 15 tier:telemetry, bucket 2 = 9 active, bucket 4 = 5 global).
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 296);
+    // PHASE-B1B (v0.7.1): +2 — `email.received` (global) + `rello.ticket_created`.
+    // (Also reclassifies rello.call_completed/exhausted telemetry→ENGAGEMENT,
+    // so bucket-3 telemetry drops 15→13; no count change.)
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 298);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -351,6 +354,55 @@ describe("normalizeSignalType — PHASE-B1 violation types now resolve", () => {
   });
 });
 
+// ── PHASE-B1B (v0.7.1): call_* reclassify + email.received/ticket_created ─────
+// B1 mis-bucketed rello.call_completed/exhausted as telemetry; they are real
+// lead-ENGAGEMENT signals (constants.ts call_completed:7/ENGAGEMENT). This block
+// is the regression proof for the reclassification + the two new real types.
+describe("normalizeSignalType — PHASE-B1B corrections", () => {
+  it("rello.call_completed reclassified telemetry→ENGAGEMENT/w7 (no telemetry tier)", () => {
+    const entry = EXACT_REGISTRY["rello.call_completed"];
+    assert.equal(entry.category, "ENGAGEMENT");
+    assert.equal(entry.weight, 7); // constants.ts:39/387
+    assert.equal(entry.tier, undefined); // tier:"telemetry" removed
+    assert.equal(entry.goalShiftSemantics, true);
+    assert.equal(entry.lifecycle, "active");
+    // resolves by identity (dotted) with the engagement classification
+    assert.equal(
+      normalizeSignalType("rello.call_completed"),
+      "rello.call_completed",
+    );
+    assert.equal(isGoalShiftSignal("rello.call_completed"), true);
+  });
+  it("rello.call_exhausted reclassified telemetry→ENGAGEMENT/w7 (no telemetry tier)", () => {
+    const entry = EXACT_REGISTRY["rello.call_exhausted"];
+    assert.equal(entry.category, "ENGAGEMENT");
+    assert.equal(entry.weight, 7);
+    assert.equal(entry.tier, undefined);
+    assert.equal(entry.goalShiftSemantics, true);
+    assert.equal(entry.lifecycle, "active");
+  });
+  it("email.received resolves as a global first-class ENGAGEMENT key", () => {
+    // `email.` is a GLOBAL_PREFIX (not a slug); the live bare-dotted emit
+    // resolves with no emit-flip owed.
+    assert.equal(normalizeSignalType("email.received"), "email.received");
+    const entry = EXACT_REGISTRY["email.received"];
+    assert.equal(entry.category, "ENGAGEMENT");
+    assert.equal(entry.weight, 1);
+    assert.equal(entry.tier, undefined);
+  });
+  it("rello.ticket_created resolves (BEHAVIORAL/w5); bare ticket_created stays null (emit-flip owed)", () => {
+    assert.equal(
+      normalizeSignalType("rello.ticket_created"),
+      "rello.ticket_created",
+    );
+    const entry = EXACT_REGISTRY["rello.ticket_created"];
+    assert.equal(entry.category, "BEHAVIORAL");
+    assert.equal(entry.weight, 5);
+    // dotless bare form cannot fold (no slug) — the B2-style emit-flip is owed
+    assert.equal(normalizeSignalType("ticket_created"), null);
+  });
+});
+
 // ── (e) malformed / unrecognized inputs ─────────────────────────────────────
 describe("normalizeSignalType — guards", () => {
   it("null / undefined / empty → null (no throw)", () => {
@@ -438,14 +490,15 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 291 (296 total − 5 forensic)", () => {
+  it("active count = 293 (298 total − 5 forensic)", () => {
     // 5 forensic (no live emitter): home-scout.lead_magnet_submitted (Wave A),
     // drumbeat-video-engine.video_rendered (repo absent / pre-registered),
     // home-ready.score_calculated + home-ready.score_changed (declared in the
     // emit union but the live emit is home-ready.score_updated — rename drift),
     // home-ready.milo_report_generated (audit §4 DEAD — zero HR refs).
     // All 29 PHASE-B1 violation types are lifecycle:"active" (forensic stays 5).
-    assert.equal(listActiveSignalTypes().length, 291);
+    // PHASE-B1B (+2): email.received + rello.ticket_created, both active.
+    assert.equal(listActiveSignalTypes().length, 293);
   });
 });
 
@@ -487,8 +540,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (291)", () => {
-    assert.equal(keyset.exactKeys.length, 291);
+  it("exactKeys count == active exact registry entries (293)", () => {
+    assert.equal(keyset.exactKeys.length, 293);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -509,8 +562,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.7.0)", () => {
-    assert.equal(keyset.version, "0.7.0");
+  it("version stamp is current (0.7.1)", () => {
+    assert.equal(keyset.version, "0.7.1");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -525,7 +578,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.7.0");
+    assert.equal(mod.default.version, "0.7.1");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
