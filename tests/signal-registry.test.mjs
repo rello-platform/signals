@@ -409,7 +409,23 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.6.0)", () => {
-    assert.equal(keyset.version, "0.6.0");
+  it("version stamp is current (0.6.1)", () => {
+    assert.equal(keyset.version, "0.6.1");
+  });
+
+  // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
+  // keyset via the `./signal-registry-keyset.json` subpath. Before v0.6.1 this
+  // threw ERR_PACKAGE_PATH_NOT_EXPORTED (file built but absent from `exports`).
+  it("is resolvable via the package subpath export (no ERR_PACKAGE_PATH_NOT_EXPORTED)", async () => {
+    const resolved = import.meta.resolve(
+      "@rello-platform/signals/signal-registry-keyset.json",
+    );
+    assert.ok(
+      resolved.endsWith("/dist/signal-registry-keyset.json"),
+      `unexpected resolution: ${resolved}`,
+    );
+    const mod = await import(resolved, { with: { type: "json" } });
+    assert.equal(mod.default.version, "0.6.1");
+    assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
