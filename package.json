@@ -1,6 +1,6 @@
 {
   "name": "@rello-platform/signals",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Cross-app signal zod schemas + canonical signal-type registry (types/categories/normalizer) + SignalPriority namespace for Rello platform",
   "type": "module",
   "main": "./dist/index.js",

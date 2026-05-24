@@ -1145,6 +1145,170 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // ── SIGNALS-ADD-HS-22-VERBS (v0.8.0): the 22 emitted HS verbs the v0.6.0
+    // keyspace seed missed — HS emits 39 canonical `home-stretch.<verb>` across
+    // SIGNAL_TYPES (src/lib/signals/types.ts) + HOMESTRETCH_EVENTS
+    // (src/lib/rello/events.ts) + 5 inline route literals, but the seed only
+    // captured the 17 surfaced in SIGNAL_TYPES. These 22 were HELD as concat in
+    // the SPOKE-FLIP-HS flip (`// HOLD:`, PR #7) until registered here. NONE has
+    // a Rello `constants.ts` row → all seeded at the effective DEFAULT (weight 3 /
+    // BEHAVIORAL / goalShiftSemantics:true, matching the sibling home-stretch
+    // DEFAULT rows above), flagged for Wave-C reclassification. Provenance:
+    // DISCOVERED-RELLO-HS-EMITTED-VERBS-UNREGISTERED-IN-SIGNALS-260524.
+    "home-stretch.chat_completed": {
+      type: "home-stretch.chat_completed",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.chat_session": {
+      type: "home-stretch.chat_session",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.credit_analyzed": {
+      type: "home-stretch.credit_analyzed",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.dream_profile_updated": {
+      type: "home-stretch.dream_profile_updated",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.guest_mlo_eligibility_decision": {
+      type: "home-stretch.guest_mlo_eligibility_decision",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.guest_mlo_message_sent": {
+      type: "home-stretch.guest_mlo_message_sent",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.guest_mlo_note_added": {
+      type: "home-stretch.guest_mlo_note_added",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.inactive": {
+      type: "home-stretch.inactive",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.login_streak": {
+      type: "home-stretch.login_streak",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.milestone_reached": {
+      type: "home-stretch.milestone_reached",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.module_stalled": {
+      type: "home-stretch.module_stalled",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.pillar_status_changed": {
+      type: "home-stretch.pillar_status_changed",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.points_earned": {
+      type: "home-stretch.points_earned",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.preapproval_approved": {
+      type: "home-stretch.preapproval_approved",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.preapproval_started": {
+      type: "home-stretch.preapproval_started",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.prospect_invitation_sms_requested": {
+      type: "home-stretch.prospect_invitation_sms_requested",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.prospect_invited": {
+      type: "home-stretch.prospect_invited",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.ready_to_buy": {
+      type: "home-stretch.ready_to_buy",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.registered": {
+      type: "home-stretch.registered",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.savings_milestone": {
+      type: "home-stretch.savings_milestone",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.track_selected": {
+      type: "home-stretch.track_selected",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "home-stretch.under_contract": {
+      type: "home-stretch.under_contract",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
     "market-intel.alert_triggered": {
       type: "market-intel.alert_triggered",
       weight: 3,

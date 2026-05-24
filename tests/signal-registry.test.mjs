@@ -18,14 +18,17 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) = 298 canonical types", () => {
+  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) + HS-22-VERBS (22) = 320 canonical types", () => {
     // v0.6.0 KEYSPACE-SEED: 17 (Wave A/B) + 250 emitted canonical types.
     // PHASE-B1 (v0.7.0): +29 build-guard violation-list types
     // (bucket 3 = 15 tier:telemetry, bucket 2 = 9 active, bucket 4 = 5 global).
     // PHASE-B1B (v0.7.1): +2 — `email.received` (global) + `rello.ticket_created`.
     // (Also reclassifies rello.call_completed/exhausted telemetry→ENGAGEMENT,
     // so bucket-3 telemetry drops 15→13; no count change.)
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 298);
+    // SIGNALS-ADD-HS-22-VERBS (v0.8.0): +22 emitted HS verbs the keyspace seed
+    // missed (all DEFAULT, no constants row, Wave-C reclass) — unblocks the
+    // SPOKE-FLIP-HS held-flip (PR #7 `// HOLD:`).
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 320);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -403,6 +406,67 @@ describe("normalizeSignalType — PHASE-B1B corrections", () => {
   });
 });
 
+// ── SIGNALS-ADD-HS-22-VERBS (v0.8.0): the 22 emitted HS verbs now resolve ─────
+// HS emits 39 canonical `home-stretch.<verb>`; the v0.6.0 keyspace seed only
+// captured 17. These 22 (5 SIGNAL_TYPES + 12 HOMESTRETCH_EVENTS + 5 inline route
+// literals) resolved to `null` before v0.8.0 — the SPOKE-FLIP-HS flip HELD them
+// as concat (`// HOLD:`, PR #7). This block is the regression proof: flip a key
+// back out of EXACT_REGISTRY and the held HS flip loses its registry foundation.
+describe("normalizeSignalType — SIGNALS-ADD-HS-22-VERBS resolutions", () => {
+  const HS_22 = [
+    "home-stretch.chat_session",
+    "home-stretch.chat_completed",
+    "home-stretch.dream_profile_updated",
+    "home-stretch.pillar_status_changed",
+    "home-stretch.track_selected",
+    "home-stretch.registered",
+    "home-stretch.module_stalled",
+    "home-stretch.milestone_reached",
+    "home-stretch.points_earned",
+    "home-stretch.login_streak",
+    "home-stretch.credit_analyzed",
+    "home-stretch.savings_milestone",
+    "home-stretch.preapproval_started",
+    "home-stretch.preapproval_approved",
+    "home-stretch.inactive",
+    "home-stretch.ready_to_buy",
+    "home-stretch.under_contract",
+    "home-stretch.guest_mlo_message_sent",
+    "home-stretch.guest_mlo_note_added",
+    "home-stretch.guest_mlo_eligibility_decision",
+    "home-stretch.prospect_invited",
+    "home-stretch.prospect_invitation_sms_requested",
+  ];
+
+  it("registers exactly 22 verbs", () => {
+    assert.equal(HS_22.length, 22);
+  });
+
+  it("all 22 resolve by identity (were null pre-v0.8.0)", () => {
+    for (const t of HS_22) {
+      assert.equal(normalizeSignalType(t), t, `${t} must resolve to itself`);
+    }
+  });
+
+  it("all 22 carry the DEFAULT metadata (weight 3 / BEHAVIORAL / goalShift / active)", () => {
+    for (const t of HS_22) {
+      const entry = EXACT_REGISTRY[t];
+      assert.ok(entry, `${t} missing from EXACT_REGISTRY`);
+      assert.equal(entry.weight, 3, `${t} weight`);
+      assert.equal(entry.category, "BEHAVIORAL", `${t} category`);
+      assert.equal(entry.goalShiftSemantics, true, `${t} goalShiftSemantics`);
+      assert.equal(entry.lifecycle, "active", `${t} lifecycle`);
+      assert.equal(entry.tier, undefined, `${t} should carry no tier`);
+    }
+  });
+
+  it("isGoalShiftSignal is true for all 22 (non-SYSTEM behavioral)", () => {
+    for (const t of HS_22) {
+      assert.equal(isGoalShiftSignal(t), true, `${t} should goal-shift`);
+    }
+  });
+});
+
 // ── (e) malformed / unrecognized inputs ─────────────────────────────────────
 describe("normalizeSignalType — guards", () => {
   it("null / undefined / empty → null (no throw)", () => {
@@ -490,7 +554,7 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 293 (298 total − 5 forensic)", () => {
+  it("active count = 315 (320 total − 5 forensic)", () => {
     // 5 forensic (no live emitter): home-scout.lead_magnet_submitted (Wave A),
     // drumbeat-video-engine.video_rendered (repo absent / pre-registered),
     // home-ready.score_calculated + home-ready.score_changed (declared in the
@@ -498,7 +562,8 @@ describe("listActiveSignalTypes", () => {
     // home-ready.milo_report_generated (audit §4 DEAD — zero HR refs).
     // All 29 PHASE-B1 violation types are lifecycle:"active" (forensic stays 5).
     // PHASE-B1B (+2): email.received + rello.ticket_created, both active.
-    assert.equal(listActiveSignalTypes().length, 293);
+    // SIGNALS-ADD-HS-22-VERBS (+22): all lifecycle:"active" (forensic stays 5).
+    assert.equal(listActiveSignalTypes().length, 315);
   });
 });
 
@@ -540,8 +605,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (293)", () => {
-    assert.equal(keyset.exactKeys.length, 293);
+  it("exactKeys count == active exact registry entries (315)", () => {
+    assert.equal(keyset.exactKeys.length, 315);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -562,8 +627,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.7.1)", () => {
-    assert.equal(keyset.version, "0.7.1");
+  it("version stamp is current (0.8.0)", () => {
+    assert.equal(keyset.version, "0.8.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -578,7 +643,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.7.1");
+    assert.equal(mod.default.version, "0.8.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
