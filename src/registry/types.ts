@@ -324,7 +324,55 @@ export type ExactCanonicalSignalType =
   | "the-oven.revival_completed"
   | "the-oven.revival_dead"
   | "the-oven.revival_started"
-  | "the-oven.temperature_changed";
+  | "the-oven.temperature_changed"
+
+  // ── PHASE-B1: build-guard violation-list types (the additive half of clearing
+  // the Layer-2 79-violation shadow report). Buckets per Kelly's locked decisions
+  // (2026-05-23); full table: BUILT/PHASE-B1-REGISTER-VIOLATION-TYPES-DONE.md.
+  //
+  // Bucket 3 — Rello-internal monitoring/observability (tier:"telemetry",
+  // goalShiftSemantics:false, SYSTEM, weight floor 1; in-registry SOT, no
+  // carve-out). Bare ops names canonicalize to `rello.<verb>`; already-namespaced
+  // forms keep their namespace folded canonical.
+  | "rello.cost_drift"
+  | "rello.mrr_discrepancy"
+  | "rello.nurture_missing_campaign"
+  | "rello.nurture_preempt_rate_anomaly"
+  | "rello.vault_failure_rate_high"
+  | "rello.trigger_dev_poll_circuit_broken"
+  | "rello.billing_upgrade_converted"
+  | "rello.call_completed"
+  | "rello.call_exhausted"
+  | "rello.pe_enrichment"
+  | "rello.agent_call_outcome"
+  | "rello.hh_intake_retry_requested"
+  | "daily_plan.item_injected"
+  | "milo-engine.composition_pipeline_failed"
+  | "consent.revoked"
+  // Bucket 2 — genuinely-missing canonical types (register as active). Underscore-
+  // slug "Upgrade 16" OHH forms (`open_house_hub.*`) fold to the hyphen-canonical
+  // `open-house-hub.*` via normalizeSlug; we register the hyphen-canonical. No
+  // constants.ts row for any of these → seeded at the effective DEFAULT (weight 3
+  // / BEHAVIORAL), flagged for Wave-C reclassification (same convention as the
+  // v0.6.0 keyspace seed).
+  | "home-stretch.lead_inactive"
+  | "open-house-hub.checkin_created"
+  | "open-house-hub.event_completed"
+  | "open-house-hub.checkin"
+  | "open-house-hub.enrichment_completed"
+  | "open-house-hub.follow_up_created"
+  | "newsletter-studio.email_forwarded"
+  | "harvest-home.gateway_injection_failed"
+  | "harvest-home.leads_imported"
+  // Bucket 4 — production global-namespace forms (first-class, NOT the
+  // admin/lab/.../simulate test-harness forms — those are Phase-B2 allowlisted).
+  // `agent.`/`rate.`/`data.` are added to GLOBAL_PREFIXES (normalize.ts) since
+  // they are not slug-foldable. No constants row → DEFAULT, flagged Wave-C.
+  | "agent.action_completed"
+  | "agent.action_skipped"
+  | "rate.alert_triggered"
+  | "signal.credits.purchased"
+  | "data.stale";
 
 declare const FAMILY_BRAND: unique symbol;
 
@@ -401,7 +449,19 @@ export interface SignalTypeEntry {
  * `normalizeSlug` folds `scout`→`home-scout` before family resolution).
  */
 export interface SignalTypeFamily {
-  readonly prefix: `${string}.`;
+  /**
+   * The canonical prefix (post-slug-fold). Ends on a segment delimiter so a
+   * family only ever matches whole segments, never a partial token. Two
+   * delimiters are legitimate:
+   *   - `.` — the common case (`home-scout.cta_clicked.`, `content-engine.audit.`),
+   *     where the variable tail is its own dotted segment.
+   *   - `_` — threshold/suffix families whose variable tail is appended after an
+   *     underscore in the SAME verb segment (`score.crossed_` → `score.crossed_90`,
+   *     PHASE-B1 bucket 5). The emit convention is `score.crossed_${threshold}`,
+   *     so a dot-terminated prefix could never match; the underscore boundary is
+   *     the real segment edge here.
+   */
+  readonly prefix: `${string}.` | `${string}_`;
   readonly weight: number;
   readonly category: SignalCategory;
   readonly priority?: SignalPriority;

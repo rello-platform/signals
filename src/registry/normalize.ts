@@ -31,6 +31,18 @@ const GLOBAL_PREFIXES = [
   "system.",
   "consent.",
   "checkpoint.",
+  // PHASE-B1: spoke-less namespaces for the registered build-guard violation
+  // types. `agent.`/`rate.`/`data.` carry bucket-4 global first-class keys
+  // (`agent.action_completed`, `rate.alert_triggered`, `data.stale`);
+  // `daily_plan.` carries the bucket-3 `daily_plan.item_injected` monitoring
+  // signal (Kelly: already-namespaced ops forms keep their namespace folded
+  // canonical). None of these segments is a `@rello-platform/slugs` slug, so —
+  // like `signal.`/`score.`/`consent.` — they cannot be slug-folded and must
+  // match directly here.
+  "agent.",
+  "rate.",
+  "data.",
+  "daily_plan.",
 ] as const;
 
 /**

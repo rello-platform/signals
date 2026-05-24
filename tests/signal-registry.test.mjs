@@ -18,9 +18,11 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed (14) + Wave-B NS email lifecycle (3) + the full emitted keyspace (250) = 267 canonical types", () => {
+  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) = 296 canonical types", () => {
     // v0.6.0 KEYSPACE-SEED: 17 (Wave A/B) + 250 emitted canonical types.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 267);
+    // PHASE-B1 (v0.7.0): +29 build-guard violation-list types
+    // (bucket 3 = 15 tier:telemetry, bucket 2 = 9 active, bucket 4 = 5 global).
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 296);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -64,9 +66,12 @@ describe("FAMILY_REGISTRY — per-entry completeness", () => {
   it("every family has a prefix ending in '.' + weight + category + goalShiftSemantics + lifecycle", () => {
     assert.ok(FAMILY_REGISTRY.length >= 3, "expected the seed families");
     for (const family of FAMILY_REGISTRY) {
+      // Families end on a segment delimiter — `.` (the common case) or `_`
+      // (threshold/suffix families like PHASE-B1 `score.crossed_`, whose
+      // variable tail is appended in-segment). See SignalTypeFamily.prefix.
       assert.ok(
-        family.prefix.endsWith("."),
-        `family prefix "${family.prefix}" must end with '.'`,
+        family.prefix.endsWith(".") || family.prefix.endsWith("_"),
+        `family prefix "${family.prefix}" must end with '.' or '_'`,
       );
       assert.equal(typeof family.weight, "number");
       assert.ok(SIGNAL_CATEGORIES.includes(family.category));
@@ -253,6 +258,99 @@ describe("normalizeSignalType — KEYSPACE-SEED un-inerts the normalizer (were n
   });
 });
 
+// ── PHASE-B1 (v0.7.0): build-guard violation-list types now resolve ──────────
+// The additive half of clearing the Layer-2 79-violation shadow report. These
+// forms were VIOLATIONS (normalizeSignalType → null) before v0.7.0; registering
+// them un-violates the additive cases. Bare-legacy seed-rule retires + the
+// test-harness/internal-monitoring allowlists are the sibling Phase B2.
+describe("normalizeSignalType — PHASE-B1 violation types now resolve", () => {
+  it("bucket 3: bare ops names canonicalize to rello.<verb> (identity at canonical)", () => {
+    assert.equal(normalizeSignalType("rello.cost_drift"), "rello.cost_drift");
+    assert.equal(
+      normalizeSignalType("rello.trigger_dev_poll_circuit_broken"),
+      "rello.trigger_dev_poll_circuit_broken",
+    );
+  });
+  it("bucket 3: already-namespaced ops forms keep their namespace", () => {
+    assert.equal(
+      normalizeSignalType("daily_plan.item_injected"),
+      "daily_plan.item_injected", // daily_plan. global prefix
+    );
+    assert.equal(normalizeSignalType("consent.revoked"), "consent.revoked");
+    assert.equal(
+      normalizeSignalType("milo-engine.composition_pipeline_failed"),
+      "milo-engine.composition_pipeline_failed",
+    );
+    assert.equal(
+      normalizeSignalType("rello.pe_enrichment"),
+      "rello.pe_enrichment",
+    );
+  });
+  it("bucket 3 types are tier:'telemetry' + goalShiftSemantics:false (SYSTEM)", () => {
+    const entry = EXACT_REGISTRY["rello.cost_drift"];
+    assert.equal(entry.tier, "telemetry");
+    assert.equal(entry.goalShiftSemantics, false);
+    assert.equal(entry.category, "SYSTEM");
+    assert.equal(entry.weight, 1);
+    // telemetry monitoring must NOT shift nurture goals
+    assert.equal(isGoalShiftSignal("rello.cost_drift"), false);
+    assert.equal(isGoalShiftSignal("consent.revoked"), false);
+  });
+  it("bucket 2: underscore/concat slug forms fold to hyphen-canonical", () => {
+    assert.equal(
+      normalizeSignalType("open_house_hub.checkin"),
+      "open-house-hub.checkin",
+    );
+    assert.equal(
+      normalizeSignalType("open-house-hub.checkin_created"),
+      "open-house-hub.checkin_created",
+    );
+    assert.equal(
+      normalizeSignalType("harvest_home.gateway_injection_failed"),
+      "harvest-home.gateway_injection_failed",
+    );
+    assert.equal(
+      normalizeSignalType("harvesthome.leads_imported"),
+      "harvest-home.leads_imported",
+    );
+    assert.equal(
+      normalizeSignalType("home-stretch.lead_inactive"),
+      "home-stretch.lead_inactive",
+    );
+    assert.equal(
+      normalizeSignalType("newsletter-studio.email_forwarded"),
+      "newsletter-studio.email_forwarded",
+    );
+  });
+  it("bucket 4: global first-class forms resolve (agent./rate./data./signal.)", () => {
+    assert.equal(
+      normalizeSignalType("agent.action_completed"),
+      "agent.action_completed",
+    );
+    assert.equal(
+      normalizeSignalType("agent.action_skipped"),
+      "agent.action_skipped",
+    );
+    assert.equal(
+      normalizeSignalType("rate.alert_triggered"),
+      "rate.alert_triggered",
+    );
+    assert.equal(normalizeSignalType("data.stale"), "data.stale");
+    assert.equal(
+      normalizeSignalType("signal.credits.purchased"),
+      "signal.credits.purchased",
+    );
+  });
+  it("bucket 5: score.crossed_<threshold> family covers seeded 60/80 + future", () => {
+    // seeded exacts still resolve by identity (EXACT_REGISTRY)
+    assert.equal(normalizeSignalType("score.crossed_60"), "score.crossed_60");
+    assert.equal(normalizeSignalType("score.crossed_80"), "score.crossed_80");
+    // future threshold resolves via the score.crossed_ family (was null pre-B1)
+    assert.equal(normalizeSignalType("score.crossed_90"), "score.crossed_90");
+    assert.equal(normalizeSignalType("score.crossed_75"), "score.crossed_75");
+  });
+});
+
 // ── (e) malformed / unrecognized inputs ─────────────────────────────────────
 describe("normalizeSignalType — guards", () => {
   it("null / undefined / empty → null (no throw)", () => {
@@ -340,13 +438,14 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 262 (267 total − 5 forensic)", () => {
+  it("active count = 291 (296 total − 5 forensic)", () => {
     // 5 forensic (no live emitter): home-scout.lead_magnet_submitted (Wave A),
     // drumbeat-video-engine.video_rendered (repo absent / pre-registered),
     // home-ready.score_calculated + home-ready.score_changed (declared in the
     // emit union but the live emit is home-ready.score_updated — rename drift),
     // home-ready.milo_report_generated (audit §4 DEAD — zero HR refs).
-    assert.equal(listActiveSignalTypes().length, 262);
+    // All 29 PHASE-B1 violation types are lifecycle:"active" (forensic stays 5).
+    assert.equal(listActiveSignalTypes().length, 291);
   });
 });
 
@@ -388,13 +487,14 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (262)", () => {
-    assert.equal(keyset.exactKeys.length, 262);
+  it("exactKeys count == active exact registry entries (291)", () => {
+    assert.equal(keyset.exactKeys.length, 291);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
-  it("familyPrefixes count == 17 (5 explicit + 12 APP_SLUGS audit families)", () => {
-    assert.equal(keyset.familyPrefixes.length, 17);
+  it("familyPrefixes count == 18 (6 explicit + 12 APP_SLUGS audit families)", () => {
+    // +1 vs v0.6.0: PHASE-B1 `score.crossed_` threshold family.
+    assert.equal(keyset.familyPrefixes.length, 18);
   });
 
   it("carries the prod silent-kill forms (canonical) that drove this workstream", () => {
@@ -409,8 +509,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.6.1)", () => {
-    assert.equal(keyset.version, "0.6.1");
+  it("version stamp is current (0.7.0)", () => {
+    assert.equal(keyset.version, "0.7.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -425,7 +525,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.6.1");
+    assert.equal(mod.default.version, "0.7.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });

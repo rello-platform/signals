@@ -2071,6 +2071,263 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+
+    // ══ PHASE-B1: build-guard violation-list types ═══════════════════════════
+    // Additive half of clearing the Layer-2 79-violation shadow report
+    // (BUILT/LAYER-2-BUILD-GUARD-SHADOW-DONE.md). Buckets per Kelly's locked
+    // decisions (2026-05-23). The seed-rule retires + guard allowlist are the
+    // sibling Phase B2 (Rello-side). Companion: BUILT/PHASE-B1-REGISTER-
+    // VIOLATION-TYPES-DONE.md.
+
+    // ── Bucket 3 · Rello-internal monitoring/observability ──
+    // tier:"telemetry" (explicit low-value, in-registry SOT — NOT a silent
+    // DEFAULT, NOT a carve-out), goalShiftSemantics:false, SYSTEM, weight floor
+    // 1. No constants.ts row for any (operational signals never classified for
+    // nurture). Bare ops names canonicalize to `rello.<verb>`; already-namespaced
+    // forms keep their namespace folded canonical (Kelly).
+    "rello.cost_drift": {
+      type: "rello.cost_drift",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.mrr_discrepancy": {
+      type: "rello.mrr_discrepancy",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.nurture_missing_campaign": {
+      type: "rello.nurture_missing_campaign",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.nurture_preempt_rate_anomaly": {
+      type: "rello.nurture_preempt_rate_anomaly",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.vault_failure_rate_high": {
+      type: "rello.vault_failure_rate_high",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.trigger_dev_poll_circuit_broken": {
+      type: "rello.trigger_dev_poll_circuit_broken",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.billing_upgrade_converted": {
+      type: "rello.billing_upgrade_converted",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.call_completed": {
+      type: "rello.call_completed",
+      // The bare `call_completed` constants row (weight 7 / ENGAGEMENT,
+      // constants.ts:39/387) is the Layer-3 lead-engagement key the receiver
+      // keys on — a DISTINCT canonical type from this `rello.`-namespaced
+      // operational call-outcome monitor (emitted src/lib/conversations/
+      // calls.ts:505). Bucketed as monitoring by Kelly → telemetry floor.
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.call_exhausted": {
+      type: "rello.call_exhausted",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.pe_enrichment": {
+      type: "rello.pe_enrichment",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.agent_call_outcome": {
+      type: "rello.agent_call_outcome",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "rello.hh_intake_retry_requested": {
+      type: "rello.hh_intake_retry_requested",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "daily_plan.item_injected": {
+      type: "daily_plan.item_injected",
+      // `daily_plan.` global namespace (GLOBAL_PREFIXES) — Kelly: already-
+      // namespaced ops forms keep their namespace folded canonical.
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "milo-engine.composition_pipeline_failed": {
+      type: "milo-engine.composition_pipeline_failed",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+    "consent.revoked": {
+      type: "consent.revoked",
+      // `consent.` global namespace (already in GLOBAL_PREFIXES). Distinct from
+      // the BEHAVIORAL `consent.email_revoked`/`consent.sms_revoked` lifecycle
+      // events — this generic compliance-monitor form is bucket-3 telemetry per
+      // Kelly (emitted src/lib/conversations/compliance.ts:249).
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
+
+    // ── Bucket 2 · genuinely-missing canonical types (register as active) ──
+    // No constants.ts row → seeded at the effective DEFAULT (DEFAULT_WEIGHT=3 /
+    // DEFAULT_CATEGORY="BEHAVIORAL", constants.ts:836–837), flagged for Wave-C
+    // reclassification (same convention as the v0.6.0 keyspace seed).
+    // goalShiftSemantics:true (real lead signals; non-SYSTEM).
+    "home-stretch.lead_inactive": {
+      type: "home-stretch.lead_inactive",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "open-house-hub.checkin_created": {
+      type: "open-house-hub.checkin_created",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "open-house-hub.event_completed": {
+      type: "open-house-hub.event_completed",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "open-house-hub.checkin": {
+      type: "open-house-hub.checkin",
+      // underscore-slug emit `open_house_hub.checkin` folds here via normalizeSlug
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "open-house-hub.enrichment_completed": {
+      type: "open-house-hub.enrichment_completed",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "open-house-hub.follow_up_created": {
+      type: "open-house-hub.follow_up_created",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "newsletter-studio.email_forwarded": {
+      type: "newsletter-studio.email_forwarded",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "harvest-home.gateway_injection_failed": {
+      type: "harvest-home.gateway_injection_failed",
+      // underscore-slug emit `harvest_home.gateway_injection_failed` folds here
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "harvest-home.leads_imported": {
+      type: "harvest-home.leads_imported",
+      // concat-slug emit `harvesthome.leads_imported` folds here
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+
+    // ── Bucket 4 · production global-namespace forms (first-class) ──
+    // NOT the admin/lab/.../simulate test-harness forms (email.*/sms.replied —
+    // Phase-B2 allowlisted). `agent.`/`rate.`/`data.` added to GLOBAL_PREFIXES.
+    // No constants row → DEFAULT, flagged Wave-C. goalShiftSemantics:true.
+    "agent.action_completed": {
+      type: "agent.action_completed",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "agent.action_skipped": {
+      type: "agent.action_skipped",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "rate.alert_triggered": {
+      type: "rate.alert_triggered",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "signal.credits.purchased": {
+      type: "signal.credits.purchased",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
+    "data.stale": {
+      type: "data.stale",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    }, // DEFAULT (no constants row) — Wave-C reclass
   };
 
 /**
@@ -2147,6 +2404,22 @@ export const FAMILY_REGISTRY: readonly SignalTypeFamily[] = [
   // rate_sheet_published, refi_candidates_found, refi_outreach_completed).
   {
     prefix: "the-drumbeat.mlo.",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active",
+  },
+  // PHASE-B1 bucket 5 · score-threshold family: `score.crossed_<threshold>`
+  // (`Rello src/trigger/jobs/conversion-score.ts:165` emits
+  // `score.crossed_${threshold}`). The seeded exacts `score.crossed_60` /
+  // `score.crossed_80` resolve via EXACT_REGISTRY; this family covers the
+  // dynamic builder + any future threshold (e.g. `score.crossed_90`) so the
+  // build-guard's template-literal check passes on the `score.crossed_` static
+  // prefix. Underscore-terminated (the threshold is appended in-segment, not a
+  // new dotted segment) — see SignalTypeFamily.prefix. Metadata mirrors the
+  // seeded score.crossed_60/_80 exacts (weight 3 / BEHAVIORAL / goal-shift).
+  {
+    prefix: "score.crossed_",
     weight: 3,
     category: "BEHAVIORAL",
     goalShiftSemantics: true,
