@@ -250,6 +250,1960 @@ var EXACT_REGISTRY = {
     category: "ENGAGEMENT",
     goalShiftSemantics: false,
     lifecycle: "active"
+  },
+  // ────────────────────────────────────────────────────────────────────
+  // Full emitted canonical keyspace seed (v0.6.0; KEYSPACE-SEED dispatch).
+  // Sorted by canonical key (= slug-grouped). `// DEFAULT` = emitted type
+  // with no Rello `constants.ts` row → seeded at effective DEFAULT (weight 3 /
+  // BEHAVIORAL), flagged in the close companion for Wave-C reclassification.
+  // `// constants w0` = constants weight 0 mapped to the registry floor
+  // (weight 1 + `tier:"telemetry"`). goalShiftSemantics defaults true; SYSTEM
+  // category → false (operational/observability, never a lead-goal shift).
+  // ────────────────────────────────────────────────────────────────────
+  "checkpoint.call_requested": {
+    type: "checkpoint.call_requested",
+    weight: 10,
+    category: "READINESS",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "checkpoint.responded": {
+    type: "checkpoint.responded",
+    weight: 8,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "checkpoint.update_started": {
+    type: "checkpoint.update_started",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "consent.email_granted": {
+    type: "consent.email_granted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "consent.email_revoked": {
+    type: "consent.email_revoked",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "consent.sms_granted": {
+    type: "consent.sms_granted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "consent.sms_revoked": {
+    type: "consent.sms_revoked",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "consent.updated": {
+    type: "consent.updated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "content-engine.article_clicked": {
+    type: "content-engine.article_clicked",
+    weight: 6,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "content-engine.article_opened": {
+    type: "content-engine.article_opened",
+    weight: 3,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "content-engine.article_scroll_deep": {
+    type: "content-engine.article_scroll_deep",
+    weight: 4,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "content-engine.article_sent": {
+    type: "content-engine.article_sent",
+    weight: 3,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "content-engine.classification_abandoned": {
+    type: "content-engine.classification_abandoned",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "content-engine.content_stale": {
+    type: "content-engine.content_stale",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "content-engine.generation_completed": {
+    type: "content-engine.generation_completed",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "drumbeat-video-engine.video_rendered": {
+    type: "drumbeat-video-engine.video_rendered",
+    weight: 5,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "forensic"
+  },
+  "harvest-home.call_list_contact_initiated": {
+    type: "harvest-home.call_list_contact_initiated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.call_list_snapshot_generated": {
+    type: "harvest-home.call_list_snapshot_generated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.data_enriched": {
+    type: "harvest-home.data_enriched",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.data_pack_purchased": {
+    type: "harvest-home.data_pack_purchased",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.discovery_replacement_claim_filed": {
+    type: "harvest-home.discovery_replacement_claim_filed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.discovery_replacement_claim_resolved": {
+    type: "harvest-home.discovery_replacement_claim_resolved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.discovery_search_saved": {
+    type: "harvest-home.discovery_search_saved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.immediate_action": {
+    type: "harvest-home.immediate_action",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.lead_acquisition_recorded": {
+    type: "harvest-home.lead_acquisition_recorded",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.property_address_changed": {
+    type: "harvest-home.property_address_changed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.property_equity_threshold_crossed": {
+    type: "harvest-home.property_equity_threshold_crossed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.property_listing_detected": {
+    type: "harvest-home.property_listing_detected",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "harvest-home.skip_trace_completed": {
+    type: "harvest-home.skip_trace_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.almost_home_login": {
+    type: "home-ready.almost_home_login",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.almost_home_session_duration": {
+    type: "home-ready.almost_home_session_duration",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.assessment_completed": {
+    type: "home-ready.assessment_completed",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-ready.assessment_started": {
+    type: "home-ready.assessment_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.assessment_updated": {
+    type: "home-ready.assessment_updated",
+    weight: 6,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-ready.challenge_completed": {
+    type: "home-ready.challenge_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.challenge_enrolled": {
+    type: "home-ready.challenge_enrolled",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.challenge_progress": {
+    type: "home-ready.challenge_progress",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.challenge_wizard_feedback": {
+    type: "home-ready.challenge_wizard_feedback",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.closing_ready": {
+    type: "home-ready.closing_ready",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.closing_retracted": {
+    type: "home-ready.closing_retracted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.data_stale": {
+    type: "home-ready.data_stale",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.document_analyzed": {
+    type: "home-ready.document_analyzed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.document_uploaded": {
+    type: "home-ready.document_uploaded",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-ready.milo_chat_session": {
+    type: "home-ready.milo_chat_session",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.milo_report_generated": {
+    type: "home-ready.milo_report_generated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "forensic"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.plaid_connected": {
+    type: "home-ready.plaid_connected",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.recommendation_acted_on": {
+    type: "home-ready.recommendation_acted_on",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.recommendation_feedback": {
+    type: "home-ready.recommendation_feedback",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.recommendation_viewed": {
+    type: "home-ready.recommendation_viewed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.score_calculated": {
+    type: "home-ready.score_calculated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "forensic"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.score_changed": {
+    type: "home-ready.score_changed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "forensic"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.score_updated": {
+    type: "home-ready.score_updated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-ready.stall_detected": {
+    type: "home-ready.stall_detected",
+    weight: 7,
+    category: "ESCALATION",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-ready.survey_completed": {
+    type: "home-ready.survey_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-scout.affordability_calculated": {
+    type: "home-scout.affordability_calculated",
+    weight: 5,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.buying_power_calculated": {
+    type: "home-scout.buying_power_calculated",
+    weight: 6,
+    category: "FINANCIAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.call_booked": {
+    type: "home-scout.call_booked",
+    weight: 9,
+    category: "READINESS",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cash_out_calculated": {
+    type: "home-scout.cash_out_calculated",
+    weight: 6,
+    category: "FINANCIAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.book_a_call": {
+    type: "home-scout.cta_clicked.book_a_call",
+    weight: 8,
+    category: "READINESS",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.get_pre_approved": {
+    type: "home-scout.cta_clicked.get_pre_approved",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.qualify": {
+    type: "home-scout.cta_clicked.qualify",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.rate_quote": {
+    type: "home-scout.cta_clicked.rate_quote",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.rate_watch": {
+    type: "home-scout.cta_clicked.rate_watch",
+    weight: 5,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.request_cma": {
+    type: "home-scout.cta_clicked.request_cma",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.cta_clicked.whats_my_home_worth": {
+    type: "home-scout.cta_clicked.whats_my_home_worth",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.data_stale": {
+    type: "home-scout.data_stale",
+    weight: 1,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.decision_stage_engagement": {
+    type: "home-scout.decision_stage_engagement",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.dpa_search_completed": {
+    type: "home-scout.dpa_search_completed",
+    weight: 5,
+    category: "FINANCIAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.embed_interaction": {
+    type: "home-scout.embed_interaction",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.embed_loaded": {
+    type: "home-scout.embed_loaded",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.equity_check_returned": {
+    type: "home-scout.equity_check_returned",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.expired_analysis_requested": {
+    type: "home-scout.expired_analysis_requested",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.form_submitted": {
+    type: "home-scout.form_submitted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.fsbo_net_sheet_requested": {
+    type: "home-scout.fsbo_net_sheet_requested",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.home_value_requested": {
+    type: "home-scout.home_value_requested",
+    weight: 5,
+    category: "BEHAVIORAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.homeowner_hub_viewed": {
+    type: "home-scout.homeowner_hub_viewed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-scout.homeowner_magic_link_issued": {
+    type: "home-scout.homeowner_magic_link_issued",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-scout.homeowner_magic_link_verified": {
+    type: "home-scout.homeowner_magic_link_verified",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-scout.homeready_handoff_exhausted": {
+    type: "home-scout.homeready_handoff_exhausted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.homeready_handoff_failed": {
+    type: "home-scout.homeready_handoff_failed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.homeready_handoff_retry_success": {
+    type: "home-scout.homeready_handoff_retry_success",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.homeready_handoff_success": {
+    type: "home-scout.homeready_handoff_success",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.injection_cta_clicked": {
+    type: "home-scout.injection_cta_clicked",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.lead_captured": {
+    type: "home-scout.lead_captured",
+    weight: 8,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.lead_reengaged": {
+    type: "home-scout.lead_reengaged",
+    weight: 7,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.listing_saved": {
+    type: "home-scout.listing_saved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.listing_search_performed": {
+    type: "home-scout.listing_search_performed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.listing_unsaved": {
+    type: "home-scout.listing_unsaved",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.net_sheet_calculated": {
+    type: "home-scout.net_sheet_calculated",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.newsletter_signup": {
+    type: "home-scout.newsletter_signup",
+    weight: 4,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.preferred_option_selected": {
+    type: "home-scout.preferred_option_selected",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.qualification_estimated": {
+    type: "home-scout.qualification_estimated",
+    weight: 6,
+    category: "FINANCIAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.rate_alert_set": {
+    type: "home-scout.rate_alert_set",
+    weight: 5,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.rate_alert_triggered": {
+    type: "home-scout.rate_alert_triggered",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.rate_shopping_signal": {
+    type: "home-scout.rate_shopping_signal",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.referral_submitted": {
+    type: "home-scout.referral_submitted",
+    weight: 7,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.refi_consideration_signal": {
+    type: "home-scout.refi_consideration_signal",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.reverse_mortgage_estimate_requested": {
+    type: "home-scout.reverse_mortgage_estimate_requested",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.search_saved": {
+    type: "home-scout.search_saved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.sell_intent_confirmed": {
+    type: "home-scout.sell_intent_confirmed",
+    weight: 9,
+    category: "READINESS",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.showing_requested": {
+    type: "home-scout.showing_requested",
+    weight: 9,
+    category: "READINESS",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.survey_gate_answered": {
+    type: "home-scout.survey_gate_answered",
+    weight: 6,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.survey_gate_question_answered": {
+    type: "home-scout.survey_gate_question_answered",
+    weight: 6,
+    category: "READINESS",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.tool_completed": {
+    type: "home-scout.tool_completed",
+    weight: 5,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.tool_started": {
+    type: "home-scout.tool_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.unattached_lead_captured": {
+    type: "home-scout.unattached_lead_captured",
+    weight: 6,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-scout.va_eligible_confirmed": {
+    type: "home-scout.va_eligible_confirmed",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-stretch.activity_completed": {
+    type: "home-stretch.activity_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.anxiety_detected": {
+    type: "home-stretch.anxiety_detected",
+    weight: 8,
+    category: "ANXIETY",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-stretch.article_read": {
+    type: "home-stretch.article_read",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.badge_earned": {
+    type: "home-stretch.badge_earned",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.chat_message": {
+    type: "home-stretch.chat_message",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.chat_started": {
+    type: "home-stretch.chat_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.document_analyzed": {
+    type: "home-stretch.document_analyzed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.document_uploaded": {
+    type: "home-stretch.document_uploaded",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-stretch.financial_snapshot_updated": {
+    type: "home-stretch.financial_snapshot_updated",
+    weight: 5,
+    category: "FINANCIAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "home-stretch.milo_report_generated": {
+    type: "home-stretch.milo_report_generated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.module_completed": {
+    type: "home-stretch.module_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.module_started": {
+    type: "home-stretch.module_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.onboarding_completed": {
+    type: "home-stretch.onboarding_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.pillar_completed": {
+    type: "home-stretch.pillar_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.score_changed": {
+    type: "home-stretch.score_changed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "home-stretch.stall_detected": {
+    type: "home-stretch.stall_detected",
+    weight: 7,
+    category: "ESCALATION",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "market-intel.alert_triggered": {
+    type: "market-intel.alert_triggered",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    routing: "rate-alert-dispatch",
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.digest_clicked": {
+    type: "market-intel.digest_clicked",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.digest_generated": {
+    type: "market-intel.digest_generated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.digest_opened": {
+    type: "market-intel.digest_opened",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.podcast_played": {
+    type: "market-intel.podcast_played",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.report_generated": {
+    type: "market-intel.report_generated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.snapshot_shared": {
+    type: "market-intel.snapshot_shared",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "market-intel.subscribed": {
+    type: "market-intel.subscribed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "newsletter-studio.content_feedback_negative": {
+    type: "newsletter-studio.content_feedback_negative",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "newsletter-studio.content_feedback_positive": {
+    type: "newsletter-studio.content_feedback_positive",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "newsletter-studio.content_preference_changed": {
+    type: "newsletter-studio.content_preference_changed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_checkpoint_responded": {
+    type: "newsletter-studio.email_checkpoint_responded",
+    weight: 8,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_clicked": {
+    type: "newsletter-studio.email_clicked",
+    weight: 5,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_delivered": {
+    type: "newsletter-studio.email_delivered",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_frequency_changed": {
+    type: "newsletter-studio.email_frequency_changed",
+    weight: 4,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_opened": {
+    type: "newsletter-studio.email_opened",
+    weight: 3,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_pause_expired": {
+    type: "newsletter-studio.email_pause_expired",
+    weight: 5,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_paused": {
+    type: "newsletter-studio.email_paused",
+    weight: 6,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_replied": {
+    type: "newsletter-studio.email_replied",
+    weight: 7,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.email_sent": {
+    type: "newsletter-studio.email_sent",
+    weight: 1,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.flow_advanced": {
+    type: "newsletter-studio.flow_advanced",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "newsletter-studio.reply_received": {
+    type: "newsletter-studio.reply_received",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "newsletter-studio.scroll_depth": {
+    type: "newsletter-studio.scroll_depth",
+    weight: 4,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "newsletter-studio.unsubscribe_reason": {
+    type: "newsletter-studio.unsubscribe_reason",
+    weight: 2,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.agent_partner.captured": {
+    type: "pathfinder-pro.agent_partner.captured",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "pathfinder-pro.attendee_reclassified": {
+    type: "pathfinder-pro.attendee_reclassified",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "pathfinder-pro.borrower_interest": {
+    type: "pathfinder-pro.borrower_interest",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.credit_pull.consent_captured": {
+    type: "pathfinder-pro.credit_pull.consent_captured",
+    weight: 1,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.credit_pull.failed": {
+    type: "pathfinder-pro.credit_pull.failed",
+    weight: 5,
+    category: "NEGATIVE",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.credit_pull.hard_executed": {
+    type: "pathfinder-pro.credit_pull.hard_executed",
+    weight: 7,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.credit_pull.soft_executed": {
+    type: "pathfinder-pro.credit_pull.soft_executed",
+    weight: 4,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.exported_to_los": {
+    type: "pathfinder-pro.exported_to_los",
+    weight: 9,
+    category: "READINESS",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.hh_intake_sync": {
+    type: "pathfinder-pro.hh_intake_sync",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "pathfinder-pro.intake_completed": {
+    type: "pathfinder-pro.intake_completed",
+    weight: 5,
+    category: "READINESS",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.intake_started": {
+    type: "pathfinder-pro.intake_started",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.past_borrowers.queried": {
+    type: "pathfinder-pro.past_borrowers.queried",
+    weight: 1,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.prequalified": {
+    type: "pathfinder-pro.prequalified",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.realtor_prospect.intake_received": {
+    type: "pathfinder-pro.realtor_prospect.intake_received",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "pathfinder-pro.scenario_converted": {
+    type: "pathfinder-pro.scenario_converted",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.scenario_created": {
+    type: "pathfinder-pro.scenario_created",
+    weight: 5,
+    category: "READINESS",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.scenario_delivered": {
+    type: "pathfinder-pro.scenario_delivered",
+    weight: 6,
+    category: "READINESS",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "pathfinder-pro.scenario_viewed": {
+    type: "pathfinder-pro.scenario_viewed",
+    weight: 4,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "property-engine.rate_sync_completed": {
+    type: "property-engine.rate_sync_completed",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "rello.handoff_transition": {
+    type: "rello.handoff_transition",
+    weight: 7,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "rello.lead_created": {
+    type: "rello.lead_created",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.lead_data_sufficient": {
+    type: "rello.lead_data_sufficient",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.lead_stage_changed": {
+    type: "rello.lead_stage_changed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.local_conversion": {
+    type: "rello.local_conversion",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "rello.meeting_booked": {
+    type: "rello.meeting_booked",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.meeting_canceled": {
+    type: "rello.meeting_canceled",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.meeting_completed": {
+    type: "rello.meeting_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.meeting_no_show": {
+    type: "rello.meeting_no_show",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "rello.nurture_reply_detected": {
+    type: "rello.nurture_reply_detected",
+    weight: 10,
+    category: "ENGAGEMENT",
+    priority: "CRITICAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "rello.nurture_reply_sent": {
+    type: "rello.nurture_reply_sent",
+    weight: 5,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "report-engine.report_failed": {
+    type: "report-engine.report_failed",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "score.crossed_60": {
+    type: "score.crossed_60",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "score.crossed_80": {
+    type: "score.crossed_80",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.leads_imported": {
+    type: "signal.byol.leads_imported",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.leads_reactivated": {
+    type: "signal.byol.leads_reactivated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.monitoring_started": {
+    type: "signal.byol.monitoring_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.parked_lead_signal_detected": {
+    type: "signal.byol.parked_lead_signal_detected",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.parked_leads_resurfaced": {
+    type: "signal.byol.parked_leads_resurfaced",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.push_calls_completed": {
+    type: "signal.byol.push_calls_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.scoring_completed": {
+    type: "signal.byol.scoring_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.byol.upload_completed": {
+    type: "signal.byol.upload_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.discovery.search": {
+    type: "signal.discovery.search",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.discovery.unlock": {
+    type: "signal.discovery.unlock",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.intake.lead_created": {
+    type: "signal.intake.lead_created",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.intake.lead_enriched": {
+    type: "signal.intake.lead_enriched",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.intake.lead_merged": {
+    type: "signal.intake.lead_merged",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.intake.lead_rescored": {
+    type: "signal.intake.lead_rescored",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.lead.contacted": {
+    type: "signal.lead.contacted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.lead.converted": {
+    type: "signal.lead.converted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.lead.delivered": {
+    type: "signal.lead.delivered",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.lead.enriched": {
+    type: "signal.lead.enriched",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.lead.purchased": {
+    type: "signal.lead.purchased",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.lead.scored": {
+    type: "signal.lead.scored",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.pipeline.call_outcome": {
+    type: "signal.pipeline.call_outcome",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.pipeline.session_completed": {
+    type: "signal.pipeline.session_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "signal.pipeline.session_started": {
+    type: "signal.pipeline.session_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // DEFAULT (no constants row)
+  "system.checkpoint_external_change": {
+    type: "system.checkpoint_external_change",
+    weight: 8,
+    category: "FINANCIAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "system.periodic_checkpoint": {
+    type: "system.periodic_checkpoint",
+    weight: 5,
+    category: "BEHAVIORAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.ad_lead_captured": {
+    type: "the-drumbeat.ad_lead_captured",
+    weight: 8,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.campaign_launched": {
+    type: "the-drumbeat.campaign_launched",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.content_broker_review_needed": {
+    type: "the-drumbeat.content_broker_review_needed",
+    weight: 5,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.content_compliance_blocked": {
+    type: "the-drumbeat.content_compliance_blocked",
+    weight: 6,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.content_draft_approved": {
+    type: "the-drumbeat.content_draft_approved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.content_draft_generated": {
+    type: "the-drumbeat.content_draft_generated",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "the-drumbeat.content_draft_published": {
+    type: "the-drumbeat.content_draft_published",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.content_draft_rejected": {
+    type: "the-drumbeat.content_draft_rejected",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "the-drumbeat.direct_mail_sent": {
+    type: "the-drumbeat.direct_mail_sent",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.market_content_generated": {
+    type: "the-drumbeat.market_content_generated",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.market_content_published": {
+    type: "the-drumbeat.market_content_published",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.market_report_generated": {
+    type: "the-drumbeat.market_report_generated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.post_published": {
+    type: "the-drumbeat.post_published",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.qr_code_scanned": {
+    type: "the-drumbeat.qr_code_scanned",
+    weight: 5,
+    category: "BEHAVIORAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.rate_alert_triggered": {
+    type: "the-drumbeat.rate_alert_triggered",
+    weight: 5,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    routing: "rate-alert-dispatch",
+    lifecycle: "active"
+  },
+  "the-drumbeat.review_received": {
+    type: "the-drumbeat.review_received",
+    weight: 4,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.stall_detected": {
+    type: "the-drumbeat.stall_detected",
+    weight: 7,
+    category: "ESCALATION",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_message_sent": {
+    type: "the-drumbeat.video_message_sent",
+    weight: 6,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_message_watched": {
+    type: "the-drumbeat.video_message_watched",
+    weight: 6,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_published": {
+    type: "the-drumbeat.video_published",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_recorded": {
+    type: "the-drumbeat.video_recorded",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_started": {
+    type: "the-drumbeat.video_started",
+    weight: 3,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_view_aggregate": {
+    type: "the-drumbeat.video_view_aggregate",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_viewed": {
+    type: "the-drumbeat.video_viewed",
+    weight: 4,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-drumbeat.video_watched": {
+    type: "the-drumbeat.video_watched",
+    weight: 7,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.anniversary_reached": {
+    type: "the-oven.anniversary_reached",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.equity_digest_sent": {
+    type: "the-oven.equity_digest_sent",
+    weight: 1,
+    category: "SYSTEM",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "the-oven.handoff_completed": {
+    type: "the-oven.handoff_completed",
+    weight: 1,
+    category: "SYSTEM",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "the-oven.handoff_initiated": {
+    type: "the-oven.handoff_initiated",
+    weight: 1,
+    category: "SYSTEM",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    tier: "telemetry",
+    lifecycle: "active"
+  },
+  // constants w0 → telemetry tier (floor 1)
+  "the-oven.homeowner_hub_visit": {
+    type: "the-oven.homeowner_hub_visit",
+    weight: 1,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.implicit_referral_detected": {
+    type: "the-oven.implicit_referral_detected",
+    weight: 5,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.nps_completed": {
+    type: "the-oven.nps_completed",
+    weight: 7,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.past_client_cold": {
+    type: "the-oven.past_client_cold",
+    weight: 6,
+    category: "NEGATIVE",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.past_client_cooling": {
+    type: "the-oven.past_client_cooling",
+    weight: 4,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.past_client_reactivated": {
+    type: "the-oven.past_client_reactivated",
+    weight: 8,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.post_close_engagement": {
+    type: "the-oven.post_close_engagement",
+    weight: 5,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.referral_confirmed": {
+    type: "the-oven.referral_confirmed",
+    weight: 10,
+    category: "FINANCIAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.referral_received": {
+    type: "the-oven.referral_received",
+    weight: 9,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.referral_submitted": {
+    type: "the-oven.referral_submitted",
+    weight: 7,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.review_completed": {
+    type: "the-oven.review_completed",
+    weight: 8,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.review_requested": {
+    type: "the-oven.review_requested",
+    weight: 2,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.revival_completed": {
+    type: "the-oven.revival_completed",
+    weight: 7,
+    category: "ENGAGEMENT",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.revival_dead": {
+    type: "the-oven.revival_dead",
+    weight: 1,
+    category: "NEGATIVE",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.revival_started": {
+    type: "the-oven.revival_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "the-oven.temperature_changed": {
+    type: "the-oven.temperature_changed",
+    weight: 5,
+    category: "ENGAGEMENT",
+    goalShiftSemantics: true,
+    lifecycle: "active"
   }
 };
 var AUDIT_FAMILIES = APP_SLUGS.map((slug) => ({
@@ -281,6 +2235,38 @@ var FAMILY_REGISTRY = [
     category: "ENGAGEMENT",
     priority: "LOW",
     goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  // Home-Scout tool-engagement global namespace: `signal.tool.<slug>.<action>`
+  // (Q-NEW-3 canonical; ~22 per-tool variants, SURFACE-MAP §1.3). Lead-tool
+  // engagement → goal-shift; DEFAULT-tier weight pending Wave-C per-tool review.
+  {
+    prefix: "signal.tool.",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // Content-Engine audit family: `content-engine.audit.<entity>.<action>`
+  // (SURFACE-MAP §1.9). content-engine is an ENGINE slug, NOT in APP_SLUGS, so
+  // AUDIT_FAMILIES (APP_SLUGS-derived) does not cover it — registered explicitly.
+  {
+    prefix: "content-engine.audit.",
+    weight: 1,
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  // The-Drumbeat MLO/engine-domain events: `the-drumbeat.mlo.<verb>` (SPEC
+  // decision 24 / DISCOVERED-DRUMBEAT-MLO-PREFIX-SIGNALS-UNREGISTERED-260522).
+  // The `mlo.` bare emit folds here via DEPRECATED_SIGNALTYPE_PREFIX_ALIASES
+  // (`mlo.` → `the-drumbeat.mlo.`); 4 verbs (rate_lock_celebrated,
+  // rate_sheet_published, refi_candidates_found, refi_outreach_completed).
+  {
+    prefix: "the-drumbeat.mlo.",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
     lifecycle: "active"
   },
   // Cross-app audit families (`<slug>.audit.<entity>.<action>`).

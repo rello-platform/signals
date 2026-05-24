@@ -1,5 +1,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import {
   EXACT_REGISTRY,
   FAMILY_REGISTRY,
@@ -15,8 +18,9 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed (14) + Wave-B Newsletter-Studio email lifecycle (3) = 17 canonical types", () => {
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 17);
+  it("holds the seed (14) + Wave-B NS email lifecycle (3) + the full emitted keyspace (250) = 267 canonical types", () => {
+    // v0.6.0 KEYSPACE-SEED: 17 (Wave A/B) + 250 emitted canonical types.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 267);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -187,29 +191,65 @@ describe("normalizeSignalType — seeded forms fold to canonical (non-null)", ()
   });
 });
 
-// ── (c cont.) documented Wave-A null behavior for not-yet-seeded forms ───────
-// The SPEC §2.2 table's remaining illustrative forms target keys that are NOT
-// in the Wave-A 13-exact + 3-family seed. They correctly resolve to null in
-// Wave A (dispatch §2: "expect null + a warn; that's correct for Wave A"). Their
-// canonical targets land with the Wave C keyspace / Wave D emit canonicalization.
-describe("normalizeSignalType — not-yet-seeded forms → null (Wave A boundary)", () => {
-  it("home-ready concat (Wave C keyspace)", () => {
-    assert.equal(normalizeSignalType("homeready.assessment_completed"), null);
+// ── (c cont.) KEYSPACE-SEED (v0.6.0): forms that were null in Wave A now RESOLVE ─
+// These are the exact forms the BPB doc §4 / dispatch §2 called out as inert at
+// v0.5.1 (registry held only ~17). The full-keyspace seed un-inerts the
+// normalizer: legacy forms now fold to their seeded canonical key. This block is
+// the regression proof — flip back to null and the build-guard loses its keyset.
+describe("normalizeSignalType — KEYSPACE-SEED un-inerts the normalizer (were null pre-v0.6.0)", () => {
+  it("home-ready concat → home-ready.assessment_completed", () => {
+    assert.equal(
+      normalizeSignalType("homeready.assessment_completed"),
+      "home-ready.assessment_completed",
+    );
   });
-  it("global namespace (Wave C keyspace — no global keys seeded in A)", () => {
-    assert.equal(normalizeSignalType("score.crossed_60"), null);
+  it("home-ready concat → home-ready.data_stale (33/30d prod silent-kill form)", () => {
+    assert.equal(normalizeSignalType("homeready.data_stale"), "home-ready.data_stale");
   });
-  it("content-engine hyphen-verb (Wave C)", () => {
-    assert.equal(normalizeSignalType("content-engine.article-opened"), null);
+  it("global namespace score.crossed_60 → identity (seeded)", () => {
+    assert.equal(normalizeSignalType("score.crossed_60"), "score.crossed_60");
   });
-  it("§2.1 mlo. alias substitutes but the-drumbeat.mlo.* family is Wave D → null", () => {
-    assert.equal(normalizeSignalType("mlo.rate_lock_celebrated"), null);
+  it("content-engine hyphen-verb → snake-verb canonical", () => {
+    assert.equal(
+      normalizeSignalType("content-engine.article-opened"),
+      "content-engine.article_opened",
+    );
   });
-  it("pfp.scenario_created → pathfinder-pro.scenario_created not in 13 seed → null", () => {
-    assert.equal(normalizeSignalType("pfp.scenario_created"), null);
+  it("§2.1 mlo. alias → the-drumbeat.mlo.* family", () => {
+    assert.equal(
+      normalizeSignalType("mlo.rate_lock_celebrated"),
+      "the-drumbeat.mlo.rate_lock_celebrated",
+    );
   });
-  it("harvest_home.email_complained → null (HH does not emit email_* — illustrative bug form only; the real Wave-B seed is newsletter-studio.*)", () => {
+  it("pfp.scenario_created → pathfinder-pro.scenario_created (dual-key collapse)", () => {
+    assert.equal(
+      normalizeSignalType("pfp.scenario_created"),
+      "pathfinder-pro.scenario_created",
+    );
+  });
+  it("drumbeat.video_recorded → the-drumbeat.video_recorded (dual-key collapse)", () => {
+    assert.equal(
+      normalizeSignalType("drumbeat.video_recorded"),
+      "the-drumbeat.video_recorded",
+    );
+  });
+  it("bare NS email_opened → newsletter-studio.* via receiver-prefix underscore form", () => {
+    assert.equal(
+      normalizeSignalType("newsletter_studio.email_opened"),
+      "newsletter-studio.email_opened",
+    );
+  });
+  it("signal.tool.* family resolves (Home-Scout global tool namespace)", () => {
+    assert.equal(
+      normalizeSignalType("signal.tool.get-pre-approved.requested"),
+      "signal.tool.get-pre-approved.requested",
+    );
+  });
+  it("harvest_home.email_complained → still null (HH does not emit email_*; not seeded)", () => {
     assert.equal(normalizeSignalType("harvest_home.email_complained"), null);
+  });
+  it("bare name (no slug) → still null (receiver supplies slug in Wave D)", () => {
+    assert.equal(normalizeSignalType("email_opened"), null);
   });
 });
 
@@ -300,8 +340,13 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 16 (17 total − 1 forensic; +3 Wave-B newsletter-studio email lifecycle, all active)", () => {
-    assert.equal(listActiveSignalTypes().length, 16);
+  it("active count = 262 (267 total − 5 forensic)", () => {
+    // 5 forensic (no live emitter): home-scout.lead_magnet_submitted (Wave A),
+    // drumbeat-video-engine.video_rendered (repo absent / pre-registered),
+    // home-ready.score_calculated + home-ready.score_changed (declared in the
+    // emit union but the live emit is home-ready.score_updated — rename drift),
+    // home-ready.milo_report_generated (audit §4 DEAD — zero HR refs).
+    assert.equal(listActiveSignalTypes().length, 262);
   });
 });
 
@@ -329,5 +374,42 @@ describe("shouldAblyBroadcast", () => {
     assert.equal(shouldAblyBroadcast("HIGH"), true);
     assert.equal(shouldAblyBroadcast("MEDIUM"), false);
     assert.equal(shouldAblyBroadcast("LOW"), false);
+  });
+});
+
+// ── (f) dist keyset artifact reflects the seeded keyspace (cross-language net) ─
+// The build-guard (Layer 2) + Report-Engine (Python) check emit literals against
+// dist/signal-registry-keyset.json. It MUST carry the full active keyspace.
+describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
+  const keyset = JSON.parse(
+    readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "..", "dist", "signal-registry-keyset.json"),
+      "utf8",
+    ),
+  );
+
+  it("exactKeys count == active exact registry entries (262)", () => {
+    assert.equal(keyset.exactKeys.length, 262);
+    assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
+  });
+
+  it("familyPrefixes count == 17 (5 explicit + 12 APP_SLUGS audit families)", () => {
+    assert.equal(keyset.familyPrefixes.length, 17);
+  });
+
+  it("carries the prod silent-kill forms (canonical) that drove this workstream", () => {
+    for (const k of [
+      "home-ready.data_stale",
+      "the-drumbeat.video_message_watched",
+      "pathfinder-pro.scenario_created",
+      "newsletter-studio.email_opened",
+      "newsletter-studio.email_delivered",
+    ]) {
+      assert.ok(keyset.exactKeys.includes(k), `keyset missing ${k}`);
+    }
+  });
+
+  it("version stamp is current (0.6.0)", () => {
+    assert.equal(keyset.version, "0.6.0");
   });
 });
