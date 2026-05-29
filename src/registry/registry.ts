@@ -1613,6 +1613,30 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // PR-B-α canonical registrations (Kelly directive 2026-05-29). MLS-listing
+    // events emit from Property Engine MLS-sync (AOM Property column). Emit is
+    // DEFERRED — PE Spark MLS cron is disabled pending the SPARK_* API-key fix
+    // ([[reference-pe-no-geo-no-sold-data-spark-mls-401-failing]]), so there is
+    // no live emitter today → lifecycle:"forensic" (registered, no live emitter;
+    // excluded from the emit-site requirement + admin coverage denominator per
+    // Q19, same gate as home-scout.lead_magnet_submitted). No constants row →
+    // seeded at the effective DEFAULT (weight 3 / BEHAVIORAL); goalShiftSemantics
+    // kept TRUE to preserve the classifier's current unregistered fail-open
+    // behavior. Flip lifecycle→"active" + reclassify when the emitter lands.
+    "property-engine.listing_under_contract": {
+      type: "property-engine.listing_under_contract",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "forensic",
+    }, // DEFAULT (no constants row) · emit deferred (PE Spark key)
+    "property-engine.listing_went_live": {
+      type: "property-engine.listing_went_live",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "forensic",
+    }, // DEFAULT (no constants row) · emit deferred (PE Spark key)
     "property-engine.rate_sync_completed": {
       type: "property-engine.rate_sync_completed",
       weight: 1,
@@ -1621,6 +1645,22 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       tier: "telemetry",
       lifecycle: "active",
     }, // constants w0 → telemetry tier (floor 1)
+    // PR-B-α canonical registration (Kelly directive 2026-05-29). Rello-internal
+    // anniversary cron concept → `rello.*` namespace (AOM; anniversary is not a
+    // spoke event). Emit is DEFERRED — the anniversary cron emit-side spec (which
+    // meaningful date, cadence) is TBD → no live emitter today, lifecycle:
+    // "forensic" (excluded from the emit-site requirement + coverage denominator
+    // per Q19). No constants row → DEFAULT (weight 3 / BEHAVIORAL); goalShift
+    // kept TRUE to preserve the classifier's current unregistered fail-open
+    // behavior (the consumer maps it to the ANNIVERSARY intent). Flip lifecycle→
+    // "active" + reclassify when the emit-side spec lands.
+    "rello.anniversary": {
+      type: "rello.anniversary",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "forensic",
+    }, // DEFAULT (no constants row) · emit deferred (anniversary cron spec TBD)
     "rello.handoff_transition": {
       type: "rello.handoff_transition",
       weight: 7,
