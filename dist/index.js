@@ -1732,6 +1732,18 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // PreQual-Pro borrower document upload — readiness-advancing, identical in
+  // weight/semantics to the home-ready./home-stretch.document_uploaded precedent
+  // (weight 8 / READINESS / HIGH / goalShift). PQP is NOT a Rello-platform app
+  // (L7 lock) — this is a hand-authored canonical registry key, no APP_SLUGS entry.
+  "prequal-pro.document_uploaded": {
+    type: "prequal-pro.document_uploaded",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   // PR-B-α canonical registrations (Kelly directive 2026-05-29). MLS-listing
   // events emit from Property Engine MLS-sync (AOM Property column). Emit is
   // DEFERRED — PE Spark MLS cron is disabled pending the SPARK_* API-key fix
