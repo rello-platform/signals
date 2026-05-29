@@ -262,7 +262,14 @@ export type ExactCanonicalSignalType =
   | "pathfinder-pro.scenario_created"
   | "pathfinder-pro.scenario_delivered"
   | "pathfinder-pro.scenario_viewed"
+  // PR-B-α forward-registered (emit deferred — PE MLS-sync emit lands on the
+  // Spark API-key fix; lifecycle:"forensic" until then, see registry.ts).
+  | "property-engine.listing_under_contract"
+  | "property-engine.listing_went_live"
   | "property-engine.rate_sync_completed"
+  // PR-B-α forward-registered (emit deferred — Rello anniversary cron emit-side
+  // spec TBD; lifecycle:"forensic" until then, see registry.ts).
+  | "rello.anniversary"
   | "rello.handoff_transition"
   | "rello.lead_created"
   | "rello.lead_data_sufficient"

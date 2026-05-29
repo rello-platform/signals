@@ -18,7 +18,7 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) + HS-22-VERBS (22) = 320 canonical types", () => {
+  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) + HS-22-VERBS (22) + PR-B-α canonical (3) = 323 canonical types", () => {
     // v0.6.0 KEYSPACE-SEED: 17 (Wave A/B) + 250 emitted canonical types.
     // PHASE-B1 (v0.7.0): +29 build-guard violation-list types
     // (bucket 3 = 15 tier:telemetry, bucket 2 = 9 active, bucket 4 = 5 global).
@@ -28,7 +28,12 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // SIGNALS-ADD-HS-22-VERBS (v0.8.0): +22 emitted HS verbs the keyspace seed
     // missed (all DEFAULT, no constants row, Wave-C reclass) — unblocks the
     // SPOKE-FLIP-HS held-flip (PR #7 `// HOLD:`).
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 320);
+    // PR-B-α (v0.9.0): +3 canonical types consumed by the today-intent classifier
+    // (rello.anniversary + property-engine.listing_under_contract +
+    // property-engine.listing_went_live). All lifecycle:"forensic" — registered
+    // ahead of their emitters (emit deferred: PE Spark MLS key / anniversary cron
+    // spec TBD), so they DON'T enter the active-coverage denominator.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 323);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -554,15 +559,18 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 315 (320 total − 5 forensic)", () => {
-    // 5 forensic (no live emitter): home-scout.lead_magnet_submitted (Wave A),
-    // drumbeat-video-engine.video_rendered (repo absent / pre-registered),
+  it("active count = 315 (323 total − 8 forensic)", () => {
+    // 5 forensic through v0.8.0 (no live emitter): home-scout.lead_magnet_submitted
+    // (Wave A), drumbeat-video-engine.video_rendered (repo absent / pre-registered),
     // home-ready.score_calculated + home-ready.score_changed (declared in the
     // emit union but the live emit is home-ready.score_updated — rename drift),
     // home-ready.milo_report_generated (audit §4 DEAD — zero HR refs).
-    // All 29 PHASE-B1 violation types are lifecycle:"active" (forensic stays 5).
+    // All 29 PHASE-B1 violation types are lifecycle:"active".
     // PHASE-B1B (+2): email.received + rello.ticket_created, both active.
-    // SIGNALS-ADD-HS-22-VERBS (+22): all lifecycle:"active" (forensic stays 5).
+    // SIGNALS-ADD-HS-22-VERBS (+22): all lifecycle:"active".
+    // PR-B-α (v0.9.0, +3): rello.anniversary + property-engine.listing_under_contract
+    // + property-engine.listing_went_live — all forensic (registered ahead of
+    // their emitters), so forensic 5→8 and the active count is UNCHANGED at 315.
     assert.equal(listActiveSignalTypes().length, 315);
   });
 });
@@ -627,8 +635,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.8.0)", () => {
-    assert.equal(keyset.version, "0.8.0");
+  it("version stamp is current (0.9.0)", () => {
+    assert.equal(keyset.version, "0.9.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -643,7 +651,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.8.0");
+    assert.equal(mod.default.version, "0.9.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
