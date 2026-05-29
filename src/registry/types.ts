@@ -262,6 +262,10 @@ export type ExactCanonicalSignalType =
   | "pathfinder-pro.scenario_created"
   | "pathfinder-pro.scenario_delivered"
   | "pathfinder-pro.scenario_viewed"
+  // PreQual-Pro is intentionally NOT a Rello-platform app (L7 lock) — no APP_SLUGS
+  // entry; this canonical signal-type string is a hand-authored registry key only.
+  // Born canonical (hyphenated-slug form, matching home-ready.); no legacy fold.
+  | "prequal-pro.document_uploaded"
   // PR-B-α forward-registered (emit deferred — PE MLS-sync emit lands on the
   // Spark API-key fix; lifecycle:"forensic" until then, see registry.ts).
   | "property-engine.listing_under_contract"
