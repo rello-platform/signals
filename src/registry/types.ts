@@ -390,6 +390,9 @@ export type ExactCanonicalSignalType =
   // v0.6.0 keyspace seed).
   | "home-stretch.lead_inactive"
   | "open-house-hub.checkin_created"
+  | "open-house-hub.attendee_signed_in"
+  | "open-house-hub.attendee_assessment_completed"
+  | "open-house-hub.lead_interested"
   | "open-house-hub.event_completed"
   | "open-house-hub.checkin"
   | "open-house-hub.enrichment_completed"
