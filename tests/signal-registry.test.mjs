@@ -18,7 +18,7 @@ import {
 
 // ── (a) per-entry completeness — EXACT_REGISTRY ─────────────────────────────
 describe("EXACT_REGISTRY — per-entry completeness", () => {
-  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) + HS-22-VERBS (22) + PR-B-α canonical (3) + PQP doc-mirror (1) = 324 canonical types", () => {
+  it("holds the seed (14) + Wave-B NS email (3) + v0.6.0 keyspace (250) + PHASE-B1 violation types (29) + PHASE-B1B corrections (2) + HS-22-VERBS (22) + PR-B-α canonical (3) + PQP doc-mirror (1) = 327 canonical types (+3 OHH attendee tuples: attendee_signed_in/attendee_assessment_completed/lead_interested)", () => {
     // v0.6.0 KEYSPACE-SEED: 17 (Wave A/B) + 250 emitted canonical types.
     // PHASE-B1 (v0.7.0): +29 build-guard violation-list types
     // (bucket 3 = 15 tier:telemetry, bucket 2 = 9 active, bucket 4 = 5 global).
@@ -33,11 +33,11 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // property-engine.listing_went_live). All lifecycle:"forensic" — registered
     // ahead of their emitters (emit deferred: PE Spark MLS key / anniversary cron
     // spec TBD), so they DON'T enter the active-coverage denominator.
-    // PQP doc-mirror (v0.10.0): +1 — `prequal-pro.document_uploaded` (RELLO-PQP
+    // PQP doc-mirror (v0.11.0): +1 — `prequal-pro.document_uploaded` (RELLO-PQP
     // document-mirror workstream; lifecycle:"active", weight 8 / READINESS / HIGH,
     // mirrors home-ready./home-stretch.document_uploaded). PQP is intentionally
     // NOT a platform app (L7 lock) — hand-authored canonical registry key.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 324);
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 327);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -563,7 +563,7 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 316 (324 total − 8 forensic)", () => {
+  it("active count = 319 (327 total − 8 forensic)", () => {
     // 5 forensic through v0.8.0 (no live emitter): home-scout.lead_magnet_submitted
     // (Wave A), drumbeat-video-engine.video_rendered (repo absent / pre-registered),
     // home-ready.score_calculated + home-ready.score_changed (declared in the
@@ -575,9 +575,9 @@ describe("listActiveSignalTypes", () => {
     // PR-B-α (v0.9.0, +3): rello.anniversary + property-engine.listing_under_contract
     // + property-engine.listing_went_live — all forensic (registered ahead of
     // their emitters), so forensic 5→8 and the active count is UNCHANGED at 315.
-    // PQP doc-mirror (v0.10.0, +1): prequal-pro.document_uploaded — lifecycle:"active"
+    // PQP doc-mirror (v0.11.0, +1): prequal-pro.document_uploaded — lifecycle:"active"
     // (live emitter ships in the same workstream), so active 315→316.
-    assert.equal(listActiveSignalTypes().length, 316);
+    assert.equal(listActiveSignalTypes().length, 319);
   });
 });
 
@@ -619,8 +619,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (316)", () => {
-    assert.equal(keyset.exactKeys.length, 316);
+  it("exactKeys count == active exact registry entries (319)", () => {
+    assert.equal(keyset.exactKeys.length, 319);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -641,8 +641,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.10.0)", () => {
-    assert.equal(keyset.version, "0.10.0");
+  it("version stamp is current (0.11.0)", () => {
+    assert.equal(keyset.version, "0.11.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -657,7 +657,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.10.0");
+    assert.equal(mod.default.version, "0.11.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });

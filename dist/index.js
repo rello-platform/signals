@@ -2649,12 +2649,33 @@ var EXACT_REGISTRY = {
   // DEFAULT (no constants row) — Wave-C reclass
   "open-house-hub.checkin_created": {
     type: "open-house-hub.checkin_created",
-    weight: 3,
+    weight: 8,
     category: "BEHAVIORAL",
     goalShiftSemantics: true,
     lifecycle: "active"
   },
-  // DEFAULT (no constants row) — Wave-C reclass
+  // weight set to 8 to match OHH SIGNAL_CONFIG + Rello constants.ts (PR #217)
+  "open-house-hub.attendee_signed_in": {
+    type: "open-house-hub.attendee_signed_in",
+    weight: 9,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "open-house-hub.attendee_assessment_completed": {
+    type: "open-house-hub.attendee_assessment_completed",
+    weight: 7,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "open-house-hub.lead_interested": {
+    type: "open-house-hub.lead_interested",
+    weight: 9,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "open-house-hub.event_completed": {
     type: "open-house-hub.event_completed",
     weight: 3,
