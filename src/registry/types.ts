@@ -57,6 +57,9 @@ export type ExactCanonicalSignalType =
   | "rello.nurture_escalate_injected"
   | "rello.nurture_escalate_deduped"
   | "rello.nurture_escalate_injection_failed"
+  // Rello Rate Engine — canonical tenant-agnostic market-move broadcast
+  // (internal-signal axis; webhook axis is `rate.changed` in webhook-events).
+  | "rello.rate_changed"
   // Newsletter-Studio email lifecycle — non-goal-shift (Wave B; the live
   // `inferNurtureGoal` bug). NS emits these BARE (`src/lib/signals/emitter.ts`
   // @ 3714bfc); Rello `/api/signals/batch` receiver-prefixes to

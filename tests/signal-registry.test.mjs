@@ -37,7 +37,10 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // document-mirror workstream; lifecycle:"active", weight 8 / READINESS / HIGH,
     // mirrors home-ready./home-stretch.document_uploaded). PQP is intentionally
     // NOT a platform app (L7 lock) — hand-authored canonical registry key.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 327);
+    // RATE-ENGINE (v0.12.0): +1 — `rello.rate_changed` (Rate Engine canonical
+    // tenant-agnostic market-move broadcast; internal-signal axis paired with
+    // the `rate.changed` webhook event; SYSTEM / weight 1 / HIGH / goalShift:false).
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 328);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -563,7 +566,7 @@ describe("listActiveSignalTypes", () => {
   it("excludes the forensic home-scout.lead_magnet_submitted", () => {
     assert.ok(!listActiveSignalTypes().includes("home-scout.lead_magnet_submitted"));
   });
-  it("active count = 319 (327 total − 8 forensic)", () => {
+  it("active count = 320 (328 total − 8 forensic)", () => {
     // 5 forensic through v0.8.0 (no live emitter): home-scout.lead_magnet_submitted
     // (Wave A), drumbeat-video-engine.video_rendered (repo absent / pre-registered),
     // home-ready.score_calculated + home-ready.score_changed (declared in the
@@ -577,7 +580,8 @@ describe("listActiveSignalTypes", () => {
     // their emitters), so forensic 5→8 and the active count is UNCHANGED at 315.
     // PQP doc-mirror (v0.11.0, +1): prequal-pro.document_uploaded — lifecycle:"active"
     // (live emitter ships in the same workstream), so active 315→316.
-    assert.equal(listActiveSignalTypes().length, 319);
+    // RATE-ENGINE (v0.12.0, +1): rello.rate_changed — lifecycle:"active", so 319→320.
+    assert.equal(listActiveSignalTypes().length, 320);
   });
 });
 
@@ -619,8 +623,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (319)", () => {
-    assert.equal(keyset.exactKeys.length, 319);
+  it("exactKeys count == active exact registry entries (320)", () => {
+    assert.equal(keyset.exactKeys.length, 320);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -641,8 +645,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.11.0)", () => {
-    assert.equal(keyset.version, "0.11.0");
+  it("version stamp is current (0.12.0)", () => {
+    assert.equal(keyset.version, "0.12.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -657,7 +661,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.11.0");
+    assert.equal(mod.default.version, "0.12.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });

@@ -1745,6 +1745,22 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // RATE-ENGINE — the canonical tenant-agnostic market-move broadcast
+    // (Rate Engine sole emitter; AOM "Generic market-move rate.changed
+    // broadcast" row, 2026-06-04). Internal-signal-type axis of the dual
+    // registration; the outbound webhook event is `rate.changed` in
+    // @rello-platform/webhook-events. Tenant-agnostic infrastructure event
+    // (no lead/tenant scope) → SYSTEM/goalShift:false, like the report-engine
+    // infrastructure rows; never feeds nurture goal-shift. Emitted on
+    // SIGNIFICANT/CRITICAL detection from src/trigger/jobs/rate-data.ts.
+    "rello.rate_changed": {
+      type: "rello.rate_changed",
+      weight: 1,
+      category: "SYSTEM",
+      priority: "HIGH",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     "rello.nurture_reply_sent": {
       type: "rello.nurture_reply_sent",
       weight: 5,
