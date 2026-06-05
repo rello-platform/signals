@@ -57,9 +57,6 @@ export type ExactCanonicalSignalType =
   | "rello.nurture_escalate_injected"
   | "rello.nurture_escalate_deduped"
   | "rello.nurture_escalate_injection_failed"
-  // Rello Rate Engine — canonical tenant-agnostic market-move broadcast
-  // (internal-signal axis; webhook axis is `rate.changed` in webhook-events).
-  | "rello.rate_changed"
   // Newsletter-Studio email lifecycle — non-goal-shift (Wave B; the live
   // `inferNurtureGoal` bug). NS emits these BARE (`src/lib/signals/emitter.ts`
   // @ 3714bfc); Rello `/api/signals/batch` receiver-prefixes to
@@ -410,6 +407,13 @@ export type ExactCanonicalSignalType =
   | "agent.action_completed"
   | "agent.action_skipped"
   | "rate.alert_triggered"
+  // RATE-ENGINE — the canonical tenant-agnostic market-move broadcast
+  // (Rate Engine sole emitter; AOM "Generic market-move rate.changed
+  // broadcast" row, 2026-06-04). Global `rate.` prefix sibling to
+  // `rate.alert_triggered`; ONE literal shared with the outbound webhook
+  // event `rate.changed` in @rello-platform/webhook-events. Tenant-agnostic
+  // infrastructure event (no lead/tenant scope) → SYSTEM/goalShift:false.
+  | "rate.changed"
   | "signal.credits.purchased"
   | "data.stale"
   // PHASE-B1B (v0.7.1) — corrections to the B1 bucket-3/bucket-4 pass.

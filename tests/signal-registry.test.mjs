@@ -37,7 +37,7 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // document-mirror workstream; lifecycle:"active", weight 8 / READINESS / HIGH,
     // mirrors home-ready./home-stretch.document_uploaded). PQP is intentionally
     // NOT a platform app (L7 lock) — hand-authored canonical registry key.
-    // RATE-ENGINE (v0.12.0): +1 — `rello.rate_changed` (Rate Engine canonical
+    // RATE-ENGINE (v0.12.0): +1 — `rate.changed` (Rate Engine canonical
     // tenant-agnostic market-move broadcast; internal-signal axis paired with
     // the `rate.changed` webhook event; SYSTEM / weight 1 / HIGH / goalShift:false).
     assert.equal(Object.keys(EXACT_REGISTRY).length, 328);
@@ -580,7 +580,7 @@ describe("listActiveSignalTypes", () => {
     // their emitters), so forensic 5→8 and the active count is UNCHANGED at 315.
     // PQP doc-mirror (v0.11.0, +1): prequal-pro.document_uploaded — lifecycle:"active"
     // (live emitter ships in the same workstream), so active 315→316.
-    // RATE-ENGINE (v0.12.0, +1): rello.rate_changed — lifecycle:"active", so 319→320.
+    // RATE-ENGINE (v0.12.0, +1): rate.changed — lifecycle:"active", so 319→320.
     assert.equal(listActiveSignalTypes().length, 320);
   });
 });
