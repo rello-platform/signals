@@ -686,8 +686,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.13.0)", () => {
-    assert.equal(keyset.version, "0.13.0");
+  it("version stamp is current (0.14.0)", () => {
+    assert.equal(keyset.version, "0.14.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -702,7 +702,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.13.0");
+    assert.equal(mod.default.version, "0.14.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
