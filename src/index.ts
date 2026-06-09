@@ -42,6 +42,8 @@ export * from "./schemas/open-house-hub.js";
 export * from "./schemas/home-scout.js";
 // HH
 export * from "./schemas/harvest-home.js";
+// HomeReady
+export * from "./schemas/home-ready.js";
 // Report Engine
 export * from "./schemas/report-engine.js";
 // PFP

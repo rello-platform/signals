@@ -602,6 +602,25 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // ── HOME-READY-INTENT-TARGET-CROSSED (v0.13.0) ──
+  // HomeReady emits when the borrower's home-readiness metric crosses the
+  // "ready" threshold UPWARD (move-up-buy intent). Live emitter: HomeReady
+  // @ b0e4269 (source: home-ready, priority HIGH). Consumed Rello-side by the
+  // today-intent classifier (`src/lib/daily-plan/lead-today-intent-classifier.ts`
+  // → "MOVE_UP_BUY"). READINESS / weight 8 / HIGH — a threshold-cross is a
+  // strong, narrative-material intent shift (mirrors the sibling HR READINESS
+  // milestones home-ready.document_uploaded:8 / assessment_completed:7). No
+  // Rello `constants.ts` row (newer than the v0.6.0 keyspace seed); seeded at
+  // the HR-confirmed semantic value, not the silent DEFAULT. Payload schema:
+  // src/schemas/home-ready.ts (homeReadyIntentTargetCrossedDataSchema).
+  "home-ready.intent_target_crossed": {
+    type: "home-ready.intent_target_crossed",
+    weight: 8,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "home-ready.milo_chat_session": {
     type: "home-ready.milo_chat_session",
     weight: 3,
@@ -3058,46 +3077,55 @@ var hhLeadIntakeDataSchema = z3.object({
   hh_phone: z3.string().nullable().optional()
 }).passthrough();
 
-// src/schemas/report-engine.ts
+// src/schemas/home-ready.ts
 import { z as z4 } from "zod";
-var reportEngineReportReadyDataSchema = z4.object({
-  reportId: z4.string(),
-  reportUrl: z4.string().url(),
-  reportType: z4.string(),
-  tenantId: z4.string(),
-  leadId: z4.string().nullable().optional()
+var homeReadyIntentTargetCrossedDataSchema = z4.object({
+  leadId: z4.string(),
+  score: z4.number(),
+  previousScore: z4.number(),
+  threshold: z4.number()
+});
+
+// src/schemas/report-engine.ts
+import { z as z5 } from "zod";
+var reportEngineReportReadyDataSchema = z5.object({
+  reportId: z5.string(),
+  reportUrl: z5.string().url(),
+  reportType: z5.string(),
+  tenantId: z5.string(),
+  leadId: z5.string().nullable().optional()
 }).passthrough();
 
 // src/schemas/pathfinder-pro.ts
-import { z as z5 } from "zod";
-var pfpExportQueuedDataSchema = z5.object({
-  pfp_export_id: z5.string(),
-  pfp_export_kind: z5.enum(["rate-sheet", "scenario-summary", "los-package", "letter"]),
-  pfp_target: z5.string().nullable().optional()
+import { z as z6 } from "zod";
+var pfpExportQueuedDataSchema = z6.object({
+  pfp_export_id: z6.string(),
+  pfp_export_kind: z6.enum(["rate-sheet", "scenario-summary", "los-package", "letter"]),
+  pfp_target: z6.string().nullable().optional()
 });
 var pfpExportInFlightDataSchema = pfpExportQueuedDataSchema.extend({
-  pfp_export_started_at: z5.string().datetime()
+  pfp_export_started_at: z6.string().datetime()
 });
 var pfpExportSuccessDataSchema = pfpExportQueuedDataSchema.extend({
-  pfp_export_url: z5.string().url().nullable().optional(),
-  pfp_export_completed_at: z5.string().datetime()
+  pfp_export_url: z6.string().url().nullable().optional(),
+  pfp_export_completed_at: z6.string().datetime()
 });
 var pfpExportFailedDataSchema = pfpExportQueuedDataSchema.extend({
-  pfp_export_error: z5.string(),
-  pfp_export_attempt: z5.number().int().positive()
+  pfp_export_error: z6.string(),
+  pfp_export_attempt: z6.number().int().positive()
 });
 var pfpExportPermanentlyFailedDataSchema = pfpExportFailedDataSchema.extend({
-  pfp_export_failed_permanently_at: z5.string().datetime()
+  pfp_export_failed_permanently_at: z6.string().datetime()
 });
-var pfpComplianceGateBlockedDataSchema = z5.object({
-  pfp_scenario_id: z5.string(),
-  pfp_gate_kind: z5.string(),
-  pfp_violation_reason: z5.string()
+var pfpComplianceGateBlockedDataSchema = z6.object({
+  pfp_scenario_id: z6.string(),
+  pfp_gate_kind: z6.string(),
+  pfp_violation_reason: z6.string()
 });
-var pfpComplianceConfigChangedDataSchema = z5.object({
-  pfp_config_kind: z5.string(),
-  pfp_changed_by_user_id: z5.string(),
-  pfp_change_summary: z5.string().nullable().optional()
+var pfpComplianceConfigChangedDataSchema = z6.object({
+  pfp_config_kind: z6.string(),
+  pfp_changed_by_user_id: z6.string(),
+  pfp_change_summary: z6.string().nullable().optional()
 });
 export {
   DEPRECATED_SIGNALTYPE_PREFIX_ALIASES,
@@ -3107,6 +3135,7 @@ export {
   SIGNAL_PRIORITIES,
   SIGNAL_PRIORITY_RANK,
   hhLeadIntakeDataSchema,
+  homeReadyIntentTargetCrossedDataSchema,
   hsLeadMagnetSubmittedDataSchema,
   isGoalShiftSignal,
   isNarrativeMaterial,
