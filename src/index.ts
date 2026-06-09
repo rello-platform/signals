@@ -36,6 +36,21 @@ export {
   shouldAblyBroadcast,
 } from "./registry/helpers.js";
 
+// ── Spoke-side signal-emit core (v0.14.0, Phase A — HH gold-standard
+//    extraction; PURE ADDITION, no existing export changed) ──
+// The emit module's lowercase SignalPriority ('critical'|'high'|'normal'|'low')
+// is re-exported here as `EmitSignalPriority` so it cannot collide with the
+// root's uppercase classifier-canonical `SignalPriority` above. Import from
+// "@rello-platform/signals/emit" to get it under its canonical local name.
+export { createSignalEmitter, mergeCustomFieldsIntoData } from "./emit.js";
+export type {
+  DispatchResult,
+  Signal,
+  SignalEmitter,
+  SignalEmitterConfig,
+  SignalPriority as EmitSignalPriority,
+} from "./emit.js";
+
 // OHH
 export * from "./schemas/open-house-hub.js";
 // HS

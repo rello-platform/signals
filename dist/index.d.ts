@@ -1,3 +1,4 @@
+export { DispatchResult, SignalPriority as EmitSignalPriority, Signal, SignalEmitter, SignalEmitterConfig, createSignalEmitter, mergeCustomFieldsIntoData } from './emit.js';
 export { OhhAttendeeData, OhhAttendeeMarkedForPfpPreapprovalData, ohhAttendeeDataSchema, ohhAttendeeMarkedForPfpPreapprovalDataSchema } from './schemas/open-house-hub.js';
 export { HsLeadMagnetSubmittedData, hsLeadMagnetSubmittedDataSchema } from './schemas/home-scout.js';
 export { HhLeadIntakeData, hhLeadIntakeDataSchema } from './schemas/harvest-home.js';
