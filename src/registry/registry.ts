@@ -546,6 +546,25 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // ── HOME-READY-INTENT-TARGET-CROSSED (v0.13.0) ──
+    // HomeReady emits when the borrower's home-readiness metric crosses the
+    // "ready" threshold UPWARD (move-up-buy intent). Live emitter: HomeReady
+    // @ b0e4269 (source: home-ready, priority HIGH). Consumed Rello-side by the
+    // today-intent classifier (`src/lib/daily-plan/lead-today-intent-classifier.ts`
+    // → "MOVE_UP_BUY"). READINESS / weight 8 / HIGH — a threshold-cross is a
+    // strong, narrative-material intent shift (mirrors the sibling HR READINESS
+    // milestones home-ready.document_uploaded:8 / assessment_completed:7). No
+    // Rello `constants.ts` row (newer than the v0.6.0 keyspace seed); seeded at
+    // the HR-confirmed semantic value, not the silent DEFAULT. Payload schema:
+    // src/schemas/home-ready.ts (homeReadyIntentTargetCrossedDataSchema).
+    "home-ready.intent_target_crossed": {
+      type: "home-ready.intent_target_crossed",
+      weight: 8,
+      category: "READINESS",
+      priority: "HIGH",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
     "home-ready.milo_chat_session": {
       type: "home-ready.milo_chat_session",
       weight: 3,

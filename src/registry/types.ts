@@ -118,6 +118,7 @@ export type ExactCanonicalSignalType =
   | "home-ready.data_stale"
   | "home-ready.document_analyzed"
   | "home-ready.document_uploaded"
+  | "home-ready.intent_target_crossed"
   | "home-ready.milo_chat_session"
   | "home-ready.milo_report_generated"
   | "home-ready.plaid_connected"

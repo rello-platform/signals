@@ -40,7 +40,12 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // RATE-ENGINE (v0.12.0): +1 — `rate.changed` (Rate Engine canonical
     // tenant-agnostic market-move broadcast; internal-signal axis paired with
     // the `rate.changed` webhook event; SYSTEM / weight 1 / HIGH / goalShift:false).
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 328);
+    // HOME-READY-INTENT-TARGET-CROSSED (v0.13.0): +1 —
+    // `home-ready.intent_target_crossed` (HomeReady emits when the readiness
+    // metric crosses the "ready" threshold upward = move-up-buy intent; live
+    // emitter HomeReady @ b0e4269; READINESS / weight 8 / HIGH / goalShift:true;
+    // lifecycle:"active" — consumed by Rello's today-intent classifier).
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 329);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -479,6 +484,40 @@ describe("normalizeSignalType — SIGNALS-ADD-HS-22-VERBS resolutions", () => {
   });
 });
 
+// ── HOME-READY-INTENT-TARGET-CROSSED (v0.13.0) ──────────────────────────────
+// HomeReady emits `home-ready.intent_target_crossed` (live @ b0e4269) when the
+// readiness metric crosses the "ready" threshold upward (move-up-buy intent).
+// Rello's today-intent classifier maps it to "MOVE_UP_BUY". Registering it
+// makes the type first-class at the /api/signals/batch receiver (no longer
+// dropped downstream as unregistered).
+describe("normalizeSignalType — home-ready.intent_target_crossed (v0.13.0)", () => {
+  it("resolves by identity (canonical)", () => {
+    assert.equal(
+      normalizeSignalType("home-ready.intent_target_crossed"),
+      "home-ready.intent_target_crossed",
+    );
+  });
+  it("homeready concat slug folds to canonical hyphen slug", () => {
+    assert.equal(
+      normalizeSignalType("homeready.intent_target_crossed"),
+      "home-ready.intent_target_crossed",
+    );
+  });
+  it("carries READINESS / weight 8 / HIGH / goalShift:true / active", () => {
+    const entry = EXACT_REGISTRY["home-ready.intent_target_crossed"];
+    assert.equal(entry.category, "READINESS");
+    assert.equal(entry.weight, 8);
+    assert.equal(entry.priority, "HIGH");
+    assert.equal(entry.goalShiftSemantics, true);
+    assert.equal(entry.lifecycle, "active");
+    assert.equal(entry.tier, undefined);
+    // a READINESS weight-8 intent cross is narrative-material + Ably-broadcast
+    assert.equal(isNarrativeMaterial(entry.category, entry.weight), true);
+    assert.equal(shouldAblyBroadcast(entry.priority), true);
+    assert.equal(isGoalShiftSignal("home-ready.intent_target_crossed"), true);
+  });
+});
+
 // ── (e) malformed / unrecognized inputs ─────────────────────────────────────
 describe("normalizeSignalType — guards", () => {
   it("null / undefined / empty → null (no throw)", () => {
@@ -581,7 +620,9 @@ describe("listActiveSignalTypes", () => {
     // PQP doc-mirror (v0.11.0, +1): prequal-pro.document_uploaded — lifecycle:"active"
     // (live emitter ships in the same workstream), so active 315→316.
     // RATE-ENGINE (v0.12.0, +1): rate.changed — lifecycle:"active", so 319→320.
-    assert.equal(listActiveSignalTypes().length, 320);
+    // HOME-READY-INTENT-TARGET-CROSSED (v0.13.0, +1): home-ready.intent_target_crossed
+    // — lifecycle:"active", so 320→321.
+    assert.equal(listActiveSignalTypes().length, 321);
   });
 });
 
@@ -623,8 +664,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (320)", () => {
-    assert.equal(keyset.exactKeys.length, 320);
+  it("exactKeys count == active exact registry entries (321)", () => {
+    assert.equal(keyset.exactKeys.length, 321);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -645,8 +686,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.12.0)", () => {
-    assert.equal(keyset.version, "0.12.0");
+  it("version stamp is current (0.13.0)", () => {
+    assert.equal(keyset.version, "0.13.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -661,7 +702,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.12.0");
+    assert.equal(mod.default.version, "0.13.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
