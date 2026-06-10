@@ -2813,8 +2813,251 @@ var EXACT_REGISTRY = {
     category: "BEHAVIORAL",
     goalShiftSemantics: true,
     lifecycle: "active"
-  }
+  },
   // DEFAULT (no constants row) — Wave-C reclass
+  // ────────────────────────────────────────────────────────────────────
+  // RELLO-LEAD-PHONE-DISCONNECTED (v0.15.0; CROSS-REPO-WALK-DECISIONS-260609
+  // Q2). Rello emits on Twilio MessageStatus=failed + ErrorCode ∈ {30003,
+  // 30005, 30006} via the SMS delivery-status webhook (MessageSid =
+  // idempotency key; outbox-backed per SIGNAL-AND-WEBHOOK-PATTERNS §6).
+  // Consumed by HH's ReplacementClaim receiver (checkPhoneDisconnected,
+  // auto-flag-watcher.ts:182-212). Registered BEFORE the Rello emit PR — the
+  // armed check:signal-types pre-push gate blocks unregistered emits.
+  // Metadata mirrors the closest negative-lead-contactability sibling,
+  // `newsletter-studio.email_complained` (NEGATIVE / HIGH / goalShift:false /
+  // active): a disconnected phone is a hard, permanent channel-dead event the
+  // agent must know about immediately (it triggers lead replacement), but it
+  // is contactability data, not a lead-goal shift. Weight 7 (vs complained's
+  // 9): channel loss, not active relationship damage by the lead.
+  // lifecycle:"active" (not forensic) — the emitter ships as the immediate
+  // next step of the same locked Q2 sequence, mirroring the v0.13.0
+  // home-ready.intent_target_crossed registration pattern.
+  // ────────────────────────────────────────────────────────────────────
+  "rello.lead_phone_disconnected": {
+    type: "rello.lead_phone_disconnected",
+    weight: 7,
+    category: "NEGATIVE",
+    priority: "HIGH",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  // ────────────────────────────────────────────────────────────────────
+  // HH-LEGACY-CANONICAL-ALIASES (v0.15.0; CROSS-REPO-WALK-DECISIONS-260609
+  // Q6 step 1). Canonical `harvest-home.<snake_verb>` (single-dot, registry
+  // doc §2) targets for HH's 24 LIVE legacy `signal.*` emit types (grep of
+  // Harvest-Home origin/main @ a40e4db). Metadata CARRIED OVER from the
+  // legacy `signal.*` EXACT_REGISTRY rows above — all 23 carried rows are at
+  // the effective DEFAULT (weight 3 / BEHAVIORAL / goalShiftSemantics:true /
+  // active, no priority), still flagged for Wave-C reclassification. The one
+  // type with NO legacy row (`signal.hh.idg_retry_synced` — live direct
+  // /signals/batch POST, never registered) is derived sensibly below. The
+  // legacy rows are KEPT as a read-bridge (historical SignalLog
+  // classification; Phase-3 retirement per registry doc §9);
+  // `normalizeSignalType` folds legacy → canonical via
+  // LEGACY_SIGNALTYPE_EXACT_ALIASES (normalize.ts).
+  // ────────────────────────────────────────────────────────────────────
+  "harvest-home.byol_leads_imported": {
+    type: "harvest-home.byol_leads_imported",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.leads_imported (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_leads_reactivated": {
+    type: "harvest-home.byol_leads_reactivated",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.leads_reactivated (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_monitoring_started": {
+    type: "harvest-home.byol_monitoring_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.monitoring_started (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_parked_lead_signal_detected": {
+    type: "harvest-home.byol_parked_lead_signal_detected",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.parked_lead_signal_detected (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_parked_leads_resurfaced": {
+    type: "harvest-home.byol_parked_leads_resurfaced",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.parked_leads_resurfaced (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_push_calls_completed": {
+    type: "harvest-home.byol_push_calls_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.push_calls_completed (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_scoring_completed": {
+    type: "harvest-home.byol_scoring_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.scoring_completed (DEFAULT) — Wave-C reclass
+  "harvest-home.byol_upload_completed": {
+    type: "harvest-home.byol_upload_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.byol.upload_completed (DEFAULT) — Wave-C reclass
+  "harvest-home.credits_purchased": {
+    type: "harvest-home.credits_purchased",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.credits.purchased (DEFAULT) — Wave-C reclass
+  "harvest-home.discovery_search": {
+    type: "harvest-home.discovery_search",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.discovery.search (DEFAULT) — Wave-C reclass
+  "harvest-home.discovery_unlock": {
+    type: "harvest-home.discovery_unlock",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.discovery.unlock (DEFAULT) — Wave-C reclass
+  // `signal.hh.idg_retry_synced` had NO legacy registry row (live direct
+  // /signals/batch POST, HH src/trigger/rello-sync-retry.ts:451 — emitted
+  // when an IDG-origin HOT lead's delayed Rello sync finally lands, so Rello
+  // knows the hot lead was delayed but is now synced). Derived: DEFAULT
+  // weight 3 / BEHAVIORAL / goalShiftSemantics:true (sibling HH convention) +
+  // priority HIGH from the emit-site caller-hint (`priority: "high"`).
+  // Canonical verb drops the redundant `hh` slug segment (the spoke itself,
+  // not a domain).
+  "harvest-home.idg_retry_synced": {
+    type: "harvest-home.idg_retry_synced",
+    weight: 3,
+    category: "BEHAVIORAL",
+    priority: "HIGH",
+    // rello-sync-retry.ts:452 caller-hint
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // derived (no legacy row) — Wave-C reclass
+  "harvest-home.intake_lead_created": {
+    type: "harvest-home.intake_lead_created",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.intake.lead_created (DEFAULT) — Wave-C reclass
+  "harvest-home.intake_lead_enriched": {
+    type: "harvest-home.intake_lead_enriched",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.intake.lead_enriched (DEFAULT) — Wave-C reclass
+  "harvest-home.intake_lead_merged": {
+    type: "harvest-home.intake_lead_merged",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.intake.lead_merged (DEFAULT) — Wave-C reclass
+  "harvest-home.intake_lead_rescored": {
+    type: "harvest-home.intake_lead_rescored",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.intake.lead_rescored (DEFAULT) — Wave-C reclass
+  "harvest-home.lead_contacted": {
+    type: "harvest-home.lead_contacted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.lead.contacted (DEFAULT) — Wave-C reclass
+  "harvest-home.lead_converted": {
+    type: "harvest-home.lead_converted",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.lead.converted (DEFAULT) — Wave-C reclass
+  "harvest-home.lead_delivered": {
+    type: "harvest-home.lead_delivered",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.lead.delivered (DEFAULT) — Wave-C reclass
+  "harvest-home.lead_purchased": {
+    type: "harvest-home.lead_purchased",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.lead.purchased (DEFAULT) — Wave-C reclass
+  "harvest-home.lead_scored": {
+    type: "harvest-home.lead_scored",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.lead.scored (DEFAULT) — Wave-C reclass
+  "harvest-home.pipeline_call_outcome": {
+    type: "harvest-home.pipeline_call_outcome",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.pipeline.call_outcome (DEFAULT) — Wave-C reclass
+  "harvest-home.pipeline_session_completed": {
+    type: "harvest-home.pipeline_session_completed",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // carried from signal.pipeline.session_completed (DEFAULT) — Wave-C reclass
+  "harvest-home.pipeline_session_started": {
+    type: "harvest-home.pipeline_session_started",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  }
+  // carried from signal.pipeline.session_started (DEFAULT) — Wave-C reclass
 };
 var AUDIT_FAMILIES = APP_SLUGS.map((slug) => ({
   prefix: `${slug}.audit.`,
@@ -2950,6 +3193,32 @@ var DEPRECATED_SIGNALTYPE_PREFIX_ALIASES = {
   "compliance.": { to: "pathfinder-pro.compliance.", deprecated: true }
   // `drumbeat.` is handled by normalizeSlug (drumbeat→the-drumbeat); no entry.
 };
+var LEGACY_SIGNALTYPE_EXACT_ALIASES = {
+  "signal.byol.leads_imported": "harvest-home.byol_leads_imported",
+  "signal.byol.leads_reactivated": "harvest-home.byol_leads_reactivated",
+  "signal.byol.monitoring_started": "harvest-home.byol_monitoring_started",
+  "signal.byol.parked_lead_signal_detected": "harvest-home.byol_parked_lead_signal_detected",
+  "signal.byol.parked_leads_resurfaced": "harvest-home.byol_parked_leads_resurfaced",
+  "signal.byol.push_calls_completed": "harvest-home.byol_push_calls_completed",
+  "signal.byol.scoring_completed": "harvest-home.byol_scoring_completed",
+  "signal.byol.upload_completed": "harvest-home.byol_upload_completed",
+  "signal.credits.purchased": "harvest-home.credits_purchased",
+  "signal.discovery.search": "harvest-home.discovery_search",
+  "signal.discovery.unlock": "harvest-home.discovery_unlock",
+  "signal.hh.idg_retry_synced": "harvest-home.idg_retry_synced",
+  "signal.intake.lead_created": "harvest-home.intake_lead_created",
+  "signal.intake.lead_enriched": "harvest-home.intake_lead_enriched",
+  "signal.intake.lead_merged": "harvest-home.intake_lead_merged",
+  "signal.intake.lead_rescored": "harvest-home.intake_lead_rescored",
+  "signal.lead.contacted": "harvest-home.lead_contacted",
+  "signal.lead.converted": "harvest-home.lead_converted",
+  "signal.lead.delivered": "harvest-home.lead_delivered",
+  "signal.lead.purchased": "harvest-home.lead_purchased",
+  "signal.lead.scored": "harvest-home.lead_scored",
+  "signal.pipeline.call_outcome": "harvest-home.pipeline_call_outcome",
+  "signal.pipeline.session_completed": "harvest-home.pipeline_session_completed",
+  "signal.pipeline.session_started": "harvest-home.pipeline_session_started"
+};
 function warnUnrecognized(raw) {
   console.warn(
     `[@rello-platform/signals] Unrecognized signalType "${raw}" \u2014 not in the canonical registry (returning null).`
@@ -2976,6 +3245,10 @@ function normalizeSignalType(raw) {
     }
   }
   const workingLower = working.toLowerCase();
+  const exactAlias = LEGACY_SIGNALTYPE_EXACT_ALIASES[workingLower];
+  if (exactAlias !== void 0) {
+    return resolve(exactAlias) ?? warnUnrecognized(raw);
+  }
   if (GLOBAL_PREFIXES.some((prefix) => workingLower.startsWith(prefix))) {
     return resolve(workingLower) ?? warnUnrecognized(raw);
   }
@@ -3275,6 +3548,7 @@ export {
   DEPRECATED_SIGNALTYPE_PREFIX_ALIASES,
   EXACT_REGISTRY,
   FAMILY_REGISTRY,
+  LEGACY_SIGNALTYPE_EXACT_ALIASES,
   SIGNAL_CATEGORIES,
   SIGNAL_PRIORITIES,
   SIGNAL_PRIORITY_RANK,

@@ -10,6 +10,7 @@ import {
   isSignalCategory,
   normalizeSignalType,
   DEPRECATED_SIGNALTYPE_PREFIX_ALIASES,
+  LEGACY_SIGNALTYPE_EXACT_ALIASES,
   isGoalShiftSignal,
   listActiveSignalTypes,
   isNarrativeMaterial,
@@ -45,7 +46,12 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // metric crosses the "ready" threshold upward = move-up-buy intent; live
     // emitter HomeReady @ b0e4269; READINESS / weight 8 / HIGH / goalShift:true;
     // lifecycle:"active" — consumed by Rello's today-intent classifier).
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 329);
+    // v0.15.0 (CROSS-REPO-WALK-DECISIONS-260609 Q2 + Q6 step 1): +25 —
+    // `rello.lead_phone_disconnected` (Q2; Twilio delivery-failure detection,
+    // registered ahead of the Rello emit PR) + 24 canonical `harvest-home.*`
+    // targets for HH's live legacy `signal.*` emit set (Q6; legacy rows kept
+    // as read-bridge, so total grows by the full 24).
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 354);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -359,9 +365,13 @@ describe("normalizeSignalType — PHASE-B1 violation types now resolve", () => {
       "rate.alert_triggered",
     );
     assert.equal(normalizeSignalType("data.stale"), "data.stale");
+    // v0.15.0 (Q6): `signal.credits.purchased` is a LIVE HH emit
+    // (webhooks/rello/route.ts:122) so it now folds to its canonical
+    // `harvest-home.*` target via LEGACY_SIGNALTYPE_EXACT_ALIASES instead of
+    // resolving to its kept-as-read-bridge legacy registry row.
     assert.equal(
       normalizeSignalType("signal.credits.purchased"),
-      "signal.credits.purchased",
+      "harvest-home.credits_purchased",
     );
   });
   it("bucket 5: score.crossed_<threshold> family covers seeded 60/80 + future", () => {
@@ -518,6 +528,176 @@ describe("normalizeSignalType — home-ready.intent_target_crossed (v0.13.0)", (
   });
 });
 
+// ── RELLO-LEAD-PHONE-DISCONNECTED (v0.15.0; CROSS-REPO-WALK Q2) ─────────────
+// Rello emits on Twilio MessageStatus=failed + ErrorCode ∈ {30003,30005,30006}
+// via the SMS delivery-status webhook (MessageSid idempotency key). HH's
+// ReplacementClaim receiver consumes it (checkPhoneDisconnected). Registered
+// BEFORE the Rello emit PR — the armed check:signal-types gate blocks
+// unregistered emits. Metadata mirrors the closest negative-lead-contactability
+// sibling (newsletter-studio.email_complained: NEGATIVE / HIGH / goalShift:false).
+describe("rello.lead_phone_disconnected (v0.15.0, Q2)", () => {
+  it("resolves by identity (canonical)", () => {
+    assert.equal(
+      normalizeSignalType("rello.lead_phone_disconnected"),
+      "rello.lead_phone_disconnected",
+    );
+  });
+  it("carries NEGATIVE / weight 7 / HIGH / goalShift:false / active", () => {
+    const entry = EXACT_REGISTRY["rello.lead_phone_disconnected"];
+    assert.equal(entry.category, "NEGATIVE");
+    assert.equal(entry.weight, 7);
+    assert.equal(entry.priority, "HIGH");
+    assert.equal(entry.goalShiftSemantics, false);
+    assert.equal(entry.lifecycle, "active");
+    assert.equal(entry.tier, undefined);
+    // NEGATIVE is always narrative-material; HIGH broadcasts; contactability
+    // loss must NOT shift the nurture goal.
+    assert.equal(isNarrativeMaterial(entry.category, entry.weight), true);
+    assert.equal(shouldAblyBroadcast(entry.priority), true);
+    assert.equal(isGoalShiftSignal("rello.lead_phone_disconnected"), false);
+  });
+  it("enters the active keyset (the armed check:signal-types gate input)", () => {
+    assert.ok(
+      listActiveSignalTypes().includes("rello.lead_phone_disconnected"),
+    );
+  });
+});
+
+// ── HH-LEGACY-CANONICAL-ALIASES (v0.15.0; CROSS-REPO-WALK Q6 step 1) ─────────
+// HH's 24 LIVE legacy `signal.*` emit types (grep of Harvest-Home origin/main
+// @ a40e4db) fold to canonical `harvest-home.<snake_verb>` single-dot form via
+// LEGACY_SIGNALTYPE_EXACT_ALIASES. Legacy registry rows are KEPT (read-bridge
+// for historical SignalLog rows; Phase-3 retirement per registry doc §9).
+// Manifest-only never-emitted types (e.g. signal.lead.enriched) are NOT
+// aliased; the dynamic signal.tool.* family is untouched.
+describe("normalizeSignalType — HH legacy signal.* → harvest-home.* (v0.15.0, Q6)", () => {
+  const HH_LEGACY_TO_CANONICAL = {
+    "signal.byol.leads_imported": "harvest-home.byol_leads_imported",
+    "signal.byol.leads_reactivated": "harvest-home.byol_leads_reactivated",
+    "signal.byol.monitoring_started": "harvest-home.byol_monitoring_started",
+    "signal.byol.parked_lead_signal_detected":
+      "harvest-home.byol_parked_lead_signal_detected",
+    "signal.byol.parked_leads_resurfaced":
+      "harvest-home.byol_parked_leads_resurfaced",
+    "signal.byol.push_calls_completed":
+      "harvest-home.byol_push_calls_completed",
+    "signal.byol.scoring_completed": "harvest-home.byol_scoring_completed",
+    "signal.byol.upload_completed": "harvest-home.byol_upload_completed",
+    "signal.credits.purchased": "harvest-home.credits_purchased",
+    "signal.discovery.search": "harvest-home.discovery_search",
+    "signal.discovery.unlock": "harvest-home.discovery_unlock",
+    "signal.hh.idg_retry_synced": "harvest-home.idg_retry_synced",
+    "signal.intake.lead_created": "harvest-home.intake_lead_created",
+    "signal.intake.lead_enriched": "harvest-home.intake_lead_enriched",
+    "signal.intake.lead_merged": "harvest-home.intake_lead_merged",
+    "signal.intake.lead_rescored": "harvest-home.intake_lead_rescored",
+    "signal.lead.contacted": "harvest-home.lead_contacted",
+    "signal.lead.converted": "harvest-home.lead_converted",
+    "signal.lead.delivered": "harvest-home.lead_delivered",
+    "signal.lead.purchased": "harvest-home.lead_purchased",
+    "signal.lead.scored": "harvest-home.lead_scored",
+    "signal.pipeline.call_outcome": "harvest-home.pipeline_call_outcome",
+    "signal.pipeline.session_completed":
+      "harvest-home.pipeline_session_completed",
+    "signal.pipeline.session_started":
+      "harvest-home.pipeline_session_started",
+  };
+
+  it("the alias map export carries exactly the 24 live legacy types", () => {
+    assert.deepEqual(
+      Object.entries(LEGACY_SIGNALTYPE_EXACT_ALIASES).sort(),
+      Object.entries(HH_LEGACY_TO_CANONICAL).sort(),
+    );
+  });
+
+  it("every live legacy form folds to its canonical harvest-home.* key", () => {
+    for (const [legacy, canonical] of Object.entries(HH_LEGACY_TO_CANONICAL)) {
+      assert.equal(
+        normalizeSignalType(legacy),
+        canonical,
+        `${legacy} must fold to ${canonical}`,
+      );
+    }
+  });
+
+  it("canonical forms resolve by identity (registered exact keys)", () => {
+    for (const canonical of Object.values(HH_LEGACY_TO_CANONICAL)) {
+      assert.equal(
+        normalizeSignalType(canonical),
+        canonical,
+        `${canonical} must resolve to itself`,
+      );
+    }
+  });
+
+  it("alias lookup is case-insensitive on the raw form", () => {
+    assert.equal(
+      normalizeSignalType("Signal.Lead.Purchased"),
+      "harvest-home.lead_purchased",
+    );
+  });
+
+  it("23 carried canonical entries keep the legacy DEFAULT metadata (weight 3 / BEHAVIORAL / goalShift:true / active)", () => {
+    for (const [legacy, canonical] of Object.entries(HH_LEGACY_TO_CANONICAL)) {
+      if (legacy === "signal.hh.idg_retry_synced") continue; // derived below
+      const legacyEntry = EXACT_REGISTRY[legacy];
+      const canonicalEntry = EXACT_REGISTRY[canonical];
+      assert.ok(canonicalEntry, `${canonical} missing from EXACT_REGISTRY`);
+      assert.ok(legacyEntry, `${legacy} legacy read-bridge row missing`);
+      assert.equal(canonicalEntry.weight, legacyEntry.weight, `${canonical} weight`);
+      assert.equal(
+        canonicalEntry.category,
+        legacyEntry.category,
+        `${canonical} category`,
+      );
+      assert.equal(
+        canonicalEntry.goalShiftSemantics,
+        legacyEntry.goalShiftSemantics,
+        `${canonical} goalShiftSemantics`,
+      );
+      assert.equal(canonicalEntry.lifecycle, "active", `${canonical} lifecycle`);
+    }
+  });
+
+  it("harvest-home.idg_retry_synced derived (no legacy row): weight 3 / BEHAVIORAL / HIGH / goalShift:true / active", () => {
+    assert.equal(EXACT_REGISTRY["signal.hh.idg_retry_synced"], undefined);
+    const entry = EXACT_REGISTRY["harvest-home.idg_retry_synced"];
+    assert.equal(entry.weight, 3);
+    assert.equal(entry.category, "BEHAVIORAL");
+    assert.equal(entry.priority, "HIGH"); // emit-site caller-hint (rello-sync-retry.ts)
+    assert.equal(entry.goalShiftSemantics, true);
+    assert.equal(entry.lifecycle, "active");
+  });
+
+  it("legacy signal.* registry rows are KEPT as a read-bridge (lookupExact still resolves them)", () => {
+    for (const legacy of Object.keys(HH_LEGACY_TO_CANONICAL)) {
+      if (legacy === "signal.hh.idg_retry_synced") continue; // never had a row
+      assert.ok(
+        EXACT_REGISTRY[legacy],
+        `${legacy} legacy read-bridge row must remain registered`,
+      );
+    }
+  });
+
+  it("manifest-only never-emitted legacy types are NOT aliased (signal.lead.enriched resolves to its legacy row)", () => {
+    assert.equal(
+      LEGACY_SIGNALTYPE_EXACT_ALIASES["signal.lead.enriched"],
+      undefined,
+    );
+    assert.equal(
+      normalizeSignalType("signal.lead.enriched"),
+      "signal.lead.enriched",
+    );
+  });
+
+  it("the dynamic signal.tool.* family is untouched by the exact aliases", () => {
+    assert.equal(
+      normalizeSignalType("signal.tool.get-pre-approved.requested"),
+      "signal.tool.get-pre-approved.requested",
+    );
+  });
+});
+
 // ── (e) malformed / unrecognized inputs ─────────────────────────────────────
 describe("normalizeSignalType — guards", () => {
   it("null / undefined / empty → null (no throw)", () => {
@@ -622,7 +802,9 @@ describe("listActiveSignalTypes", () => {
     // RATE-ENGINE (v0.12.0, +1): rate.changed — lifecycle:"active", so 319→320.
     // HOME-READY-INTENT-TARGET-CROSSED (v0.13.0, +1): home-ready.intent_target_crossed
     // — lifecycle:"active", so 320→321.
-    assert.equal(listActiveSignalTypes().length, 321);
+    // v0.15.0 (Q2 + Q6, +25): rello.lead_phone_disconnected + 24 canonical
+    // harvest-home.* alias targets — all lifecycle:"active", so 321→346.
+    assert.equal(listActiveSignalTypes().length, 346);
   });
 });
 
@@ -664,8 +846,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (321)", () => {
-    assert.equal(keyset.exactKeys.length, 321);
+  it("exactKeys count == active exact registry entries (346)", () => {
+    assert.equal(keyset.exactKeys.length, 346);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -686,8 +868,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.14.0)", () => {
-    assert.equal(keyset.version, "0.14.0");
+  it("version stamp is current (0.15.0)", () => {
+    assert.equal(keyset.version, "0.15.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -702,7 +884,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.14.0");
+    assert.equal(mod.default.version, "0.15.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });

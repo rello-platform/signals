@@ -430,7 +430,55 @@ export type ExactCanonicalSignalType =
   // Emitted BARE/dotless → normalizeSignalType("ticket_created") returns null
   // (no slug to fold). Registered as the canonical `rello.ticket_created`; the
   // bare→`rello.ticket_created` emit-flip is a B2-style follow-on (owed).
-  | "rello.ticket_created";
+  | "rello.ticket_created"
+
+  // ── RELLO-LEAD-PHONE-DISCONNECTED (v0.15.0; CROSS-REPO-WALK Q2) ──
+  // Rello emits on Twilio MessageStatus=failed + ErrorCode ∈ {30003, 30005,
+  // 30006} (dead/disconnected lead phone) via the SMS delivery-status webhook;
+  // MessageSid is the idempotency key. Consumed by Harvest-Home's
+  // ReplacementClaim receiver (`auto-flag-watcher.ts` checkPhoneDisconnected).
+  // Born canonical `<slug>.<snake_verb>` — registered HERE before the Rello
+  // emit PR lands (the armed check:signal-types gate blocks unregistered emits).
+  | "rello.lead_phone_disconnected"
+
+  // ── HH-LEGACY-CANONICAL-ALIASES (v0.15.0; CROSS-REPO-WALK Q6 step 1) ──
+  // Canonical `harvest-home.<snake_verb>` (single-dot) targets for HH's 24 LIVE
+  // legacy `signal.*` emit types (per grep of Harvest-Home origin/main @
+  // a40e4db — includes signal.byol.* / signal.intake.* the manifest never
+  // declared; excludes manifest-only never-emitted types like
+  // signal.lead.enriched). The legacy `signal.*` EXACT_REGISTRY rows are KEPT
+  // as a read-bridge (classify historical SignalLog rows; Phase-3 retirement
+  // per registry doc §9); `normalizeSignalType` now folds legacy → canonical
+  // via LEGACY_SIGNALTYPE_EXACT_ALIASES (normalize.ts).
+  | "harvest-home.byol_leads_imported"
+  | "harvest-home.byol_leads_reactivated"
+  | "harvest-home.byol_monitoring_started"
+  | "harvest-home.byol_parked_lead_signal_detected"
+  | "harvest-home.byol_parked_leads_resurfaced"
+  | "harvest-home.byol_push_calls_completed"
+  | "harvest-home.byol_scoring_completed"
+  | "harvest-home.byol_upload_completed"
+  | "harvest-home.credits_purchased"
+  | "harvest-home.discovery_search"
+  | "harvest-home.discovery_unlock"
+  // `signal.hh.idg_retry_synced` — the `hh.` segment is HH's own slug
+  // abbreviation (redundant under the harvest-home prefix), so the canonical
+  // verb drops it: `idg_retry_synced` (mirrors the drumbeat→the-drumbeat
+  // slug-fold convention; `hh` is the spoke itself, not a domain like
+  // byol/intake/pipeline).
+  | "harvest-home.idg_retry_synced"
+  | "harvest-home.intake_lead_created"
+  | "harvest-home.intake_lead_enriched"
+  | "harvest-home.intake_lead_merged"
+  | "harvest-home.intake_lead_rescored"
+  | "harvest-home.lead_contacted"
+  | "harvest-home.lead_converted"
+  | "harvest-home.lead_delivered"
+  | "harvest-home.lead_purchased"
+  | "harvest-home.lead_scored"
+  | "harvest-home.pipeline_call_outcome"
+  | "harvest-home.pipeline_session_completed"
+  | "harvest-home.pipeline_session_started";
 
 declare const FAMILY_BRAND: unique symbol;
 
