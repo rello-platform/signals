@@ -27,6 +27,9 @@ export {
 } from "./registry/registry.js";
 export {
   DEPRECATED_SIGNALTYPE_PREFIX_ALIASES,
+  // v0.15.0 (CROSS-REPO-WALK Q6): HH legacy `signal.*` → canonical
+  // `harvest-home.*` exact-alias map (additive export).
+  LEGACY_SIGNALTYPE_EXACT_ALIASES,
   normalizeSignalType,
 } from "./registry/normalize.js";
 export {
