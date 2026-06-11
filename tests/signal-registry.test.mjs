@@ -55,7 +55,10 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // (requested/confirmed/canceled/completed/no_show/feedback) lifecycle
     // family, all BEHAVIORAL / goalShift:true / lifecycle:"active" with
     // explicit curated weights (8/9/4/7/5/9), so 354→360.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 360);
+    // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0): +3 — `open-house-hub.tour_created`
+    // (w6) + `open-house-hub.tour_completed` (w7) + `home-scout.tour_stop_rated`
+    // (w8), all BEHAVIORAL / goalShift:true / lifecycle:"active", so 360→363.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 363);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -618,6 +621,52 @@ describe("open-house-hub.showing_* family (v0.16.0, OHH-SHOWINGS-AND-TOURS)", ()
   });
 });
 
+// ── OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) ──────────────────────────────────────
+// Multi-stop tour family — 2 OHH lifecycle types + the HS-LOCAL stop rating
+// (DL4: rating writes never round-trip to OHH; HS emits on its own key).
+// Same conventions as the showing_* family: BEHAVIORAL / goalShift:true /
+// active / explicit curated weights / no `priority` (weight-band derivation).
+describe("tour family (v0.18.0, OHH-SHOWINGS-AND-TOURS P4)", () => {
+  const expected = {
+    "open-house-hub.tour_created": 6,
+    "open-house-hub.tour_completed": 7,
+    "home-scout.tour_stop_rated": 8,
+  };
+  it("all 3 resolve by identity (canonical hyphen slug)", () => {
+    for (const t of Object.keys(expected)) {
+      assert.equal(normalizeSignalType(t), t);
+    }
+  });
+  it("underscore-slug emits fold to the hyphen canonical", () => {
+    assert.equal(
+      normalizeSignalType("open_house_hub.tour_created"),
+      "open-house-hub.tour_created",
+    );
+    assert.equal(
+      normalizeSignalType("home_scout.tour_stop_rated"),
+      "home-scout.tour_stop_rated",
+    );
+  });
+  it("all 3 carry BEHAVIORAL / curated weight / goalShift:true / active, no priority", () => {
+    for (const [t, weight] of Object.entries(expected)) {
+      const entry = EXACT_REGISTRY[t];
+      assert.equal(entry.category, "BEHAVIORAL", `${t} category`);
+      assert.equal(entry.weight, weight, `${t} weight`);
+      assert.equal(entry.goalShiftSemantics, true, `${t} goalShift`);
+      assert.equal(entry.lifecycle, "active", `${t} lifecycle`);
+      assert.equal(entry.priority, undefined, `${t} priority (weight-band derived)`);
+      assert.equal(entry.tier, undefined, `${t} tier`);
+      assert.equal(isGoalShiftSignal(t), true, `${t} isGoalShiftSignal`);
+    }
+  });
+  it("all 3 enter the active keyset (the armed check:signal-types gate input)", () => {
+    const active = listActiveSignalTypes();
+    for (const t of Object.keys(expected)) {
+      assert.ok(active.includes(t), `active keyset missing ${t}`);
+    }
+  });
+});
+
 // ── HH-LEGACY-CANONICAL-ALIASES (v0.15.0; CROSS-REPO-WALK Q6 step 1) ─────────
 // HH's 24 LIVE legacy `signal.*` emit types (grep of Harvest-Home origin/main
 // @ a40e4db) fold to canonical `harvest-home.<snake_verb>` single-dot form via
@@ -861,7 +910,10 @@ describe("listActiveSignalTypes", () => {
     // harvest-home.* alias targets — all lifecycle:"active", so 321→346.
     // OHH-SHOWINGS-AND-TOURS (v0.16.0, +6): open-house-hub.showing_* family —
     // all lifecycle:"active", so 346→352.
-    assert.equal(listActiveSignalTypes().length, 352);
+    // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0, +3): open-house-hub.tour_created/
+    // tour_completed + home-scout.tour_stop_rated — all lifecycle:"active",
+    // so 352→355.
+    assert.equal(listActiveSignalTypes().length, 355);
   });
 });
 
@@ -903,8 +955,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (352)", () => {
-    assert.equal(keyset.exactKeys.length, 352);
+  it("exactKeys count == active exact registry entries (355)", () => {
+    assert.equal(keyset.exactKeys.length, 355);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -925,8 +977,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.17.0)", () => {
-    assert.equal(keyset.version, "0.17.0");
+  it("version stamp is current (0.18.0)", () => {
+    assert.equal(keyset.version, "0.18.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -941,7 +993,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.17.0");
+    assert.equal(mod.default.version, "0.18.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });

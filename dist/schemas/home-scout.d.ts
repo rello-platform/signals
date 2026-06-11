@@ -17,5 +17,13 @@ declare const hsLeadMagnetSubmittedDataSchema: z.ZodObject<{
     scout_intent_signal: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, z.core.$strip>;
 type HsLeadMagnetSubmittedData = z.infer<typeof hsLeadMagnetSubmittedDataSchema>;
+declare const hsTourStopRatedDataSchema: z.ZodObject<{
+    tourId: z.ZodString;
+    stopId: z.ZodString;
+    leadId: z.ZodString;
+    rating: z.ZodNumber;
+    hasNotes: z.ZodBoolean;
+}, z.core.$strip>;
+type HsTourStopRatedData = z.infer<typeof hsTourStopRatedDataSchema>;
 
-export { type HsLeadMagnetSubmittedData, hsLeadMagnetSubmittedDataSchema };
+export { type HsLeadMagnetSubmittedData, type HsTourStopRatedData, hsLeadMagnetSubmittedDataSchema, hsTourStopRatedDataSchema };

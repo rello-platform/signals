@@ -1032,6 +1032,20 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — buyer rates a tour stop in the HS
+    // companion (HS-LOCAL write per DL4; OHH never called on rating writes).
+    // BEHAVIORAL per the tour-family contract lock — consistent with the
+    // home-scout BEHAVIORAL neighbors (search_saved/survey_gate_answered/
+    // tool_started), which carry no `priority` (weight-band derivation), so
+    // none here either. goalShiftSemantics:true — a rating redirects buyer
+    // preference (contract §Signals).
+    "home-scout.tour_stop_rated": {
+      type: "home-scout.tour_stop_rated",
+      weight: 8,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
     "home-scout.unattached_lead_captured": {
       type: "home-scout.unattached_lead_captured",
       weight: 6,
@@ -2611,6 +2625,24 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       weight: 9,
       category: "BEHAVIORAL",
       goalShiftSemantics: true, // feedback redirects nurture (dispatch)
+      lifecycle: "active",
+    },
+    // ── OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — multi-stop tour lifecycle ──
+    // Siblings of the showing_* family above; same conventions (explicit
+    // curated weights per CONTRACT-TOUR-COMPANION-PAYLOAD-260611 §Signals,
+    // BEHAVIORAL, goalShift:true, no `priority` — weight-band derivation).
+    "open-house-hub.tour_created": {
+      type: "open-house-hub.tour_created",
+      weight: 6,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    "open-house-hub.tour_completed": {
+      type: "open-house-hub.tour_completed",
+      weight: 7,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
       lifecycle: "active",
     },
     "newsletter-studio.email_forwarded": {

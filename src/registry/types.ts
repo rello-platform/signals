@@ -181,6 +181,9 @@ export type ExactCanonicalSignalType =
   | "home-scout.survey_gate_question_answered"
   | "home-scout.tool_completed"
   | "home-scout.tool_started"
+  // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — buyer tour-stop rating, HS-LOCAL
+  // write (DL4: no cross-app round-trip; OHH never called on rating writes).
+  | "home-scout.tour_stop_rated"
   | "home-scout.unattached_lead_captured"
   | "home-scout.va_eligible_confirmed"
   | "home-stretch.activity_completed"
@@ -407,6 +410,10 @@ export type ExactCanonicalSignalType =
   | "open-house-hub.showing_completed"
   | "open-house-hub.showing_no_show"
   | "open-house-hub.showing_feedback"
+  // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — multi-stop tour lifecycle siblings
+  // of the showing_* family above (CONTRACT-TOUR-COMPANION-PAYLOAD-260611).
+  | "open-house-hub.tour_created"
+  | "open-house-hub.tour_completed"
   | "newsletter-studio.email_forwarded"
   | "harvest-home.gateway_injection_failed"
   | "harvest-home.leads_imported"

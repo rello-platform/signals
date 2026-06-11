@@ -71,6 +71,21 @@ var ohhShowingFeedbackDataSchema = z.object({
   propertyAddress: z.string(),
   response: ohhShowingFeedbackResponseSchema
 });
+var ohhTourLifecycleBaseDataSchema = z.object({
+  tourId: z.string().min(1),
+  /** Resolved Rello lead id of the buyer; null when unresolved. */
+  relloLeadId: z.string().nullable(),
+  /** Number of stops on the tour (TourStop rows). */
+  stopCount: z.number().int().nonnegative(),
+  /** ISO 8601 — date of the tour day (date-only or datetime form). */
+  tourDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected"),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1)
+});
+var ohhTourCreatedDataSchema = ohhTourLifecycleBaseDataSchema;
+var ohhTourCompletedDataSchema = ohhTourLifecycleBaseDataSchema.extend({
+  completedStops: z.number().int().nonnegative()
+});
 export {
   ohhAttendeeDataSchema,
   ohhAttendeeMarkedForPfpPreapprovalDataSchema,
@@ -82,6 +97,9 @@ export {
   ohhShowingLifecycleBaseDataSchema,
   ohhShowingNoShowDataSchema,
   ohhShowingRequestedDataSchema,
-  ohhShowingStatusSchema
+  ohhShowingStatusSchema,
+  ohhTourCompletedDataSchema,
+  ohhTourCreatedDataSchema,
+  ohhTourLifecycleBaseDataSchema
 };
 //# sourceMappingURL=open-house-hub.js.map

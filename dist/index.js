@@ -1101,6 +1101,20 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — buyer rates a tour stop in the HS
+  // companion (HS-LOCAL write per DL4; OHH never called on rating writes).
+  // BEHAVIORAL per the tour-family contract lock — consistent with the
+  // home-scout BEHAVIORAL neighbors (search_saved/survey_gate_answered/
+  // tool_started), which carry no `priority` (weight-band derivation), so
+  // none here either. goalShiftSemantics:true — a rating redirects buyer
+  // preference (contract §Signals).
+  "home-scout.tour_stop_rated": {
+    type: "home-scout.tour_stop_rated",
+    weight: 8,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "home-scout.unattached_lead_captured": {
     type: "home-scout.unattached_lead_captured",
     weight: 6,
@@ -2782,6 +2796,24 @@ var EXACT_REGISTRY = {
     // feedback redirects nurture (dispatch)
     lifecycle: "active"
   },
+  // ── OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — multi-stop tour lifecycle ──
+  // Siblings of the showing_* family above; same conventions (explicit
+  // curated weights per CONTRACT-TOUR-COMPANION-PAYLOAD-260611 §Signals,
+  // BEHAVIORAL, goalShift:true, no `priority` — weight-band derivation).
+  "open-house-hub.tour_created": {
+    type: "open-house-hub.tour_created",
+    weight: 6,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  "open-house-hub.tour_completed": {
+    type: "open-house-hub.tour_completed",
+    weight: 7,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "newsletter-studio.email_forwarded": {
     type: "newsletter-studio.email_forwarded",
     weight: 3,
@@ -3566,6 +3598,21 @@ var ohhShowingFeedbackDataSchema = z.object({
   propertyAddress: z.string(),
   response: ohhShowingFeedbackResponseSchema
 });
+var ohhTourLifecycleBaseDataSchema = z.object({
+  tourId: z.string().min(1),
+  /** Resolved Rello lead id of the buyer; null when unresolved. */
+  relloLeadId: z.string().nullable(),
+  /** Number of stops on the tour (TourStop rows). */
+  stopCount: z.number().int().nonnegative(),
+  /** ISO 8601 — date of the tour day (date-only or datetime form). */
+  tourDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected"),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1)
+});
+var ohhTourCreatedDataSchema = ohhTourLifecycleBaseDataSchema;
+var ohhTourCompletedDataSchema = ohhTourLifecycleBaseDataSchema.extend({
+  completedStops: z.number().int().nonnegative()
+});
 
 // src/schemas/home-scout.ts
 import { z as z2 } from "zod";
@@ -3577,6 +3624,16 @@ var hsLeadMagnetSubmittedDataSchema = z2.object({
   scout_visitor_first_name: z2.string().nullable().optional(),
   scout_visitor_last_name: z2.string().nullable().optional(),
   scout_intent_signal: z2.string().nullable().optional()
+});
+var hsTourStopRatedDataSchema = z2.object({
+  tourId: z2.string().min(1),
+  stopId: z2.string().min(1),
+  /** HS-side lead id (TourStopRating.leadId — the rating buyer). */
+  leadId: z2.string().min(1),
+  /** 1-5 integer star rating. */
+  rating: z2.number().int().min(1).max(5),
+  /** Whether the buyer left notes — NEVER the notes text (PII floor). */
+  hasNotes: z2.boolean()
 });
 
 // src/schemas/harvest-home.ts
@@ -3653,6 +3710,7 @@ export {
   hhLeadIntakeDataSchema,
   homeReadyIntentTargetCrossedDataSchema,
   hsLeadMagnetSubmittedDataSchema,
+  hsTourStopRatedDataSchema,
   isGoalShiftSignal,
   isNarrativeMaterial,
   isSignalCategory,
@@ -3674,6 +3732,9 @@ export {
   ohhShowingNoShowDataSchema,
   ohhShowingRequestedDataSchema,
   ohhShowingStatusSchema,
+  ohhTourCompletedDataSchema,
+  ohhTourCreatedDataSchema,
+  ohhTourLifecycleBaseDataSchema,
   pfpComplianceConfigChangedDataSchema,
   pfpComplianceGateBlockedDataSchema,
   pfpExportFailedDataSchema,
