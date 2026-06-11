@@ -2561,6 +2561,58 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     }, // DEFAULT (no constants row) — Wave-C reclass
+    // ── OHH-SHOWINGS-AND-TOURS (v0.16.0) — showing/tour lifecycle family ──
+    // Explicit curated weights from the workstream dispatch (NOT bucket-2
+    // DEFAULT seeds). All BEHAVIORAL: the family is high-intent lead behavior
+    // (mirrors the OHH attendee tuple above + rello.meeting_canceled/no_show,
+    // both BEHAVIORAL); NEGATIVE stays reserved for relationship-damage signals
+    // (complaints/unsubscribes). goalShiftSemantics:true across the family
+    // (real lead signals, non-SYSTEM — same convention as every OHH neighbor);
+    // showing_feedback explicitly goal-shifting per dispatch (feedback
+    // redirects nurture). No `priority` — weight-band derivation applies,
+    // mirroring attendee_signed_in/lead_interested.
+    "open-house-hub.showing_requested": {
+      type: "open-house-hub.showing_requested",
+      weight: 8, // high-intent behavioral per dispatch
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    "open-house-hub.showing_confirmed": {
+      type: "open-house-hub.showing_confirmed",
+      weight: 9,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    "open-house-hub.showing_canceled": {
+      type: "open-house-hub.showing_canceled",
+      weight: 4,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    "open-house-hub.showing_completed": {
+      type: "open-house-hub.showing_completed",
+      weight: 7,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    "open-house-hub.showing_no_show": {
+      type: "open-house-hub.showing_no_show",
+      weight: 5,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    "open-house-hub.showing_feedback": {
+      type: "open-house-hub.showing_feedback",
+      weight: 9,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true, // feedback redirects nurture (dispatch)
+      lifecycle: "active",
+    },
     "newsletter-studio.email_forwarded": {
       type: "newsletter-studio.email_forwarded",
       weight: 3,

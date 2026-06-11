@@ -51,7 +51,11 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // registered ahead of the Rello emit PR) + 24 canonical `harvest-home.*`
     // targets for HH's live legacy `signal.*` emit set (Q6; legacy rows kept
     // as read-bridge, so total grows by the full 24).
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 354);
+    // OHH-SHOWINGS-AND-TOURS (v0.16.0): +6 — `open-house-hub.showing_*`
+    // (requested/confirmed/canceled/completed/no_show/feedback) lifecycle
+    // family, all BEHAVIORAL / goalShift:true / lifecycle:"active" with
+    // explicit curated weights (8/9/4/7/5/9), so 354→360.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 360);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -563,6 +567,57 @@ describe("rello.lead_phone_disconnected (v0.15.0, Q2)", () => {
   });
 });
 
+// ── OHH-SHOWINGS-AND-TOURS (v0.16.0) ─────────────────────────────────────────
+// OHH showing/tour lifecycle family — 6 hyphen-canonical types with explicit
+// curated weights (NOT bucket-2 DEFAULT seeds). All BEHAVIORAL (high-intent
+// lead behavior; mirrors the OHH attendee tuple + rello.meeting_canceled/
+// no_show) / goalShift:true (real lead signals; showing_feedback explicitly
+// redirects nurture per dispatch) / lifecycle:"active". No `priority` —
+// weight-band derivation applies (mirrors attendee_signed_in).
+describe("open-house-hub.showing_* family (v0.16.0, OHH-SHOWINGS-AND-TOURS)", () => {
+  const expected = {
+    "open-house-hub.showing_requested": 8,
+    "open-house-hub.showing_confirmed": 9,
+    "open-house-hub.showing_canceled": 4,
+    "open-house-hub.showing_completed": 7,
+    "open-house-hub.showing_no_show": 5,
+    "open-house-hub.showing_feedback": 9,
+  };
+  it("all 6 resolve by identity (canonical hyphen slug)", () => {
+    for (const t of Object.keys(expected)) {
+      assert.equal(normalizeSignalType(t), t);
+    }
+  });
+  it("underscore-slug emits fold to the hyphen canonical", () => {
+    assert.equal(
+      normalizeSignalType("open_house_hub.showing_requested"),
+      "open-house-hub.showing_requested",
+    );
+  });
+  it("all 6 carry BEHAVIORAL / curated weight / goalShift:true / active, no priority", () => {
+    for (const [t, weight] of Object.entries(expected)) {
+      const entry = EXACT_REGISTRY[t];
+      assert.equal(entry.category, "BEHAVIORAL", `${t} category`);
+      assert.equal(entry.weight, weight, `${t} weight`);
+      assert.equal(entry.goalShiftSemantics, true, `${t} goalShift`);
+      assert.equal(entry.lifecycle, "active", `${t} lifecycle`);
+      assert.equal(entry.priority, undefined, `${t} priority (weight-band derived)`);
+      assert.equal(entry.tier, undefined, `${t} tier`);
+      assert.equal(isGoalShiftSignal(t), true, `${t} isGoalShiftSignal`);
+    }
+  });
+  it("BEHAVIORAL narrative-material derivation: weight>=5 material, canceled (4) not", () => {
+    assert.equal(isNarrativeMaterial("BEHAVIORAL", expected["open-house-hub.showing_requested"]), true);
+    assert.equal(isNarrativeMaterial("BEHAVIORAL", expected["open-house-hub.showing_canceled"]), false);
+  });
+  it("all 6 enter the active keyset (the armed check:signal-types gate input)", () => {
+    const active = listActiveSignalTypes();
+    for (const t of Object.keys(expected)) {
+      assert.ok(active.includes(t), `active keyset missing ${t}`);
+    }
+  });
+});
+
 // ── HH-LEGACY-CANONICAL-ALIASES (v0.15.0; CROSS-REPO-WALK Q6 step 1) ─────────
 // HH's 24 LIVE legacy `signal.*` emit types (grep of Harvest-Home origin/main
 // @ a40e4db) fold to canonical `harvest-home.<snake_verb>` single-dot form via
@@ -804,7 +859,9 @@ describe("listActiveSignalTypes", () => {
     // — lifecycle:"active", so 320→321.
     // v0.15.0 (Q2 + Q6, +25): rello.lead_phone_disconnected + 24 canonical
     // harvest-home.* alias targets — all lifecycle:"active", so 321→346.
-    assert.equal(listActiveSignalTypes().length, 346);
+    // OHH-SHOWINGS-AND-TOURS (v0.16.0, +6): open-house-hub.showing_* family —
+    // all lifecycle:"active", so 346→352.
+    assert.equal(listActiveSignalTypes().length, 352);
   });
 });
 
@@ -846,8 +903,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (346)", () => {
-    assert.equal(keyset.exactKeys.length, 346);
+  it("exactKeys count == active exact registry entries (352)", () => {
+    assert.equal(keyset.exactKeys.length, 352);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -868,8 +925,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.15.0)", () => {
-    assert.equal(keyset.version, "0.15.0");
+  it("version stamp is current (0.16.0)", () => {
+    assert.equal(keyset.version, "0.16.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -884,7 +941,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.15.0");
+    assert.equal(mod.default.version, "0.16.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
