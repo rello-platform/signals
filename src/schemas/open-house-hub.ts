@@ -167,6 +167,57 @@ export const ohhShowingFeedbackDataSchema = z.object({
   response: ohhShowingFeedbackResponseSchema,
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — multi-stop tour lifecycle payload
+// schemas. Registered in the SAME minor as the registry rows (BPB 9.1: schema
+// lands with/before the emit PR — the OHH tour emitters are the P4 producer
+// lane and land AFTER this minor, so shapes follow the LOCKED contract
+// (CONTRACT-TOUR-COMPANION-PAYLOAD-260611) rather than live emit sites.
+//
+// `action` + `actorUserId` are the Rule-D mutation trail (Pattern-C: OHH has
+// no local AuditLog table — audit routes to Rello via signal), mirroring
+// ohhShowingLifecycleBaseDataSchema. `relloLeadId` is nullable NOT optional
+// (always-present-may-be-null, same discipline as the showing base block).
+// PRIVACY LOCK: no accessInstructions, no other-party personal names — the
+// payload carries ids + counts + date only.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Shared tour lifecycle data block for `open-house-hub.tour_*`.
+ *
+ * `tourDate` is ISO 8601 "date of the tour day" (contract) — the emitter is
+ * not yet landed, so the schema pins the ISO-date prefix (`YYYY-MM-DD…`) and
+ * accepts both date-only and full-datetime serializations rather than
+ * guessing which one OHH will emit.
+ */
+export const ohhTourLifecycleBaseDataSchema = z.object({
+  tourId: z.string().min(1),
+  /** Resolved Rello lead id of the buyer; null when unresolved. */
+  relloLeadId: z.string().nullable(),
+  /** Number of stops on the tour (TourStop rows). */
+  stopCount: z.number().int().nonnegative(),
+  /** ISO 8601 — date of the tour day (date-only or datetime form). */
+  tourDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected"),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1),
+});
+
+/** `open-house-hub.tour_created` — agent assembles a multi-stop tour. */
+export const ohhTourCreatedDataSchema = ohhTourLifecycleBaseDataSchema;
+
+/**
+ * `open-house-hub.tour_completed` — tour day wraps. `completedStops` counts
+ * stops whose Showing reached COMPLETED (≤ stopCount; NO_SHOW/CANCELED stops
+ * don't count).
+ */
+export const ohhTourCompletedDataSchema = ohhTourLifecycleBaseDataSchema.extend({
+  completedStops: z.number().int().nonnegative(),
+});
+
+export type OhhTourLifecycleBaseData = z.infer<typeof ohhTourLifecycleBaseDataSchema>;
+export type OhhTourCreatedData = z.infer<typeof ohhTourCreatedDataSchema>;
+export type OhhTourCompletedData = z.infer<typeof ohhTourCompletedDataSchema>;
+
 export type OhhShowingStatus = z.infer<typeof ohhShowingStatusSchema>;
 export type OhhShowingLifecycleBaseData = z.infer<typeof ohhShowingLifecycleBaseDataSchema>;
 export type OhhShowingRequestedData = z.infer<typeof ohhShowingRequestedDataSchema>;

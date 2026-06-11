@@ -245,6 +245,48 @@ declare const ohhShowingFeedbackDataSchema: z.ZodObject<{
         not_for_me: "not_for_me";
     }>;
 }, z.core.$strip>;
+/**
+ * Shared tour lifecycle data block for `open-house-hub.tour_*`.
+ *
+ * `tourDate` is ISO 8601 "date of the tour day" (contract) — the emitter is
+ * not yet landed, so the schema pins the ISO-date prefix (`YYYY-MM-DD…`) and
+ * accepts both date-only and full-datetime serializations rather than
+ * guessing which one OHH will emit.
+ */
+declare const ohhTourLifecycleBaseDataSchema: z.ZodObject<{
+    tourId: z.ZodString;
+    relloLeadId: z.ZodNullable<z.ZodString>;
+    stopCount: z.ZodNumber;
+    tourDate: z.ZodString;
+    action: z.ZodString;
+    actorUserId: z.ZodString;
+}, z.core.$strip>;
+/** `open-house-hub.tour_created` — agent assembles a multi-stop tour. */
+declare const ohhTourCreatedDataSchema: z.ZodObject<{
+    tourId: z.ZodString;
+    relloLeadId: z.ZodNullable<z.ZodString>;
+    stopCount: z.ZodNumber;
+    tourDate: z.ZodString;
+    action: z.ZodString;
+    actorUserId: z.ZodString;
+}, z.core.$strip>;
+/**
+ * `open-house-hub.tour_completed` — tour day wraps. `completedStops` counts
+ * stops whose Showing reached COMPLETED (≤ stopCount; NO_SHOW/CANCELED stops
+ * don't count).
+ */
+declare const ohhTourCompletedDataSchema: z.ZodObject<{
+    tourId: z.ZodString;
+    relloLeadId: z.ZodNullable<z.ZodString>;
+    stopCount: z.ZodNumber;
+    tourDate: z.ZodString;
+    action: z.ZodString;
+    actorUserId: z.ZodString;
+    completedStops: z.ZodNumber;
+}, z.core.$strip>;
+type OhhTourLifecycleBaseData = z.infer<typeof ohhTourLifecycleBaseDataSchema>;
+type OhhTourCreatedData = z.infer<typeof ohhTourCreatedDataSchema>;
+type OhhTourCompletedData = z.infer<typeof ohhTourCompletedDataSchema>;
 type OhhShowingStatus = z.infer<typeof ohhShowingStatusSchema>;
 type OhhShowingLifecycleBaseData = z.infer<typeof ohhShowingLifecycleBaseDataSchema>;
 type OhhShowingRequestedData = z.infer<typeof ohhShowingRequestedDataSchema>;
@@ -255,4 +297,4 @@ type OhhShowingNoShowData = z.infer<typeof ohhShowingNoShowDataSchema>;
 type OhhShowingFeedbackResponse = z.infer<typeof ohhShowingFeedbackResponseSchema>;
 type OhhShowingFeedbackData = z.infer<typeof ohhShowingFeedbackDataSchema>;
 
-export { type OhhAttendeeData, type OhhAttendeeMarkedForPfpPreapprovalData, type OhhShowingCanceledData, type OhhShowingCompletedData, type OhhShowingConfirmedData, type OhhShowingFeedbackData, type OhhShowingFeedbackResponse, type OhhShowingLifecycleBaseData, type OhhShowingNoShowData, type OhhShowingRequestedData, type OhhShowingStatus, ohhAttendeeDataSchema, ohhAttendeeMarkedForPfpPreapprovalDataSchema, ohhShowingCanceledDataSchema, ohhShowingCompletedDataSchema, ohhShowingConfirmedDataSchema, ohhShowingFeedbackDataSchema, ohhShowingFeedbackResponseSchema, ohhShowingLifecycleBaseDataSchema, ohhShowingNoShowDataSchema, ohhShowingRequestedDataSchema, ohhShowingStatusSchema };
+export { type OhhAttendeeData, type OhhAttendeeMarkedForPfpPreapprovalData, type OhhShowingCanceledData, type OhhShowingCompletedData, type OhhShowingConfirmedData, type OhhShowingFeedbackData, type OhhShowingFeedbackResponse, type OhhShowingLifecycleBaseData, type OhhShowingNoShowData, type OhhShowingRequestedData, type OhhShowingStatus, type OhhTourCompletedData, type OhhTourCreatedData, type OhhTourLifecycleBaseData, ohhAttendeeDataSchema, ohhAttendeeMarkedForPfpPreapprovalDataSchema, ohhShowingCanceledDataSchema, ohhShowingCompletedDataSchema, ohhShowingConfirmedDataSchema, ohhShowingFeedbackDataSchema, ohhShowingFeedbackResponseSchema, ohhShowingLifecycleBaseDataSchema, ohhShowingNoShowDataSchema, ohhShowingRequestedDataSchema, ohhShowingStatusSchema, ohhTourCompletedDataSchema, ohhTourCreatedDataSchema, ohhTourLifecycleBaseDataSchema };
