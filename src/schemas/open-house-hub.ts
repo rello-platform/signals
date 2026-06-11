@@ -42,3 +42,137 @@ export const ohhAttendeeMarkedForPfpPreapprovalDataSchema = z.object({
 
 export type OhhAttendeeData = z.infer<typeof ohhAttendeeDataSchema>;
 export type OhhAttendeeMarkedForPfpPreapprovalData = z.infer<typeof ohhAttendeeMarkedForPfpPreapprovalDataSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OHH-SHOWINGS-AND-TOURS — showing/tour lifecycle + feedback payload schemas
+// (v0.17.0). Registry rows landed in v0.16.0 ahead of the spoke emit PRs
+// (OHH #27/#29); these schemas close the README BPB 9.1 gap (schema lands
+// with the emit PR).
+//
+// Shapes are derived from the LIVE emit sites @ OHH origin/main af0b718:
+//   - src/lib/showings/lifecycle.ts  (emitShowingLifecycleSignal — shared
+//     data block for all 5 lifecycle types + per-type extraData spread)
+//   - src/app/api/showings/route.ts:250        (showing_requested)
+//   - src/lib/showings/confirm.ts:241          (showing_confirmed)
+//   - src/app/api/showings/[id]/cancel/route.ts:149   (showing_canceled)
+//   - src/app/api/showings/[id]/complete/route.ts:83  (showing_completed)
+//   - src/app/api/showings/[id]/no-show/route.ts:84   (showing_no_show)
+//   - src/lib/feedback/record.ts:87            (showing_feedback)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Mirror of OHH's prisma `enum ShowingStatus` (openhousehub schema). */
+export const ohhShowingStatusSchema = z.enum([
+  "REQUESTED",
+  "CONFIRMED",
+  "COMPLETED",
+  "CANCELED",
+  "NO_SHOW",
+]);
+
+/**
+ * Shared lifecycle data block — every `open-house-hub.showing_*` lifecycle
+ * signal carries these fields (lifecycle.ts builds them unconditionally; the
+ * null-bearing fields are always PRESENT but may be null, so they are
+ * `.nullable()` not `.optional()`).
+ *
+ * `action` + `actorUserId` are the Rule-D mutation trail (Pattern-C: OHH has
+ * no local AuditLog table — audit routes to Rello via signal). `action` is
+ * typed `string` at the emitter (observed literals: showing.create /
+ * showing.confirm / showing.cancel / showing.complete / showing.no_show), so
+ * the schema stays `z.string()` rather than pinning literals that would
+ * break on a new emitter verb.
+ */
+export const ohhShowingLifecycleBaseDataSchema = z.object({
+  showingId: z.string().min(1),
+  propertyAddress: z.string(),
+  /** `showing.scheduledAt?.toISOString() ?? null` — ISO datetime or null. */
+  scheduledAt: z.string().datetime().nullable(),
+  status: ohhShowingStatusSchema,
+  agentId: z.string().min(1),
+  relloMeetingId: z.string().nullable(),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1),
+});
+
+/**
+ * `open-house-hub.showing_requested` — POST /api/showings creates a
+ * REQUESTED showing. extraData: `{ requestedSlots: requestedSlots ?? null }`
+ * (route.ts:255; slots are zod `.datetime()`-validated ISO strings, max 20,
+ * already filtered to future slots; null when none were proposed, e.g. the
+ * direct-confirm slotStart path).
+ */
+export const ohhShowingRequestedDataSchema = ohhShowingLifecycleBaseDataSchema.extend({
+  requestedSlots: z.array(z.string().datetime()).nullable(),
+});
+
+/**
+ * `open-house-hub.showing_confirmed` — shared confirm core (confirm.ts:246)
+ * after the Rello meeting books. extraData:
+ * `{ slotStart: params.slotStart, videoMeetingUrl: booked.videoMeetingUrl ?? null }`.
+ */
+export const ohhShowingConfirmedDataSchema = ohhShowingLifecycleBaseDataSchema.extend({
+  slotStart: z.string().datetime(),
+  videoMeetingUrl: z.string().nullable(),
+});
+
+/**
+ * `open-house-hub.showing_canceled` — POST /api/showings/[id]/cancel.
+ * extraData: `{ reason: reason ?? null, priorStatus: showing.status }`
+ * (cancel/route.ts:154 — priorStatus is the pre-cancel status snapshot;
+ * the base `status` field is CANCELED on this signal).
+ */
+export const ohhShowingCanceledDataSchema = ohhShowingLifecycleBaseDataSchema.extend({
+  reason: z.string().nullable(),
+  priorStatus: ohhShowingStatusSchema,
+});
+
+/**
+ * `open-house-hub.showing_completed` — POST /api/showings/[id]/complete.
+ * No extraData; base block only (complete/route.ts:83).
+ */
+export const ohhShowingCompletedDataSchema = ohhShowingLifecycleBaseDataSchema;
+
+/**
+ * `open-house-hub.showing_no_show` — POST /api/showings/[id]/no-show.
+ * No extraData; base block only (no-show/route.ts:84).
+ */
+export const ohhShowingNoShowDataSchema = ohhShowingLifecycleBaseDataSchema;
+
+/**
+ * Consumer feedback vocabulary — EXACT three-option lock from
+ * OHH src/lib/feedback/constants.ts (`FEEDBACK_RESPONSES`).
+ */
+export const ohhShowingFeedbackResponseSchema = z.enum([
+  "loved",
+  "interested",
+  "not_for_me",
+]);
+
+/**
+ * `open-house-hub.showing_feedback` — record.ts:87, locked payload shape
+ * `{ leadId, eventId, showingId, propertyAddress, response }`.
+ *
+ * The live emitter always includes every key (null when unresolved), but the
+ * lock comment writes `eventId?` / `showingId?` as optional — so the two
+ * conditionally-resolved ids accept BOTH absent and null. `leadId` is the
+ * resolved relloLeadId and may be null for attendee-only tokens (the signal
+ * envelope's own leadId falls back through attendee → agent → tenant).
+ * `propertyAddress` may be "" when neither showing nor event resolves.
+ */
+export const ohhShowingFeedbackDataSchema = z.object({
+  leadId: z.string().nullable(),
+  eventId: z.string().nullable().optional(),
+  showingId: z.string().nullable().optional(),
+  propertyAddress: z.string(),
+  response: ohhShowingFeedbackResponseSchema,
+});
+
+export type OhhShowingStatus = z.infer<typeof ohhShowingStatusSchema>;
+export type OhhShowingLifecycleBaseData = z.infer<typeof ohhShowingLifecycleBaseDataSchema>;
+export type OhhShowingRequestedData = z.infer<typeof ohhShowingRequestedDataSchema>;
+export type OhhShowingConfirmedData = z.infer<typeof ohhShowingConfirmedDataSchema>;
+export type OhhShowingCanceledData = z.infer<typeof ohhShowingCanceledDataSchema>;
+export type OhhShowingCompletedData = z.infer<typeof ohhShowingCompletedDataSchema>;
+export type OhhShowingNoShowData = z.infer<typeof ohhShowingNoShowDataSchema>;
+export type OhhShowingFeedbackResponse = z.infer<typeof ohhShowingFeedbackResponseSchema>;
+export type OhhShowingFeedbackData = z.infer<typeof ohhShowingFeedbackDataSchema>;

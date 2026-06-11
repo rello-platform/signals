@@ -28,8 +28,60 @@ var ohhAttendeeMarkedForPfpPreapprovalDataSchema = z.object({
   ohhEventHostTenantId: z.string().cuid(),
   ohhAttendeeId: z.string().cuid()
 });
+var ohhShowingStatusSchema = z.enum([
+  "REQUESTED",
+  "CONFIRMED",
+  "COMPLETED",
+  "CANCELED",
+  "NO_SHOW"
+]);
+var ohhShowingLifecycleBaseDataSchema = z.object({
+  showingId: z.string().min(1),
+  propertyAddress: z.string(),
+  /** `showing.scheduledAt?.toISOString() ?? null` — ISO datetime or null. */
+  scheduledAt: z.string().datetime().nullable(),
+  status: ohhShowingStatusSchema,
+  agentId: z.string().min(1),
+  relloMeetingId: z.string().nullable(),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1)
+});
+var ohhShowingRequestedDataSchema = ohhShowingLifecycleBaseDataSchema.extend({
+  requestedSlots: z.array(z.string().datetime()).nullable()
+});
+var ohhShowingConfirmedDataSchema = ohhShowingLifecycleBaseDataSchema.extend({
+  slotStart: z.string().datetime(),
+  videoMeetingUrl: z.string().nullable()
+});
+var ohhShowingCanceledDataSchema = ohhShowingLifecycleBaseDataSchema.extend({
+  reason: z.string().nullable(),
+  priorStatus: ohhShowingStatusSchema
+});
+var ohhShowingCompletedDataSchema = ohhShowingLifecycleBaseDataSchema;
+var ohhShowingNoShowDataSchema = ohhShowingLifecycleBaseDataSchema;
+var ohhShowingFeedbackResponseSchema = z.enum([
+  "loved",
+  "interested",
+  "not_for_me"
+]);
+var ohhShowingFeedbackDataSchema = z.object({
+  leadId: z.string().nullable(),
+  eventId: z.string().nullable().optional(),
+  showingId: z.string().nullable().optional(),
+  propertyAddress: z.string(),
+  response: ohhShowingFeedbackResponseSchema
+});
 export {
   ohhAttendeeDataSchema,
-  ohhAttendeeMarkedForPfpPreapprovalDataSchema
+  ohhAttendeeMarkedForPfpPreapprovalDataSchema,
+  ohhShowingCanceledDataSchema,
+  ohhShowingCompletedDataSchema,
+  ohhShowingConfirmedDataSchema,
+  ohhShowingFeedbackDataSchema,
+  ohhShowingFeedbackResponseSchema,
+  ohhShowingLifecycleBaseDataSchema,
+  ohhShowingNoShowDataSchema,
+  ohhShowingRequestedDataSchema,
+  ohhShowingStatusSchema
 };
 //# sourceMappingURL=open-house-hub.js.map
