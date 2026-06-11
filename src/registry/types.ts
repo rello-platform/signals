@@ -398,6 +398,15 @@ export type ExactCanonicalSignalType =
   | "open-house-hub.checkin"
   | "open-house-hub.enrichment_completed"
   | "open-house-hub.follow_up_created"
+  // OHH-SHOWINGS-AND-TOURS (v0.16.0) — showing/tour lifecycle family. Explicit
+  // curated weights (NOT the bucket-2 DEFAULT seed); hyphen-canonical slug per
+  // the OHH convention above (underscore emits fold via normalizeSlug).
+  | "open-house-hub.showing_requested"
+  | "open-house-hub.showing_confirmed"
+  | "open-house-hub.showing_canceled"
+  | "open-house-hub.showing_completed"
+  | "open-house-hub.showing_no_show"
+  | "open-house-hub.showing_feedback"
   | "newsletter-studio.email_forwarded"
   | "harvest-home.gateway_injection_failed"
   | "harvest-home.leads_imported"
