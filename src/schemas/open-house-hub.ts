@@ -158,14 +158,57 @@ export const ohhShowingFeedbackResponseSchema = z.enum([
  * resolved relloLeadId and may be null for attendee-only tokens (the signal
  * envelope's own leadId falls back through attendee → agent → tenant).
  * `propertyAddress` may be "" when neither showing nor event resolves.
+ *
+ * P5 (v0.19.0, ADDITIVE): `submitterRole` — P5 lets the CO-OP AGENT leave
+ * listing feedback through the same signal, so consumers can distinguish the
+ * buyer's reaction from the co-op agent's. `.optional()` (not nullable) — the
+ * pre-P5 live emitter omits the key entirely, and existing persisted payloads
+ * must keep parsing (back-compat: absent ⇒ buyer-era payload).
  */
+export const ohhFeedbackSubmitterRoleSchema = z.enum(["buyer", "coop_agent"]);
+
 export const ohhShowingFeedbackDataSchema = z.object({
   leadId: z.string().nullable(),
   eventId: z.string().nullable().optional(),
   showingId: z.string().nullable().optional(),
   propertyAddress: z.string(),
   response: ohhShowingFeedbackResponseSchema,
+  submitterRole: ohhFeedbackSubmitterRoleSchema.optional(),
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent showing invite.
+// Registered in the SAME minor as the registry row (BPB 9.1); the OHH P5
+// emitter lands AFTER this minor, so the shape follows the dispatch contract.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * `open-house-hub.coop_invite_sent` — the listing agent invites a co-op
+ * (buyer's) agent to a showing.
+ *
+ * PII FLOOR: the payload is the Rule-D mutation trail ONLY (Pattern-C: OHH
+ * has no local AuditLog table — audit routes to Rello via signal). It carries
+ * ids + channel-capability booleans (`hasEmail`/`hasPhone` — whether an
+ * invite channel existed), NEVER the co-op agent's email/phone values.
+ * `action` is typed `string` at the emitter (expected literal:
+ * `showing.coop_invite`), so the schema stays `z.string()` rather than
+ * pinning a literal that would break on a new emitter verb — same convention
+ * as ohhShowingLifecycleBaseDataSchema.
+ */
+export const ohhCoopInviteSentDataSchema = z.object({
+  showingId: z.string().min(1),
+  /** ShowingParticipant row id for the invited co-op agent (NOT a contact value). */
+  participantId: z.string().min(1),
+  /** Whether the invite had an email channel — capability flag, never the address. */
+  hasEmail: z.boolean(),
+  /** Whether the invite had a phone channel — capability flag, never the number. */
+  hasPhone: z.boolean(),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1),
+});
+
+export type OhhFeedbackSubmitterRole = z.infer<typeof ohhFeedbackSubmitterRoleSchema>;
+export type OhhCoopInviteSentData = z.infer<typeof ohhCoopInviteSentDataSchema>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OHH-SHOWINGS-AND-TOURS P4 (v0.18.0) — multi-stop tour lifecycle payload

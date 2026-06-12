@@ -174,4 +174,48 @@ describe("open-house-hub.showing_feedback schema (v0.17.0)", () => {
       false,
     );
   });
+
+  // ── P5 (v0.19.0) additive extension: submitterRole ──
+  it("P5: accepts submitterRole buyer | coop_agent, stays optional (pre-P5 emits omit it)", () => {
+    for (const role of ["buyer", "coop_agent"]) {
+      assert.ok(
+        ohhShowingFeedbackDataSchema.safeParse({
+          leadId: "lead_123",
+          propertyAddress: "123 Main St",
+          response: "interested",
+          submitterRole: role,
+        }).success,
+        `submitterRole ${role} must parse`,
+      );
+    }
+    // back-compat: absent key (the pre-P5 live emitter shape) still parses
+    assert.ok(
+      ohhShowingFeedbackDataSchema.safeParse({
+        leadId: "lead_123",
+        propertyAddress: "123 Main St",
+        response: "interested",
+      }).success,
+    );
+  });
+
+  it("P5: rejects an unknown submitterRole and null (optional, NOT nullable)", () => {
+    assert.equal(
+      ohhShowingFeedbackDataSchema.safeParse({
+        leadId: "lead_123",
+        propertyAddress: "123 Main St",
+        response: "interested",
+        submitterRole: "listing_agent",
+      }).success,
+      false,
+    );
+    assert.equal(
+      ohhShowingFeedbackDataSchema.safeParse({
+        leadId: "lead_123",
+        propertyAddress: "123 Main St",
+        response: "interested",
+        submitterRole: null,
+      }).success,
+      false,
+    );
+  });
 });

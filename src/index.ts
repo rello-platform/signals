@@ -56,6 +56,8 @@ export type {
 
 // OHH
 export * from "./schemas/open-house-hub.js";
+// Rello (hub-emitted payloads — v0.19.0 HOMEOWNER-LIFECYCLE-REHOME P1)
+export * from "./schemas/rello.js";
 // HS
 export * from "./schemas/home-scout.js";
 // HH
