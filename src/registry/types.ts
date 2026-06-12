@@ -494,7 +494,21 @@ export type ExactCanonicalSignalType =
   | "harvest-home.lead_scored"
   | "harvest-home.pipeline_call_outcome"
   | "harvest-home.pipeline_session_completed"
-  | "harvest-home.pipeline_session_started";
+  | "harvest-home.pipeline_session_started"
+
+  // ── HOMEOWNER-LIFECYCLE-REHOME P1 (v0.19.0; spec DL1) ──
+  // Rello emits at the funded/recorded BUY-SIDE closing milestone, carrying
+  // the NEW property identity (schema: relloHomePurchasedDataSchema, same
+  // minor). The spec drafted "closing.home_purchased"; the registry owns
+  // canonical form — `closing` is a Rello-internal domain, not a slug, so the
+  // type registers under `rello.*` (the rello.meeting_* precedent).
+  // Registered ahead of the Rello emit PR (the armed check:signal-types gate
+  // blocks unregistered emits).
+  | "rello.home_purchased"
+  // ── OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent showing invite ──
+  // Rule-D trail payload: ids + hasEmail/hasPhone capability booleans ONLY,
+  // NEVER the co-op agent's contact values (PII floor).
+  | "open-house-hub.coop_invite_sent";
 
 declare const FAMILY_BRAND: unique symbol;
 

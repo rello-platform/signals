@@ -3142,8 +3142,60 @@ var EXACT_REGISTRY = {
     category: "BEHAVIORAL",
     goalShiftSemantics: true,
     lifecycle: "active"
-  }
+  },
   // carried from signal.pipeline.session_started (DEFAULT) — Wave-C reclass
+  // ────────────────────────────────────────────────────────────────────
+  // HOMEOWNER-LIFECYCLE-REHOME P1 (v0.19.0; spec DL1). Rello emits at the
+  // funded/recorded BUY-SIDE ClosingMilestone advance (Rello
+  // closing/milestones.ts:464 / closing/index.ts:298), carrying the NEW
+  // property identity {relloLeadId, tenantId, newPropertyAddress,
+  // newPropertyZip, purchasePrice, loanAmount, closeDate} — see
+  // relloHomePurchasedDataSchema (schemas/rello.ts, same minor per BPB 9.1).
+  // NAMING: the spec drafted "closing.home_purchased", but the registry owns
+  // canonical form. `closing` is a Rello-internal domain concept, NOT a
+  // @rello-platform/slugs slug (it could never slug-fold), and per §2.1 a
+  // bare domain prefix is never first-class — Rello-internal concepts
+  // register under `rello.*` (the rello.meeting_* / rello.anniversary
+  // precedent). Emitters MUST use the literal "rello.home_purchased"; no
+  // `closing.` alias is registered (there is no live legacy emitter — the
+  // Rello P1 emit lane lands AFTER this minor and emits canonical from
+  // birth).
+  // Weight 9 / goalShiftSemantics:true — a purchase close is the strongest
+  // lifecycle pivot (buyer journey ends, homeowner journey begins; Oven
+  // profile repoint + OHH listing close + HH state advance all key off it).
+  // BEHAVIORAL per the family neighbors (rello.meeting_* /
+  // rello.handoff_transition — real lead lifecycle events, non-SYSTEM;
+  // FINANCIAL stays reserved for finance-readiness signals). No `priority`
+  // — weight-band derivation (mirrors every rello.meeting_* sibling).
+  // lifecycle:"active" — the Rello emitter ships as the immediate next step
+  // of the same locked spec sequence (the v0.15.0
+  // rello.lead_phone_disconnected registration pattern).
+  // ────────────────────────────────────────────────────────────────────
+  "rello.home_purchased": {
+    type: "rello.home_purchased",
+    weight: 9,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // ────────────────────────────────────────────────────────────────────
+  // OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent invited to a showing.
+  // Sibling of the showing_* lifecycle family above (same conventions:
+  // BEHAVIORAL, goalShift:true, lifecycle:"active", explicit curated
+  // weight, no `priority` — weight-band derivation). Weight 4 (coordination
+  // step, same band as showing_canceled — not a lead-intent spike).
+  // Payload is the Rule-D mutation trail ONLY (Pattern-C: OHH has no local
+  // AuditLog table — audit routes to Rello via signal): ids + capability
+  // booleans (hasEmail/hasPhone), NEVER the co-op agent's contact values
+  // (PII floor) — see ohhCoopInviteSentDataSchema (schemas/open-house-hub.ts).
+  // ────────────────────────────────────────────────────────────────────
+  "open-house-hub.coop_invite_sent": {
+    type: "open-house-hub.coop_invite_sent",
+    weight: 4,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  }
 };
 var AUDIT_FAMILIES = APP_SLUGS.map((slug) => ({
   prefix: `${slug}.audit.`,
@@ -3591,12 +3643,25 @@ var ohhShowingFeedbackResponseSchema = z.enum([
   "interested",
   "not_for_me"
 ]);
+var ohhFeedbackSubmitterRoleSchema = z.enum(["buyer", "coop_agent"]);
 var ohhShowingFeedbackDataSchema = z.object({
   leadId: z.string().nullable(),
   eventId: z.string().nullable().optional(),
   showingId: z.string().nullable().optional(),
   propertyAddress: z.string(),
-  response: ohhShowingFeedbackResponseSchema
+  response: ohhShowingFeedbackResponseSchema,
+  submitterRole: ohhFeedbackSubmitterRoleSchema.optional()
+});
+var ohhCoopInviteSentDataSchema = z.object({
+  showingId: z.string().min(1),
+  /** ShowingParticipant row id for the invited co-op agent (NOT a contact value). */
+  participantId: z.string().min(1),
+  /** Whether the invite had an email channel — capability flag, never the address. */
+  hasEmail: z.boolean(),
+  /** Whether the invite had a phone channel — capability flag, never the number. */
+  hasPhone: z.boolean(),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1)
 });
 var ohhTourLifecycleBaseDataSchema = z.object({
   tourId: z.string().min(1),
@@ -3614,89 +3679,124 @@ var ohhTourCompletedDataSchema = ohhTourLifecycleBaseDataSchema.extend({
   completedStops: z.number().int().nonnegative()
 });
 
-// src/schemas/home-scout.ts
+// src/schemas/rello.ts
 import { z as z2 } from "zod";
-var hsLeadMagnetSubmittedDataSchema = z2.object({
-  scout_lead_magnet_id: z2.string(),
-  scout_magnet_type: z2.string(),
-  scout_visitor_email: z2.string().email(),
-  scout_visitor_phone: z2.string().nullable().optional(),
-  scout_visitor_first_name: z2.string().nullable().optional(),
-  scout_visitor_last_name: z2.string().nullable().optional(),
-  scout_intent_signal: z2.string().nullable().optional()
+var relloHomePurchasedDataSchema = z2.object({
+  /** Rello Lead id of the buyer (the portal follows the person). */
+  relloLeadId: z2.string().min(1),
+  /**
+   * Owning tenant. DL3: tenant boundary is sacred — a purchase under a
+   * different tenant is a NEW (tenantId, relloLeadId) relationship downstream,
+   * never a cross-tenant repoint.
+   */
+  tenantId: z2.string().min(1),
+  /** Full street address of the NEW (purchased) property. */
+  newPropertyAddress: z2.string().min(1),
+  /** ZIP of the NEW property (string — leading zeros are meaningful). */
+  newPropertyZip: z2.string().min(1),
+  /**
+   * Purchase price in WHOLE DOLLARS (positive integer — never cents, never a
+   * float). Becomes the Oven value/equity rebaseline.
+   */
+  purchasePrice: z2.number().int().positive(),
+  /**
+   * Loan amount in WHOLE DOLLARS (positive integer), or null when unknown /
+   * not applicable (cash close). Nullable NOT optional — the key is always
+   * present on the wire.
+   */
+  loanAmount: z2.number().int().positive().nullable(),
+  /**
+   * ISO 8601 close (funding/recording) date — date-only or full-datetime
+   * form. The emitter is not yet landed, so the schema pins the ISO-date
+   * prefix (`YYYY-MM-DD…`) and accepts both serializations rather than
+   * guessing which one Rello will emit (the v0.18.0 `tourDate` precedent).
+   */
+  closeDate: z2.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected")
 });
-var hsTourStopRatedDataSchema = z2.object({
-  tourId: z2.string().min(1),
-  stopId: z2.string().min(1),
+
+// src/schemas/home-scout.ts
+import { z as z3 } from "zod";
+var hsLeadMagnetSubmittedDataSchema = z3.object({
+  scout_lead_magnet_id: z3.string(),
+  scout_magnet_type: z3.string(),
+  scout_visitor_email: z3.string().email(),
+  scout_visitor_phone: z3.string().nullable().optional(),
+  scout_visitor_first_name: z3.string().nullable().optional(),
+  scout_visitor_last_name: z3.string().nullable().optional(),
+  scout_intent_signal: z3.string().nullable().optional()
+});
+var hsTourStopRatedDataSchema = z3.object({
+  tourId: z3.string().min(1),
+  stopId: z3.string().min(1),
   /** HS-side lead id (TourStopRating.leadId — the rating buyer). */
-  leadId: z2.string().min(1),
+  leadId: z3.string().min(1),
   /** 1-5 integer star rating. */
-  rating: z2.number().int().min(1).max(5),
+  rating: z3.number().int().min(1).max(5),
   /** Whether the buyer left notes — NEVER the notes text (PII floor). */
-  hasNotes: z2.boolean()
+  hasNotes: z3.boolean()
 });
 
 // src/schemas/harvest-home.ts
-import { z as z3 } from "zod";
-var hhLeadIntakeDataSchema = z3.object({
-  hh_lead_id: z3.string().cuid(),
-  hh_tenant_id: z3.string().cuid(),
-  hh_source: z3.string(),
-  hh_first_name: z3.string().nullable().optional(),
-  hh_last_name: z3.string().nullable().optional(),
-  hh_email: z3.string().email().nullable().optional(),
-  hh_phone: z3.string().nullable().optional()
+import { z as z4 } from "zod";
+var hhLeadIntakeDataSchema = z4.object({
+  hh_lead_id: z4.string().cuid(),
+  hh_tenant_id: z4.string().cuid(),
+  hh_source: z4.string(),
+  hh_first_name: z4.string().nullable().optional(),
+  hh_last_name: z4.string().nullable().optional(),
+  hh_email: z4.string().email().nullable().optional(),
+  hh_phone: z4.string().nullable().optional()
 }).passthrough();
 
 // src/schemas/home-ready.ts
-import { z as z4 } from "zod";
-var homeReadyIntentTargetCrossedDataSchema = z4.object({
-  leadId: z4.string(),
-  score: z4.number(),
-  previousScore: z4.number(),
-  threshold: z4.number()
+import { z as z5 } from "zod";
+var homeReadyIntentTargetCrossedDataSchema = z5.object({
+  leadId: z5.string(),
+  score: z5.number(),
+  previousScore: z5.number(),
+  threshold: z5.number()
 });
 
 // src/schemas/report-engine.ts
-import { z as z5 } from "zod";
-var reportEngineReportReadyDataSchema = z5.object({
-  reportId: z5.string(),
-  reportUrl: z5.string().url(),
-  reportType: z5.string(),
-  tenantId: z5.string(),
-  leadId: z5.string().nullable().optional()
+import { z as z6 } from "zod";
+var reportEngineReportReadyDataSchema = z6.object({
+  reportId: z6.string(),
+  reportUrl: z6.string().url(),
+  reportType: z6.string(),
+  tenantId: z6.string(),
+  leadId: z6.string().nullable().optional()
 }).passthrough();
 
 // src/schemas/pathfinder-pro.ts
-import { z as z6 } from "zod";
-var pfpExportQueuedDataSchema = z6.object({
-  pfp_export_id: z6.string(),
-  pfp_export_kind: z6.enum(["rate-sheet", "scenario-summary", "los-package", "letter"]),
-  pfp_target: z6.string().nullable().optional()
+import { z as z7 } from "zod";
+var pfpExportQueuedDataSchema = z7.object({
+  pfp_export_id: z7.string(),
+  pfp_export_kind: z7.enum(["rate-sheet", "scenario-summary", "los-package", "letter"]),
+  pfp_target: z7.string().nullable().optional()
 });
 var pfpExportInFlightDataSchema = pfpExportQueuedDataSchema.extend({
-  pfp_export_started_at: z6.string().datetime()
+  pfp_export_started_at: z7.string().datetime()
 });
 var pfpExportSuccessDataSchema = pfpExportQueuedDataSchema.extend({
-  pfp_export_url: z6.string().url().nullable().optional(),
-  pfp_export_completed_at: z6.string().datetime()
+  pfp_export_url: z7.string().url().nullable().optional(),
+  pfp_export_completed_at: z7.string().datetime()
 });
 var pfpExportFailedDataSchema = pfpExportQueuedDataSchema.extend({
-  pfp_export_error: z6.string(),
-  pfp_export_attempt: z6.number().int().positive()
+  pfp_export_error: z7.string(),
+  pfp_export_attempt: z7.number().int().positive()
 });
 var pfpExportPermanentlyFailedDataSchema = pfpExportFailedDataSchema.extend({
-  pfp_export_failed_permanently_at: z6.string().datetime()
+  pfp_export_failed_permanently_at: z7.string().datetime()
 });
-var pfpComplianceGateBlockedDataSchema = z6.object({
-  pfp_scenario_id: z6.string(),
-  pfp_gate_kind: z6.string(),
-  pfp_violation_reason: z6.string()
+var pfpComplianceGateBlockedDataSchema = z7.object({
+  pfp_scenario_id: z7.string(),
+  pfp_gate_kind: z7.string(),
+  pfp_violation_reason: z7.string()
 });
-var pfpComplianceConfigChangedDataSchema = z6.object({
-  pfp_config_kind: z6.string(),
-  pfp_changed_by_user_id: z6.string(),
-  pfp_change_summary: z6.string().nullable().optional()
+var pfpComplianceConfigChangedDataSchema = z7.object({
+  pfp_config_kind: z7.string(),
+  pfp_changed_by_user_id: z7.string(),
+  pfp_change_summary: z7.string().nullable().optional()
 });
 export {
   DEPRECATED_SIGNALTYPE_PREFIX_ALIASES,
@@ -3723,6 +3823,8 @@ export {
   normalizeSignalType,
   ohhAttendeeDataSchema,
   ohhAttendeeMarkedForPfpPreapprovalDataSchema,
+  ohhCoopInviteSentDataSchema,
+  ohhFeedbackSubmitterRoleSchema,
   ohhShowingCanceledDataSchema,
   ohhShowingCompletedDataSchema,
   ohhShowingConfirmedDataSchema,
@@ -3742,6 +3844,7 @@ export {
   pfpExportPermanentlyFailedDataSchema,
   pfpExportQueuedDataSchema,
   pfpExportSuccessDataSchema,
+  relloHomePurchasedDataSchema,
   reportEngineReportReadyDataSchema,
   shouldAblyBroadcast
 };

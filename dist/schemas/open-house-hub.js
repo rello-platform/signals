@@ -64,12 +64,25 @@ var ohhShowingFeedbackResponseSchema = z.enum([
   "interested",
   "not_for_me"
 ]);
+var ohhFeedbackSubmitterRoleSchema = z.enum(["buyer", "coop_agent"]);
 var ohhShowingFeedbackDataSchema = z.object({
   leadId: z.string().nullable(),
   eventId: z.string().nullable().optional(),
   showingId: z.string().nullable().optional(),
   propertyAddress: z.string(),
-  response: ohhShowingFeedbackResponseSchema
+  response: ohhShowingFeedbackResponseSchema,
+  submitterRole: ohhFeedbackSubmitterRoleSchema.optional()
+});
+var ohhCoopInviteSentDataSchema = z.object({
+  showingId: z.string().min(1),
+  /** ShowingParticipant row id for the invited co-op agent (NOT a contact value). */
+  participantId: z.string().min(1),
+  /** Whether the invite had an email channel — capability flag, never the address. */
+  hasEmail: z.boolean(),
+  /** Whether the invite had a phone channel — capability flag, never the number. */
+  hasPhone: z.boolean(),
+  action: z.string().min(1),
+  actorUserId: z.string().min(1)
 });
 var ohhTourLifecycleBaseDataSchema = z.object({
   tourId: z.string().min(1),
@@ -89,6 +102,8 @@ var ohhTourCompletedDataSchema = ohhTourLifecycleBaseDataSchema.extend({
 export {
   ohhAttendeeDataSchema,
   ohhAttendeeMarkedForPfpPreapprovalDataSchema,
+  ohhCoopInviteSentDataSchema,
+  ohhFeedbackSubmitterRoleSchema,
   ohhShowingCanceledDataSchema,
   ohhShowingCompletedDataSchema,
   ohhShowingConfirmedDataSchema,

@@ -2945,6 +2945,60 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     }, // carried from signal.pipeline.session_started (DEFAULT) — Wave-C reclass
+
+    // ────────────────────────────────────────────────────────────────────
+    // HOMEOWNER-LIFECYCLE-REHOME P1 (v0.19.0; spec DL1). Rello emits at the
+    // funded/recorded BUY-SIDE ClosingMilestone advance (Rello
+    // closing/milestones.ts:464 / closing/index.ts:298), carrying the NEW
+    // property identity {relloLeadId, tenantId, newPropertyAddress,
+    // newPropertyZip, purchasePrice, loanAmount, closeDate} — see
+    // relloHomePurchasedDataSchema (schemas/rello.ts, same minor per BPB 9.1).
+    // NAMING: the spec drafted "closing.home_purchased", but the registry owns
+    // canonical form. `closing` is a Rello-internal domain concept, NOT a
+    // @rello-platform/slugs slug (it could never slug-fold), and per §2.1 a
+    // bare domain prefix is never first-class — Rello-internal concepts
+    // register under `rello.*` (the rello.meeting_* / rello.anniversary
+    // precedent). Emitters MUST use the literal "rello.home_purchased"; no
+    // `closing.` alias is registered (there is no live legacy emitter — the
+    // Rello P1 emit lane lands AFTER this minor and emits canonical from
+    // birth).
+    // Weight 9 / goalShiftSemantics:true — a purchase close is the strongest
+    // lifecycle pivot (buyer journey ends, homeowner journey begins; Oven
+    // profile repoint + OHH listing close + HH state advance all key off it).
+    // BEHAVIORAL per the family neighbors (rello.meeting_* /
+    // rello.handoff_transition — real lead lifecycle events, non-SYSTEM;
+    // FINANCIAL stays reserved for finance-readiness signals). No `priority`
+    // — weight-band derivation (mirrors every rello.meeting_* sibling).
+    // lifecycle:"active" — the Rello emitter ships as the immediate next step
+    // of the same locked spec sequence (the v0.15.0
+    // rello.lead_phone_disconnected registration pattern).
+    // ────────────────────────────────────────────────────────────────────
+    "rello.home_purchased": {
+      type: "rello.home_purchased",
+      weight: 9,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent invited to a showing.
+    // Sibling of the showing_* lifecycle family above (same conventions:
+    // BEHAVIORAL, goalShift:true, lifecycle:"active", explicit curated
+    // weight, no `priority` — weight-band derivation). Weight 4 (coordination
+    // step, same band as showing_canceled — not a lead-intent spike).
+    // Payload is the Rule-D mutation trail ONLY (Pattern-C: OHH has no local
+    // AuditLog table — audit routes to Rello via signal): ids + capability
+    // booleans (hasEmail/hasPhone), NEVER the co-op agent's contact values
+    // (PII floor) — see ohhCoopInviteSentDataSchema (schemas/open-house-hub.ts).
+    // ────────────────────────────────────────────────────────────────────
+    "open-house-hub.coop_invite_sent": {
+      type: "open-house-hub.coop_invite_sent",
+      weight: 4,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
   };
 
 /**

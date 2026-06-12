@@ -233,7 +233,17 @@ declare const ohhShowingFeedbackResponseSchema: z.ZodEnum<{
  * resolved relloLeadId and may be null for attendee-only tokens (the signal
  * envelope's own leadId falls back through attendee → agent → tenant).
  * `propertyAddress` may be "" when neither showing nor event resolves.
+ *
+ * P5 (v0.19.0, ADDITIVE): `submitterRole` — P5 lets the CO-OP AGENT leave
+ * listing feedback through the same signal, so consumers can distinguish the
+ * buyer's reaction from the co-op agent's. `.optional()` (not nullable) — the
+ * pre-P5 live emitter omits the key entirely, and existing persisted payloads
+ * must keep parsing (back-compat: absent ⇒ buyer-era payload).
  */
+declare const ohhFeedbackSubmitterRoleSchema: z.ZodEnum<{
+    buyer: "buyer";
+    coop_agent: "coop_agent";
+}>;
 declare const ohhShowingFeedbackDataSchema: z.ZodObject<{
     leadId: z.ZodNullable<z.ZodString>;
     eventId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -244,7 +254,34 @@ declare const ohhShowingFeedbackDataSchema: z.ZodObject<{
         interested: "interested";
         not_for_me: "not_for_me";
     }>;
+    submitterRole: z.ZodOptional<z.ZodEnum<{
+        buyer: "buyer";
+        coop_agent: "coop_agent";
+    }>>;
 }, z.core.$strip>;
+/**
+ * `open-house-hub.coop_invite_sent` — the listing agent invites a co-op
+ * (buyer's) agent to a showing.
+ *
+ * PII FLOOR: the payload is the Rule-D mutation trail ONLY (Pattern-C: OHH
+ * has no local AuditLog table — audit routes to Rello via signal). It carries
+ * ids + channel-capability booleans (`hasEmail`/`hasPhone` — whether an
+ * invite channel existed), NEVER the co-op agent's email/phone values.
+ * `action` is typed `string` at the emitter (expected literal:
+ * `showing.coop_invite`), so the schema stays `z.string()` rather than
+ * pinning a literal that would break on a new emitter verb — same convention
+ * as ohhShowingLifecycleBaseDataSchema.
+ */
+declare const ohhCoopInviteSentDataSchema: z.ZodObject<{
+    showingId: z.ZodString;
+    participantId: z.ZodString;
+    hasEmail: z.ZodBoolean;
+    hasPhone: z.ZodBoolean;
+    action: z.ZodString;
+    actorUserId: z.ZodString;
+}, z.core.$strip>;
+type OhhFeedbackSubmitterRole = z.infer<typeof ohhFeedbackSubmitterRoleSchema>;
+type OhhCoopInviteSentData = z.infer<typeof ohhCoopInviteSentDataSchema>;
 /**
  * Shared tour lifecycle data block for `open-house-hub.tour_*`.
  *
@@ -297,4 +334,4 @@ type OhhShowingNoShowData = z.infer<typeof ohhShowingNoShowDataSchema>;
 type OhhShowingFeedbackResponse = z.infer<typeof ohhShowingFeedbackResponseSchema>;
 type OhhShowingFeedbackData = z.infer<typeof ohhShowingFeedbackDataSchema>;
 
-export { type OhhAttendeeData, type OhhAttendeeMarkedForPfpPreapprovalData, type OhhShowingCanceledData, type OhhShowingCompletedData, type OhhShowingConfirmedData, type OhhShowingFeedbackData, type OhhShowingFeedbackResponse, type OhhShowingLifecycleBaseData, type OhhShowingNoShowData, type OhhShowingRequestedData, type OhhShowingStatus, type OhhTourCompletedData, type OhhTourCreatedData, type OhhTourLifecycleBaseData, ohhAttendeeDataSchema, ohhAttendeeMarkedForPfpPreapprovalDataSchema, ohhShowingCanceledDataSchema, ohhShowingCompletedDataSchema, ohhShowingConfirmedDataSchema, ohhShowingFeedbackDataSchema, ohhShowingFeedbackResponseSchema, ohhShowingLifecycleBaseDataSchema, ohhShowingNoShowDataSchema, ohhShowingRequestedDataSchema, ohhShowingStatusSchema, ohhTourCompletedDataSchema, ohhTourCreatedDataSchema, ohhTourLifecycleBaseDataSchema };
+export { type OhhAttendeeData, type OhhAttendeeMarkedForPfpPreapprovalData, type OhhCoopInviteSentData, type OhhFeedbackSubmitterRole, type OhhShowingCanceledData, type OhhShowingCompletedData, type OhhShowingConfirmedData, type OhhShowingFeedbackData, type OhhShowingFeedbackResponse, type OhhShowingLifecycleBaseData, type OhhShowingNoShowData, type OhhShowingRequestedData, type OhhShowingStatus, type OhhTourCompletedData, type OhhTourCreatedData, type OhhTourLifecycleBaseData, ohhAttendeeDataSchema, ohhAttendeeMarkedForPfpPreapprovalDataSchema, ohhCoopInviteSentDataSchema, ohhFeedbackSubmitterRoleSchema, ohhShowingCanceledDataSchema, ohhShowingCompletedDataSchema, ohhShowingConfirmedDataSchema, ohhShowingFeedbackDataSchema, ohhShowingFeedbackResponseSchema, ohhShowingLifecycleBaseDataSchema, ohhShowingNoShowDataSchema, ohhShowingRequestedDataSchema, ohhShowingStatusSchema, ohhTourCompletedDataSchema, ohhTourCreatedDataSchema, ohhTourLifecycleBaseDataSchema };
