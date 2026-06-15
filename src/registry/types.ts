@@ -171,6 +171,11 @@ export type ExactCanonicalSignalType =
   | "home-scout.rate_alert_set"
   | "home-scout.rate_alert_triggered"
   | "home-scout.rate_shopping_signal"
+  // SCOUT-RE-CROSS-SELL-HANDOFF (06142026-NURTURE-AUDIT) — a Home-Scout RE-hat
+  // buyer (scout_buy_sell ∈ {buying, both}) who is NOT yet pre-approved
+  // (scout_pre_approved === "no") is a high-intent "connect me to a lender"
+  // readiness event → hand off to the agent's MLO partner for pre-approval.
+  | "home-scout.re_buyer_needs_preapproval"
   | "home-scout.referral_submitted"
   | "home-scout.refi_consideration_signal"
   | "home-scout.reverse_mortgage_estimate_requested"

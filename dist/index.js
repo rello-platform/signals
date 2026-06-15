@@ -1024,6 +1024,20 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // SCOUT-RE-CROSS-SELL-HANDOFF (06142026-NURTURE-AUDIT). A Home-Scout RE-hat
+  // buyer who is not yet pre-approved is the hottest cross-sell handoff to the
+  // agent's MLO partner — a "connect me to a lender" readiness event. Weighted
+  // in the lead_captured (8) / sell_intent_confirmed (9) band: HIGH/7. READINESS
+  // (the lead is ready to act on financing). goalShift:true — a buyer asking to
+  // get pre-approved is a genuine readiness shift the nurture loop should reflect.
+  "home-scout.re_buyer_needs_preapproval": {
+    type: "home-scout.re_buyer_needs_preapproval",
+    weight: 7,
+    category: "READINESS",
+    priority: "HIGH",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "home-scout.referral_submitted": {
     type: "home-scout.referral_submitted",
     weight: 7,
