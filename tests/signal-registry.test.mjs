@@ -63,7 +63,9 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // spec drafted "closing.home_purchased", canonicalized under `rello.*`) +
     // `open-house-hub.coop_invite_sent` (w4, Rule-D co-op invite trail), both
     // BEHAVIORAL / goalShift:true / lifecycle:"active", so 363→365.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 365);
+    // v0.20.0 (SCOUT-RE-CROSS-SELL-HANDOFF, +1): home-scout.re_buyer_needs_preapproval
+    // (w7, READINESS/HIGH, goalShift:true, lifecycle:"active"), so 365→366.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 366);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -990,7 +992,9 @@ describe("listActiveSignalTypes", () => {
     // so 352→355.
     // v0.19.0 (REHOME P1 + OHH P5, +2): rello.home_purchased +
     // open-house-hub.coop_invite_sent — both lifecycle:"active", so 355→357.
-    assert.equal(listActiveSignalTypes().length, 357);
+    // v0.20.0 (SCOUT-RE-CROSS-SELL-HANDOFF, +1): home-scout.re_buyer_needs_preapproval
+    // — lifecycle:"active", so 357→358.
+    assert.equal(listActiveSignalTypes().length, 358);
   });
 });
 
@@ -1032,8 +1036,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (357)", () => {
-    assert.equal(keyset.exactKeys.length, 357);
+  it("exactKeys count == active exact registry entries (358)", () => {
+    assert.equal(keyset.exactKeys.length, 358);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -1054,8 +1058,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.19.0)", () => {
-    assert.equal(keyset.version, "0.19.0");
+  it("version stamp is current (0.20.0)", () => {
+    assert.equal(keyset.version, "0.20.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -1070,7 +1074,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.19.0");
+    assert.equal(mod.default.version, "0.20.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
