@@ -1542,6 +1542,29 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     }, // DEFAULT (no constants row)
+    // Bank Statement (non-QM / self-employed) lead SAVE from the PFP Bank
+    // Statement workspace — a top-of-funnel lead action capturing self-employed
+    // / non-QM intent. LIVE-emitted by PFP (the Bank-Statement-save bypass fix
+    // lands in tandem); registered here to fix classification from the DEFAULT
+    // weight-3 fallback to founded values. Classified IDENTICALLY to the sibling
+    // top-of-funnel lead ACTION pathfinder-pro.quick_estimate_completed (weight
+    // 3, BEHAVIORAL, goalShift:true, active), which itself mirrors
+    // harvest-home.intake_lead_created, and the direct siblings
+    // pathfinder-pro.dscr_lead_saved + pathfinder-pro.hecm_lead_saved (same shape).
+    // NOT classed like home-scout.reverse_mortgage_estimate_requested (w6,
+    // READINESS/MEDIUM): that sibling is a result-returned estimate checkpoint,
+    // whereas a Bank Statement lead SAVE is the lead-capture action that PRECEDES
+    // any estimate/verdict — a behavioral top-of-funnel event, not a readiness result.
+    // NAME NOTE: the SIGNAL type uses the full word `bankstatement_` per the
+    // cross-app docs; the PFP custom-field PREFIX is `bankstmt_` (a separate
+    // surface) — do NOT conflate the two.
+    "pathfinder-pro.bankstatement_lead_saved": {
+      type: "pathfinder-pro.bankstatement_lead_saved",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
     "pathfinder-pro.borrower_interest": {
       type: "pathfinder-pro.borrower_interest",
       weight: 7,

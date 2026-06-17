@@ -255,6 +255,7 @@ export type ExactCanonicalSignalType =
   | "newsletter-studio.unsubscribe_reason"
   | "pathfinder-pro.agent_partner.captured"
   | "pathfinder-pro.attendee_reclassified"
+  | "pathfinder-pro.bankstatement_lead_saved"
   | "pathfinder-pro.borrower_interest"
   | "pathfinder-pro.credit_pull.consent_captured"
   | "pathfinder-pro.credit_pull.failed"
