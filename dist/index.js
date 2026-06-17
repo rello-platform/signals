@@ -1705,6 +1705,24 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // HECM (reverse-mortgage) lead SAVE from the PFP HECM workspace — a
+  // top-of-funnel lead action capturing reverse-mortgage intent. LIVE-emitted
+  // by PFP (the HECM-save fix lands in tandem); registered here to fix
+  // classification from the DEFAULT weight-3 fallback to founded values.
+  // Classified IDENTICALLY to the sibling top-of-funnel lead ACTION
+  // pathfinder-pro.quick_estimate_completed (weight 3, BEHAVIORAL,
+  // goalShift:true, active), which itself mirrors harvest-home.intake_lead_created.
+  // NOT classed like home-scout.reverse_mortgage_estimate_requested (w6,
+  // READINESS/MEDIUM): that sibling is a result-returned estimate checkpoint,
+  // whereas a HECM lead SAVE is the lead-capture action that PRECEDES any
+  // estimate/verdict — a behavioral top-of-funnel event, not a readiness result.
+  "pathfinder-pro.hecm_lead_saved": {
+    type: "pathfinder-pro.hecm_lead_saved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "pathfinder-pro.hh_intake_sync": {
     type: "pathfinder-pro.hh_intake_sync",
     weight: 3,

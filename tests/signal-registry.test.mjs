@@ -75,7 +75,13 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // goalShift:true, active; external eligible/refer/ineligible verdict checkpoint,
     // weight matched to the result-returned READINESS sibling
     // home-scout.reverse_mortgage_estimate_requested w6/MEDIUM), so 366→368.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 368);
+    // v0.22.0 (SIGNALS-REGISTER-PFP-HECM-LEAD-SAVED, +1): LIVE-emitted by PFP,
+    // registered to fix classification from the DEFAULT weight-3 fallback —
+    // `pathfinder-pro.hecm_lead_saved` (w3, BEHAVIORAL, goalShift:true, active;
+    // top-of-funnel HECM lead-SAVE action, classified identically to the sibling
+    // lead action pathfinder-pro.quick_estimate_completed, NOT the result-returned
+    // readiness sibling home-scout.reverse_mortgage_estimate_requested), so 368→369.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 369);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -1008,7 +1014,11 @@ describe("listActiveSignalTypes", () => {
     // PFP — pathfinder-pro.quick_estimate_completed (w3 BEHAVIORAL) +
     // pathfinder-pro.prequal_verdict_received (w6 READINESS/MEDIUM) — both
     // lifecycle:"active", so 358→360.
-    assert.equal(listActiveSignalTypes().length, 360);
+    // v0.22.0 (SIGNALS-REGISTER-PFP-HECM-LEAD-SAVED, +1): LIVE-emitted by PFP —
+    // pathfinder-pro.hecm_lead_saved (w3 BEHAVIORAL, top-of-funnel HECM lead-SAVE
+    // action, classified identically to pathfinder-pro.quick_estimate_completed)
+    // — lifecycle:"active", so 360→361.
+    assert.equal(listActiveSignalTypes().length, 361);
   });
 });
 
@@ -1050,10 +1060,11 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (360)", () => {
+  it("exactKeys count == active exact registry entries (361)", () => {
     // v0.21.0 (+2): pathfinder-pro.quick_estimate_completed +
     // pathfinder-pro.prequal_verdict_received (both active), so 358→360.
-    assert.equal(keyset.exactKeys.length, 360);
+    // v0.22.0 (+1): pathfinder-pro.hecm_lead_saved (active), so 360→361.
+    assert.equal(keyset.exactKeys.length, 361);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -1074,8 +1085,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.21.0)", () => {
-    assert.equal(keyset.version, "0.21.0");
+  it("version stamp is current (0.22.0)", () => {
+    assert.equal(keyset.version, "0.22.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -1090,7 +1101,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.21.0");
+    assert.equal(mod.default.version, "0.22.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
