@@ -260,6 +260,7 @@ export type ExactCanonicalSignalType =
   | "pathfinder-pro.credit_pull.failed"
   | "pathfinder-pro.credit_pull.hard_executed"
   | "pathfinder-pro.credit_pull.soft_executed"
+  | "pathfinder-pro.dscr_lead_saved"
   | "pathfinder-pro.exported_to_los"
   | "pathfinder-pro.hecm_lead_saved"
   | "pathfinder-pro.hh_intake_sync"

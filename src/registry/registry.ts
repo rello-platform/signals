@@ -1580,6 +1580,25 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // DSCR (investor / non-QM) lead SAVE from the PFP DSCR workspace — a
+    // top-of-funnel lead action capturing investor / non-QM intent. LIVE-emitted
+    // by PFP (the DSCR-save fix lands in tandem); registered here to fix
+    // classification from the DEFAULT weight-3 fallback to founded values.
+    // Classified IDENTICALLY to the sibling top-of-funnel lead ACTION
+    // pathfinder-pro.quick_estimate_completed (weight 3, BEHAVIORAL,
+    // goalShift:true, active), which itself mirrors harvest-home.intake_lead_created,
+    // and the direct sibling pathfinder-pro.hecm_lead_saved (same shape).
+    // NOT classed like home-scout.reverse_mortgage_estimate_requested (w6,
+    // READINESS/MEDIUM): that sibling is a result-returned estimate checkpoint,
+    // whereas a DSCR lead SAVE is the lead-capture action that PRECEDES any
+    // estimate/verdict — a behavioral top-of-funnel event, not a readiness result.
+    "pathfinder-pro.dscr_lead_saved": {
+      type: "pathfinder-pro.dscr_lead_saved",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
     "pathfinder-pro.exported_to_los": {
       type: "pathfinder-pro.exported_to_los",
       weight: 9,
