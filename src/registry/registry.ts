@@ -1616,11 +1616,44 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // EXTERNAL pre-qual verdict (eligible/refer/ineligible) — a borrower-
+    // qualification checkpoint where a verdict is RETURNED from an external
+    // underwriting/eligibility surface. LIVE-emitted by PFP; registered here to
+    // fix classification from the DEFAULT weight-3 fallback to founded values.
+    // READINESS / weight 6 / MEDIUM — matched by analogy to the closest "result-
+    // returned readiness" sibling home-scout.reverse_mortgage_estimate_requested
+    // (weight 6, READINESS, MEDIUM, goalShift:true). A returned verdict carries
+    // more nurture signal than an export-status event (export.success: weight 3,
+    // ENGAGEMENT) but sits BELOW the confirmed-positive pathfinder-pro.prequalified
+    // (weight 8, HIGH): a verdict may be refer/ineligible, so it is a checkpoint,
+    // not a committed positive outcome — hence MEDIUM not HIGH. goalShift:true —
+    // an external qualification result is a genuine readiness shift the nurture
+    // loop should reflect.
+    "pathfinder-pro.prequal_verdict_received": {
+      type: "pathfinder-pro.prequal_verdict_received",
+      weight: 6,
+      category: "READINESS",
+      priority: "MEDIUM",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
     "pathfinder-pro.prequalified": {
       type: "pathfinder-pro.prequalified",
       weight: 8,
       category: "READINESS",
       priority: "HIGH",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
+    // Top-of-funnel lead action — a borrower completes a quick payment/affordability
+    // estimate. LIVE-emitted by PFP; registered here to fix classification from the
+    // DEFAULT weight-3 fallback to founded values. Classified IDENTICALLY to the
+    // sibling top-of-funnel lead-creation event harvest-home.intake_lead_created
+    // (weight 3, BEHAVIORAL, goalShift:true, active).
+    "pathfinder-pro.quick_estimate_completed": {
+      type: "pathfinder-pro.quick_estimate_completed",
+      weight: 3,
+      category: "BEHAVIORAL",
       goalShiftSemantics: true,
       lifecycle: "active",
     },
