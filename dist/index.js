@@ -1872,6 +1872,26 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // VA (veteran / VA-loan) lead SAVE from the PFP VA workspace — a top-of-funnel
+  // lead action capturing veteran / VA-loan intent (the VA deepen-trio save).
+  // LIVE-emitted by PFP (the VA-save emission already shipped + firing);
+  // registered here to fix classification from the DEFAULT weight-3 fallback to
+  // founded values. Classified IDENTICALLY to the sibling top-of-funnel lead
+  // ACTION pathfinder-pro.quick_estimate_completed (weight 3, BEHAVIORAL,
+  // goalShift:true, active), which itself mirrors harvest-home.intake_lead_created,
+  // and the direct siblings pathfinder-pro.dscr_lead_saved +
+  // pathfinder-pro.hecm_lead_saved + pathfinder-pro.bankstatement_lead_saved
+  // (same shape). NOT classed like home-scout.reverse_mortgage_estimate_requested
+  // (w6, READINESS/MEDIUM): that sibling is a result-returned estimate checkpoint,
+  // whereas a VA lead SAVE is the lead-capture action that PRECEDES any
+  // estimate/verdict — a behavioral top-of-funnel event, not a readiness result.
+  "pathfinder-pro.va_lead_saved": {
+    type: "pathfinder-pro.va_lead_saved",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   // PreQual-Pro borrower document upload — readiness-advancing, identical in
   // weight/semantics to the home-ready./home-stretch.document_uploaded precedent
   // (weight 8 / READINESS / HIGH / goalShift). PQP is NOT a Rello-platform app

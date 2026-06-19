@@ -276,6 +276,7 @@ export type ExactCanonicalSignalType =
   | "pathfinder-pro.scenario_created"
   | "pathfinder-pro.scenario_delivered"
   | "pathfinder-pro.scenario_viewed"
+  | "pathfinder-pro.va_lead_saved"
   // PreQual-Pro is intentionally NOT a Rello-platform app (L7 lock) — no APP_SLUGS
   // entry; this canonical signal-type string is a hand-authored registry key only.
   // Born canonical (hyphenated-slug form, matching home-ready.); no legacy fold.
