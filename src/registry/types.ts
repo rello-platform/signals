@@ -383,6 +383,7 @@ export type ExactCanonicalSignalType =
   // carve-out). Bare ops names canonicalize to `rello.<verb>`; already-namespaced
   // forms keep their namespace folded canonical.
   | "rello.cost_drift"
+  | "rello.dlq_threshold_breached"
   | "rello.mrr_discrepancy"
   | "rello.nurture_missing_campaign"
   | "rello.nurture_preempt_rate_anomaly"

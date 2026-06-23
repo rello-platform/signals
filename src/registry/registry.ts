@@ -2469,6 +2469,18 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       tier: "telemetry",
       lifecycle: "active",
     },
+    // Durable-jobs DLQ-threshold breach (Pillar-4 observability alert). Fired by
+    // the dlq-threshold-alert cron when a durable-jobs queue's DEAD_LETTER+FAILED
+    // depth crosses its operator threshold — surfaces a silently-accumulating DLQ
+    // as a loud AppSignal on the same substrate as rello.cost_drift.
+    "rello.dlq_threshold_breached": {
+      type: "rello.dlq_threshold_breached",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
     "rello.mrr_discrepancy": {
       type: "rello.mrr_discrepancy",
       weight: 1,
