@@ -107,7 +107,12 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // classified identically to the sibling lead action
     // pathfinder-pro.quick_estimate_completed, NOT the result-returned readiness
     // sibling home-scout.reverse_mortgage_estimate_requested), so 371→372.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 372);
+    // v0.26.0 (PLATFORM-DURABLE-BULK-OPERATION-FRAMEWORK Pillar-4 observability,
+    // +1): `rello.dlq_threshold_breached` (w1, SYSTEM, goalShift:false,
+    // tier:telemetry, active) — Rello-internal observability sibling of
+    // rello.cost_drift, fired by the durable-jobs DLQ-threshold alert cron onto
+    // the cost-drift AppSignal substrate, so 372→373.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 373);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -1061,7 +1066,11 @@ describe("listActiveSignalTypes", () => {
     // pathfinder-pro.hecm_lead_saved + pathfinder-pro.bankstatement_lead_saved,
     // classified identically to pathfinder-pro.quick_estimate_completed)
     // — lifecycle:"active", so 363→364.
-    assert.equal(listActiveSignalTypes().length, 364);
+    // v0.26.0 (PLATFORM-DURABLE-BULK-OPERATION-FRAMEWORK Pillar-4, +1):
+    // rello.dlq_threshold_breached (w1 SYSTEM, tier:telemetry, goalShift:false) —
+    // Rello-internal observability sibling of rello.cost_drift, lifecycle:"active",
+    // so 364→365.
+    assert.equal(listActiveSignalTypes().length, 365);
   });
 });
 
@@ -1110,7 +1119,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     // v0.23.0 (+1): pathfinder-pro.dscr_lead_saved (active), so 361→362.
     // v0.24.0 (+1): pathfinder-pro.bankstatement_lead_saved (active), so 362→363.
     // v0.25.0 (+1): pathfinder-pro.va_lead_saved (active), so 363→364.
-    assert.equal(keyset.exactKeys.length, 364);
+    // v0.26.0 (+1): rello.dlq_threshold_breached (active), so 364→365.
+    assert.equal(keyset.exactKeys.length, 365);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -1131,8 +1141,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.25.0)", () => {
-    assert.equal(keyset.version, "0.25.0");
+  it("version stamp is current (0.26.0)", () => {
+    assert.equal(keyset.version, "0.26.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -1147,7 +1157,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.25.0");
+    assert.equal(mod.default.version, "0.26.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
