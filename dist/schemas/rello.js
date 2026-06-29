@@ -32,7 +32,34 @@ var relloHomePurchasedDataSchema = z.object({
    */
   closeDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected")
 });
+var relloHomeSoldDataSchema = z.object({
+  /** Rello Lead id of the seller (the portal follows the person). */
+  relloLeadId: z.string().min(1),
+  /**
+   * Owning tenant. The tenant boundary is sacred — a sale under a different
+   * tenant is a NEW (tenantId, relloLeadId) relationship downstream, never a
+   * cross-tenant repoint (mirrors `home_purchased` DL3).
+   */
+  tenantId: z.string().min(1),
+  /** Full street address of the SOLD property (the archive/suppress target). */
+  soldAddress: z.string().min(1),
+  /** ZIP of the SOLD property (string — leading zeros are meaningful). */
+  soldZip: z.string().min(1),
+  /**
+   * Sale price in WHOLE DOLLARS (positive integer — never cents, never a
+   * float). The realized-history figure shown on the between-homes hub card.
+   */
+  salePrice: z.number().int().positive(),
+  /**
+   * ISO 8601 close (funding/recording) date — date-only or full-datetime
+   * form. Pins the ISO-date prefix (`YYYY-MM-DD…`) and accepts both
+   * serializations (the emitter is not yet landed — mirrors `home_purchased`).
+   * Half of the consumer idempotency key (closeDate + normalized soldAddress).
+   */
+  closeDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected")
+});
 export {
-  relloHomePurchasedDataSchema
+  relloHomePurchasedDataSchema,
+  relloHomeSoldDataSchema
 };
 //# sourceMappingURL=rello.js.map

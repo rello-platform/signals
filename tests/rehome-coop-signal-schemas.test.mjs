@@ -14,6 +14,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   relloHomePurchasedDataSchema,
+  relloHomeSoldDataSchema,
   ohhCoopInviteSentDataSchema,
 } from "../dist/index.js";
 
@@ -99,6 +100,101 @@ describe("rello.home_purchased schema (v0.19.0, HOMEOWNER-LIFECYCLE-REHOME P1)",
         ...homePurchasedBase,
         newPropertyZip: "",
       }).success,
+      false,
+    );
+  });
+});
+
+// HOMEOWNER-LIFECYCLE-REHOME W1/U1 (v0.27.0) — sell-side close, symmetric to
+// home_purchased. 6-key shape, every key ALWAYS present (no nullable analogue
+// to home_purchased's loanAmount — a sale carries no loan figure). salePrice in
+// WHOLE DOLLARS (positive int); soldZip is a string; closeDate ISO-prefixed.
+const homeSoldBase = {
+  relloLeadId: "lead_0002",
+  tenantId: "tenant_1773865296594_ukwq2w",
+  soldAddress: "1043 W Mapleview Dr, Lehi, UT",
+  soldZip: "84043",
+  salePrice: 612000,
+  closeDate: "2026-06-12",
+};
+
+describe("rello.home_sold schema (v0.27.0, HOMEOWNER-LIFECYCLE-REHOME W1/U1)", () => {
+  it("accepts the spec-contract shape (symmetric to home_purchased)", () => {
+    assert.ok(relloHomeSoldDataSchema.safeParse(homeSoldBase).success);
+  });
+
+  it("declares EXACTLY the 6 symmetric sell-side keys (no loanAmount analogue)", () => {
+    const keys = Object.keys(relloHomeSoldDataSchema.shape).sort();
+    assert.deepEqual(keys, [
+      "closeDate",
+      "relloLeadId",
+      "salePrice",
+      "soldAddress",
+      "soldZip",
+      "tenantId",
+    ]);
+  });
+
+  it("closeDate accepts both ISO date-only and full-datetime forms, rejects non-ISO", () => {
+    assert.ok(
+      relloHomeSoldDataSchema.safeParse({
+        ...homeSoldBase,
+        closeDate: "2026-06-12T18:00:00.000Z",
+      }).success,
+    );
+    assert.equal(
+      relloHomeSoldDataSchema.safeParse({
+        ...homeSoldBase,
+        closeDate: "June 12, 2026",
+      }).success,
+      false,
+    );
+  });
+
+  it("salePrice is WHOLE DOLLARS — rejects floats (cents), zero, negatives, and NaN", () => {
+    for (const bad of [612000.5, 0, -1, NaN]) {
+      assert.equal(
+        relloHomeSoldDataSchema.safeParse({
+          ...homeSoldBase,
+          salePrice: bad,
+        }).success,
+        false,
+        `salePrice ${bad} must reject`,
+      );
+    }
+  });
+
+  it("rejects a missing tenant boundary (tenantId required, never inferred)", () => {
+    const { tenantId: _omit, ...noTenant } = homeSoldBase;
+    assert.equal(relloHomeSoldDataSchema.safeParse(noTenant).success, false);
+    assert.equal(
+      relloHomeSoldDataSchema.safeParse({ ...homeSoldBase, tenantId: "" }).success,
+      false,
+    );
+  });
+
+  it("rejects empty relloLeadId (the portal-follow key)", () => {
+    assert.equal(
+      relloHomeSoldDataSchema.safeParse({ ...homeSoldBase, relloLeadId: "" }).success,
+      false,
+    );
+  });
+
+  it("rejects empty sold-property identity (address/zip are the archive/suppress target)", () => {
+    assert.equal(
+      relloHomeSoldDataSchema.safeParse({ ...homeSoldBase, soldAddress: "" }).success,
+      false,
+    );
+    assert.equal(
+      relloHomeSoldDataSchema.safeParse({ ...homeSoldBase, soldZip: "" }).success,
+      false,
+    );
+  });
+
+  it("rejects a wrong-type salePrice (string) — runtime type guard, not just TS", () => {
+    assert.equal(
+      relloHomeSoldDataSchema.safeParse({ ...homeSoldBase, salePrice: "612000" })
+        .success,
       false,
     );
   });

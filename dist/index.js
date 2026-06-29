@@ -3318,6 +3318,39 @@ var EXACT_REGISTRY = {
     lifecycle: "active"
   },
   // ────────────────────────────────────────────────────────────────────
+  // HOMEOWNER-LIFECYCLE-REHOME W1/U1 (v0.27.0; WALK-DECISIONS-260629 §2).
+  // The symmetric SELL-SIDE sibling of rello.home_purchased. Emitted at the
+  // funded/recorded sell-side ClosingMilestone advance (Rello U2,
+  // src/lib/closing/) AND on the OHH manual SellerListing→SOLD PATCH
+  // completeness path (U4) — one canonical type, two emit lanes. Carries the
+  // SOLD property identity {relloLeadId, tenantId, soldAddress, soldZip,
+  // salePrice, closeDate} — see relloHomeSoldDataSchema (schemas/rello.ts,
+  // same minor per BPB 9.1). Downstream consumer (Oven U3): set
+  // lifecycleStatus=BETWEEN_HOMES, archive the value/equity snapshot, suppress
+  // live value; idempotent on (closeDate + normalized soldAddress) via
+  // lastSoldKey (mirrors home_purchased → lastRehomeKey).
+  // Metadata mirrors rello.home_purchased EXACTLY — weight 9 /
+  // goalShiftSemantics:true (a sell-side close is the symmetric lifecycle
+  // pivot: the homeowner journey ends, the between-homes/next-buy journey
+  // begins; Oven lifecycle flip + value archive key off it). BEHAVIORAL per
+  // the rello.* family neighbors (rello.meeting_* / rello.home_purchased —
+  // real lead-lifecycle events, non-SYSTEM; FINANCIAL stays reserved for
+  // finance-readiness signals). No `priority` — weight-band derivation
+  // (mirrors home_purchased + every rello.meeting_* sibling).
+  // lifecycle:"active" — the Rello + OHH emit lanes ship as the immediate
+  // next units of the same locked spec sequence (the home_purchased pattern).
+  // No `closing.`/`seller.` alias is registered — emitters MUST use the
+  // canonical literal "rello.home_sold" (no live legacy emitter exists; the
+  // emit lanes land AFTER this minor and emit canonical from birth).
+  // ────────────────────────────────────────────────────────────────────
+  "rello.home_sold": {
+    type: "rello.home_sold",
+    weight: 9,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
+  // ────────────────────────────────────────────────────────────────────
   // OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent invited to a showing.
   // Sibling of the showing_* lifecycle family above (same conventions:
   // BEHAVIORAL, goalShift:true, lifecycle:"active", explicit curated
@@ -3852,6 +3885,32 @@ var relloHomePurchasedDataSchema = z2.object({
    */
   closeDate: z2.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected")
 });
+var relloHomeSoldDataSchema = z2.object({
+  /** Rello Lead id of the seller (the portal follows the person). */
+  relloLeadId: z2.string().min(1),
+  /**
+   * Owning tenant. The tenant boundary is sacred — a sale under a different
+   * tenant is a NEW (tenantId, relloLeadId) relationship downstream, never a
+   * cross-tenant repoint (mirrors `home_purchased` DL3).
+   */
+  tenantId: z2.string().min(1),
+  /** Full street address of the SOLD property (the archive/suppress target). */
+  soldAddress: z2.string().min(1),
+  /** ZIP of the SOLD property (string — leading zeros are meaningful). */
+  soldZip: z2.string().min(1),
+  /**
+   * Sale price in WHOLE DOLLARS (positive integer — never cents, never a
+   * float). The realized-history figure shown on the between-homes hub card.
+   */
+  salePrice: z2.number().int().positive(),
+  /**
+   * ISO 8601 close (funding/recording) date — date-only or full-datetime
+   * form. Pins the ISO-date prefix (`YYYY-MM-DD…`) and accepts both
+   * serializations (the emitter is not yet landed — mirrors `home_purchased`).
+   * Half of the consumer idempotency key (closeDate + normalized soldAddress).
+   */
+  closeDate: z2.string().regex(/^\d{4}-\d{2}-\d{2}/, "ISO 8601 date expected")
+});
 
 // src/schemas/home-scout.ts
 import { z as z3 } from "zod";
@@ -3984,6 +4043,7 @@ export {
   pfpExportQueuedDataSchema,
   pfpExportSuccessDataSchema,
   relloHomePurchasedDataSchema,
+  relloHomeSoldDataSchema,
   reportEngineReportReadyDataSchema,
   shouldAblyBroadcast
 };

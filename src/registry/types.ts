@@ -517,6 +517,14 @@ export type ExactCanonicalSignalType =
   // Registered ahead of the Rello emit PR (the armed check:signal-types gate
   // blocks unregistered emits).
   | "rello.home_purchased"
+  // ── HOMEOWNER-LIFECYCLE-REHOME W1/U1 (v0.27.0; WALK-DECISIONS-260629 §2) ──
+  // The symmetric SELL-SIDE sibling of rello.home_purchased. Emitted at the
+  // funded/recorded sell-side close (Rello U2) AND on the OHH manual
+  // SellerListing→SOLD PATCH completeness path (U4); one canonical type, two
+  // emit lanes. Carries the SOLD property identity (schema:
+  // relloHomeSoldDataSchema, same minor per BPB 9.1). Registered ahead of the
+  // emit PRs (the armed check:signal-types gate blocks unregistered emits).
+  | "rello.home_sold"
   // ── OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent showing invite ──
   // Rule-D trail payload: ids + hasEmail/hasPhone capability booleans ONLY,
   // NEVER the co-op agent's contact values (PII floor).
