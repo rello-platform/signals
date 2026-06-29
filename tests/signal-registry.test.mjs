@@ -112,7 +112,11 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // tier:telemetry, active) — Rello-internal observability sibling of
     // rello.cost_drift, fired by the durable-jobs DLQ-threshold alert cron onto
     // the cost-drift AppSignal substrate, so 372→373.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 373);
+    // v0.27.0 (HOMEOWNER-LIFECYCLE-REHOME W1/U1, +1): `rello.home_sold` (w9,
+    // BEHAVIORAL, goalShift:true, active) — the symmetric SELL-SIDE sibling of
+    // rello.home_purchased (identical metadata; sell-side close lifecycle pivot,
+    // GATE unit for the between-homes build), so 373→374.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 374);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -754,6 +758,46 @@ describe("rello.home_purchased (v0.19.0, HOMEOWNER-LIFECYCLE-REHOME P1)", () => 
   });
 });
 
+// ── HOMEOWNER-LIFECYCLE-REHOME W1/U1 (v0.27.0) — sell-side close ─────────────
+// `rello.home_sold` — the symmetric SELL-SIDE sibling of rello.home_purchased,
+// carrying the SOLD property identity. Two emit lanes (Rello sell-side closing
+// milestone U2 + OHH manual SellerListing→SOLD PATCH U4), one canonical type.
+// Metadata mirrors home_purchased EXACTLY: weight 9 / BEHAVIORAL /
+// goalShift:true / active / no priority (weight-band derivation). No
+// closing.*/seller.* alias — emitters use the canonical literal.
+describe("rello.home_sold (v0.27.0, HOMEOWNER-LIFECYCLE-REHOME W1/U1)", () => {
+  it("resolves by identity (canonical rello.* literal)", () => {
+    assert.equal(normalizeSignalType("rello.home_sold"), "rello.home_sold");
+  });
+  it("no closing.*/seller.* alias resolves (emitters must use the canonical literal)", () => {
+    assert.equal(normalizeSignalType("closing.home_sold"), null);
+    assert.equal(normalizeSignalType("seller.home_sold"), null);
+  });
+  it("carries weight 9 / BEHAVIORAL / goalShift:true / active, no priority/tier (mirrors home_purchased)", () => {
+    const entry = EXACT_REGISTRY["rello.home_sold"];
+    assert.equal(entry.weight, 9);
+    assert.equal(entry.category, "BEHAVIORAL");
+    assert.equal(entry.goalShiftSemantics, true);
+    assert.equal(entry.lifecycle, "active");
+    assert.equal(entry.priority, undefined);
+    assert.equal(entry.tier, undefined);
+    assert.equal(isGoalShiftSignal("rello.home_sold"), true);
+    assert.equal(isNarrativeMaterial(entry.category, entry.weight), true);
+  });
+  it("is metadata-symmetric with rello.home_purchased (same weight/category/goalShift/lifecycle)", () => {
+    const sold = EXACT_REGISTRY["rello.home_sold"];
+    const bought = EXACT_REGISTRY["rello.home_purchased"];
+    assert.equal(sold.weight, bought.weight);
+    assert.equal(sold.category, bought.category);
+    assert.equal(sold.goalShiftSemantics, bought.goalShiftSemantics);
+    assert.equal(sold.lifecycle, bought.lifecycle);
+    assert.equal(sold.priority, bought.priority);
+  });
+  it("enters the active keyset (the armed check:signal-types gate input)", () => {
+    assert.ok(listActiveSignalTypes().includes("rello.home_sold"));
+  });
+});
+
 // ── OHH-SHOWINGS-AND-TOURS P5 (v0.19.0) — co-op agent showing invite ─────────
 // Sibling of the showing_* family (BEHAVIORAL / goalShift:true / active /
 // explicit curated weight 4 / no priority — weight-band derivation). Payload
@@ -1070,7 +1114,10 @@ describe("listActiveSignalTypes", () => {
     // rello.dlq_threshold_breached (w1 SYSTEM, tier:telemetry, goalShift:false) —
     // Rello-internal observability sibling of rello.cost_drift, lifecycle:"active",
     // so 364→365.
-    assert.equal(listActiveSignalTypes().length, 365);
+    // v0.27.0 (HOMEOWNER-LIFECYCLE-REHOME W1/U1, +1): rello.home_sold (w9
+    // BEHAVIORAL, goalShift:true, the symmetric sell-side sibling of
+    // rello.home_purchased) — lifecycle:"active", so 365→366.
+    assert.equal(listActiveSignalTypes().length, 366);
   });
 });
 
@@ -1112,7 +1159,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (364)", () => {
+  it("exactKeys count == active exact registry entries (366)", () => {
     // v0.21.0 (+2): pathfinder-pro.quick_estimate_completed +
     // pathfinder-pro.prequal_verdict_received (both active), so 358→360.
     // v0.22.0 (+1): pathfinder-pro.hecm_lead_saved (active), so 360→361.
@@ -1120,7 +1167,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     // v0.24.0 (+1): pathfinder-pro.bankstatement_lead_saved (active), so 362→363.
     // v0.25.0 (+1): pathfinder-pro.va_lead_saved (active), so 363→364.
     // v0.26.0 (+1): rello.dlq_threshold_breached (active), so 364→365.
-    assert.equal(keyset.exactKeys.length, 365);
+    // v0.27.0 (+1): rello.home_sold (active), so 365→366.
+    assert.equal(keyset.exactKeys.length, 366);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
@@ -1141,8 +1189,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.26.0)", () => {
-    assert.equal(keyset.version, "0.26.0");
+  it("version stamp is current (0.27.0)", () => {
+    assert.equal(keyset.version, "0.27.0");
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -1157,7 +1205,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.26.0");
+    assert.equal(mod.default.version, "0.27.0");
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
