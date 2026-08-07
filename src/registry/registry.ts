@@ -184,7 +184,14 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
     "rello.nurture_escalate_deduped": {
       type: "rello.nurture_escalate_deduped",
       weight: 4, // escalate.ts:~135 caller-hint
-      category: "BEHAVIORAL",
+      // OPERATIONAL, NOT LEAD-INTENT (2026-08-07). Sibling of the other two
+      // `rello.nurture_escalate_*` types, and missed when they moved: a dedup
+      // hit on OUR escalation injector describes our plumbing, not the lead.
+      // At weight 4 it never cleared `buying_surge` (minWeight 7), but it DID
+      // enter `readinessTrend`, which excludes by category alone. Found by the
+      // writer-layer guard in Rello's escalate-signal-classification.test.ts —
+      // the previous pass moved the two the audit named and not the third.
+      category: "SYSTEM", // was BEHAVIORAL
       priority: "MEDIUM", // escalate.ts:~134 caller-hint
       goalShiftSemantics: false,
       lifecycle: "active",
