@@ -1640,7 +1640,20 @@ var EXACT_REGISTRY = {
   },
   "newsletter-studio.email_replied": {
     type: "newsletter-studio.email_replied",
-    weight: 7,
+    // RECONCILED 2026-08-07 (was weight 7). This and
+    // `rello.nurture_reply_detected` denote the SAME event — a lead replied —
+    // from two producers, and carried different weights (7 vs 10). 10 is the
+    // established convention for top-of-scale intent here
+    // (`checkpoint.call_requested` 10), and Rello's router already treats a
+    // reply as story-changing. This is the signal the reply pipeline actually
+    // produces: 6 of the 7 real reply rows in SignalLog are this type, against
+    // 1 for the rello.* spelling.
+    weight: 10,
+    // ENGAGEMENT is correct and deliberately UNCHANGED. Rello's
+    // `isNarrativeMaterial` excludes ENGAGEMENT wholesale, which is right for
+    // opens and clicks — the highest-volume signals on the platform. The fix
+    // for replies is a per-signal override in Rello's router, NOT widening the
+    // category rule by weight, which would rebuild narrative on every open.
     category: "ENGAGEMENT",
     goalShiftSemantics: true,
     lifecycle: "active"
