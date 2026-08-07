@@ -134,8 +134,17 @@ var EXACT_REGISTRY = {
     type: "pathfinder-pro.export.permanently_failed",
     weight: 7,
     // constants.ts:227
-    category: "BEHAVIORAL",
-    // constants.ts:549
+    // OPERATIONAL, NOT LEAD-INTENT (2026-08-06). This describes RELLO's
+    // plumbing, not anything the lead did. It was BEHAVIORAL, which is a
+    // lead-intent category, so it entered Rello's `readinessTrend` (the mean
+    // signal weight of the recent week vs the prior week, carrying 0.18 — the
+    // second-heaviest of eight conversion features) and, at weight >= 7, the
+    // `buying_surge` rule. An infrastructure failure therefore raised a lead's
+    // conversion score for something the lead never did, and did so precisely
+    // on the leads Rello had just failed to surface.
+    // See DISCOVERED-RELLO-INFRASTRUCTURE-FAILURES-INFLATE-LEAD-CONVERSION-SCORES-260805.
+    category: "SYSTEM",
+    // was BEHAVIORAL (constants.ts:549)
     priority: "CRITICAL",
     // constants.ts:768
     goalShiftSemantics: true,
@@ -176,7 +185,17 @@ var EXACT_REGISTRY = {
     type: "rello.nurture_escalate_injected",
     weight: 8,
     // escalate.ts:~304 caller-hint
-    category: "BEHAVIORAL",
+    // OPERATIONAL, NOT LEAD-INTENT (2026-08-06). This describes RELLO's
+    // plumbing, not anything the lead did. It was BEHAVIORAL, which is a
+    // lead-intent category, so it entered Rello's `readinessTrend` (the mean
+    // signal weight of the recent week vs the prior week, carrying 0.18 — the
+    // second-heaviest of eight conversion features) and, at weight >= 7, the
+    // `buying_surge` rule. An infrastructure failure therefore raised a lead's
+    // conversion score for something the lead never did, and did so precisely
+    // on the leads Rello had just failed to surface.
+    // See DISCOVERED-RELLO-INFRASTRUCTURE-FAILURES-INFLATE-LEAD-CONVERSION-SCORES-260805.
+    category: "SYSTEM",
+    // was BEHAVIORAL
     priority: "HIGH",
     // escalate.ts:~303 caller-hint
     goalShiftSemantics: false,
@@ -196,7 +215,17 @@ var EXACT_REGISTRY = {
     type: "rello.nurture_escalate_injection_failed",
     weight: 10,
     // escalate.ts:~321 caller-hint
-    category: "BEHAVIORAL",
+    // OPERATIONAL, NOT LEAD-INTENT (2026-08-06). This describes RELLO's
+    // plumbing, not anything the lead did. It was BEHAVIORAL, which is a
+    // lead-intent category, so it entered Rello's `readinessTrend` (the mean
+    // signal weight of the recent week vs the prior week, carrying 0.18 — the
+    // second-heaviest of eight conversion features) and, at weight >= 7, the
+    // `buying_surge` rule. An infrastructure failure therefore raised a lead's
+    // conversion score for something the lead never did, and did so precisely
+    // on the leads Rello had just failed to surface.
+    // See DISCOVERED-RELLO-INFRASTRUCTURE-FAILURES-INFLATE-LEAD-CONVERSION-SCORES-260805.
+    category: "SYSTEM",
+    // was BEHAVIORAL
     priority: "CRITICAL",
     // escalate.ts:~320 caller-hint
     goalShiftSemantics: false,
@@ -900,14 +929,24 @@ var EXACT_REGISTRY = {
   "home-scout.homeready_handoff_exhausted": {
     type: "home-scout.homeready_handoff_exhausted",
     weight: 3,
-    category: "BEHAVIORAL",
+    // OPERATIONAL, NOT LEAD-INTENT (2026-08-06) — the HomeReady handoff
+    // failing is Home Scout's plumbing, not something the lead did. Weight 3
+    // so it never reached `buying_surge` (minWeight 7), but it did enter
+    // Rello's `readinessTrend` mean. Same defect class as the escalate family.
+    category: "SYSTEM",
+    // was BEHAVIORAL
     goalShiftSemantics: true,
     lifecycle: "active"
   },
   "home-scout.homeready_handoff_failed": {
     type: "home-scout.homeready_handoff_failed",
     weight: 3,
-    category: "BEHAVIORAL",
+    // OPERATIONAL, NOT LEAD-INTENT (2026-08-06) — the HomeReady handoff
+    // failing is Home Scout's plumbing, not something the lead did. Weight 3
+    // so it never reached `buying_surge` (minWeight 7), but it did enter
+    // Rello's `readinessTrend` mean. Same defect class as the escalate family.
+    category: "SYSTEM",
+    // was BEHAVIORAL
     goalShiftSemantics: true,
     lifecycle: "active"
   },
@@ -2965,7 +3004,17 @@ var EXACT_REGISTRY = {
     type: "harvest-home.gateway_injection_failed",
     // underscore-slug emit `harvest_home.gateway_injection_failed` folds here
     weight: 3,
-    category: "BEHAVIORAL",
+    // OPERATIONAL, NOT LEAD-INTENT (2026-08-06). This describes RELLO's
+    // plumbing, not anything the lead did. It was BEHAVIORAL, which is a
+    // lead-intent category, so it entered Rello's `readinessTrend` (the mean
+    // signal weight of the recent week vs the prior week, carrying 0.18 — the
+    // second-heaviest of eight conversion features) and, at weight >= 7, the
+    // `buying_surge` rule. An infrastructure failure therefore raised a lead's
+    // conversion score for something the lead never did, and did so precisely
+    // on the leads Rello had just failed to surface.
+    // See DISCOVERED-RELLO-INFRASTRUCTURE-FAILURES-INFLATE-LEAD-CONVERSION-SCORES-260805.
+    category: "SYSTEM",
+    // was BEHAVIORAL
     goalShiftSemantics: true,
     lifecycle: "active"
   },
