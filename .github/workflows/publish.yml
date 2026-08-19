@@ -14,20 +14,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify tag matches package.json version
-        run: |
-          PKG_VERSION=$(jq -r .version package.json)
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json.version ${PKG_VERSION}"
-            exit 1
-          fi
-          echo "Tag ↔ package.json version match: ${GITHUB_REF_NAME} = v${PKG_VERSION}"
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com
+
+      # Refuse to publish a tag whose tree misdeclares its version.
+      #
+      # This guard is NOT new — it has been here since v0.2.0 and it worked: it
+      # refused v0.28.0, v0.28.1, v0.29.0 and v0.30.0 (four `failure` runs on
+      # 2026-08-07, each reading "does not match package.json.version 0.27.0"),
+      # so nothing above 0.27.0 was ever published to GitHub Packages.
+      #
+      # What it could not do is stop those tags reaching consumers. Every
+      # consumer pins `github:rello-platform/signals#<tag>`, which resolves the
+      # tag's tree and never contacts the registry — so a failed publish changed
+      # nothing for them. That gap is now covered by .husky/pre-push, which
+      # refuses the tag before it exists.
+      #
+      # It runs the SAME script as the hook, so the two can never disagree, and
+      # it still runs before build/publish so a mismatch costs nothing.
+      - name: Verify tag matches package.json version
+        run: node scripts/check-version-tag.mjs "${GITHUB_REF_NAME}"
 
       - run: npm ci
 

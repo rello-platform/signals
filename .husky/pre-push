@@ -1,0 +1,64 @@
+#!/usr/bin/env sh
+# Refuse to push a release tag whose tree misdeclares its version.
+#
+# This is the enforcement point that protects GIT-REF consumers, and it is the
+# one that was missing. The publish workflow's guard already refused v0.28.0,
+# v0.28.1, v0.29.0 and v0.30.0 (four `failure` runs, 2026-08-07) — but every
+# consumer pins `github:rello-platform/signals#<tag>`, which resolves the tag's
+# tree and never contacts the registry. A failed publish does not un-push a tag,
+# so the bad version reached five repos' lockfiles anyway.
+#
+# Once the tag exists it is installable. The only moment that helps is this one.
+#
+# pre-push receives "<local ref> <local sha> <remote ref> <remote sha>" per ref
+# on stdin; tag pushes arrive as refs/tags/<name>.
+
+FAILED=0
+
+while read -r LOCAL_REF LOCAL_SHA REMOTE_REF REMOTE_SHA; do
+  case "$REMOTE_REF" in
+    refs/tags/*) ;;
+    *) continue ;;
+  esac
+
+  TAG="${REMOTE_REF#refs/tags/}"
+
+  # Deleting a tag pushes the all-zero sha — nothing to verify.
+  case "$LOCAL_SHA" in
+    *[!0]*) ;;
+    *) continue ;;
+  esac
+
+  # Verify the version in the COMMIT BEING TAGGED, not the working tree — they
+  # can differ, and the tree is what a consumer will actually install.
+  TAGGED_PKG="$(git show "${LOCAL_SHA}:package.json" 2>/dev/null)"
+  if [ -z "$TAGGED_PKG" ]; then
+    echo "[pre-push] UNVERIFIED — cannot read package.json at ${LOCAL_SHA} for tag ${TAG}. Refusing."
+    FAILED=1
+    continue
+  fi
+
+  TAGGED_VERSION="$(printf '%s' "$TAGGED_PKG" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).version||"")}catch{process.stdout.write("")}})')"
+
+  if ! TAG="$TAG" VER="$TAGGED_VERSION" node -e '
+    const {compare} = await import("./scripts/check-version-tag.mjs");
+    const r = compare(process.env.TAG, process.env.VER || undefined);
+    if (!r.ok) { console.error(`[pre-push] REFUSED — ${r.reason}`); process.exit(r.code); }
+    console.log(`[pre-push] tag/version agree — ${r.reason}`);
+  ' --input-type=module 2>&1; then
+    FAILED=1
+  fi
+done
+
+if [ "$FAILED" -ne 0 ]; then
+  echo ""
+  echo "  A tag whose tree misdeclares its version reaches consumers regardless of"
+  echo "  whether the publish succeeds — they pin github:...#<tag> and npm records"
+  echo "  the DECLARED version in their lockfile. That is how v0.28.0-v0.30.0 put"
+  echo "  \"0.27.0\" into five repos while shipping newer code."
+  echo ""
+  echo "  Set package.json version to match, commit, then re-tag."
+  exit 1
+fi
+
+exit 0
