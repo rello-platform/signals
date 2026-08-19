@@ -1189,8 +1189,24 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     }
   });
 
-  it("version stamp is current (0.27.0)", () => {
-    assert.equal(keyset.version, "0.27.0");
+  // Asserts the INVARIANT (keyset stamp === package.json version), not a
+  // hardcoded literal.
+  //
+  // This test used to read `assert.equal(keyset.version, "0.27.0")`. That is a
+  // ratchet pointing the wrong way: while package.json wrongly declared 0.27.0
+  // across v0.28.0-v0.30.0, the literal AGREED with it and the test passed —
+  // and the only thing that could make it fail was someone CORRECTLY bumping
+  // the version. A test that goes red when you fix the bug, and green while the
+  // bug ships, is worse than no test. Comparing the two sources catches real
+  // keyset/package drift and can never enforce a stale value.
+  it("keyset version stamp equals the declared package version", () => {
+    const pkg = JSON.parse(
+      readFileSync(
+        join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(keyset.version, pkg.version);
   });
 
   // v0.6.1 export-fix: Report-Engine (Python) + CJS consumers (Milo) resolve the
@@ -1205,7 +1221,13 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
       `unexpected resolution: ${resolved}`,
     );
     const mod = await import(resolved, { with: { type: "json" } });
-    assert.equal(mod.default.version, "0.27.0");
+    const pkg = JSON.parse(
+      readFileSync(
+        join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(mod.default.version, pkg.version);
     assert.ok(Array.isArray(mod.default.exactKeys));
   });
 });
