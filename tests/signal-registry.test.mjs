@@ -116,7 +116,10 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // BEHAVIORAL, goalShift:true, active) — the symmetric SELL-SIDE sibling of
     // rello.home_purchased (identical metadata; sell-side close lifecycle pivot,
     // GATE unit for the between-homes build), so 373→374.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 374);
+    // v0.32.0 (C-23 (a), +1): `home-scout.pfp_intake_dead` (w1, SYSTEM,
+    // goalShift:false, active) — emitted leadless by Home Scout once when a
+    // HS → PFP loan-application handoff exhausts its retries, so 374→375.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 375);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -1117,7 +1120,9 @@ describe("listActiveSignalTypes", () => {
     // v0.27.0 (HOMEOWNER-LIFECYCLE-REHOME W1/U1, +1): rello.home_sold (w9
     // BEHAVIORAL, goalShift:true, the symmetric sell-side sibling of
     // rello.home_purchased) — lifecycle:"active", so 365→366.
-    assert.equal(listActiveSignalTypes().length, 366);
+    // v0.32.0 (C-23 (a), +1): home-scout.pfp_intake_dead (w1 SYSTEM,
+    // goalShift:false, leadless operational) — lifecycle:"active", so 366→367.
+    assert.equal(listActiveSignalTypes().length, 367);
   });
 });
 
@@ -1159,7 +1164,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (366)", () => {
+  it("exactKeys count == active exact registry entries (367)", () => {
     // v0.21.0 (+2): pathfinder-pro.quick_estimate_completed +
     // pathfinder-pro.prequal_verdict_received (both active), so 358→360.
     // v0.22.0 (+1): pathfinder-pro.hecm_lead_saved (active), so 360→361.
@@ -1168,7 +1173,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     // v0.25.0 (+1): pathfinder-pro.va_lead_saved (active), so 363→364.
     // v0.26.0 (+1): rello.dlq_threshold_breached (active), so 364→365.
     // v0.27.0 (+1): rello.home_sold (active), so 365→366.
-    assert.equal(keyset.exactKeys.length, 366);
+    // v0.32.0 (+1): home-scout.pfp_intake_dead (active), so 366→367.
+    assert.equal(keyset.exactKeys.length, 367);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 

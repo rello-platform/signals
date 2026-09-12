@@ -166,6 +166,7 @@ export type ExactCanonicalSignalType =
   | "home-scout.listing_unsaved"
   | "home-scout.net_sheet_calculated"
   | "home-scout.newsletter_signup"
+  | "home-scout.pfp_intake_dead"
   | "home-scout.preferred_option_selected"
   | "home-scout.qualification_estimated"
   | "home-scout.rate_alert_set"

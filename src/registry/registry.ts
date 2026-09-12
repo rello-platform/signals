@@ -958,6 +958,19 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    "home-scout.pfp_intake_dead": {
+      type: "home-scout.pfp_intake_dead",
+      weight: 1,
+      // OPERATIONAL, NOT LEAD-INTENT (C-23 (a), 2026-09-12) — a Home Scout →
+      // PathfinderPro loan-application handoff exhausted its retries
+      // (FailedPfpIntake.dead). Our plumbing failing, not something the lead
+      // did: SYSTEM keeps it out of Rello's readinessTrend / buying_surge.
+      // Emitted LEADLESS (no leadId), so Rello records it to AuditLog via
+      // 2e.isLeadlessPlatformSignal. Payload: hsPfpIntakeDeadDataSchema.
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     "home-scout.preferred_option_selected": {
       type: "home-scout.preferred_option_selected",
       weight: 3,
