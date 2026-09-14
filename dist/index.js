@@ -1032,6 +1032,19 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  "home-scout.pfp_intake_dead": {
+    type: "home-scout.pfp_intake_dead",
+    weight: 1,
+    // OPERATIONAL, NOT LEAD-INTENT (C-23 (a), 2026-09-12) — a Home Scout →
+    // PathfinderPro loan-application handoff exhausted its retries
+    // (FailedPfpIntake.dead). Our plumbing failing, not something the lead
+    // did: SYSTEM keeps it out of Rello's readinessTrend / buying_surge.
+    // Emitted LEADLESS (no leadId), so Rello records it to AuditLog via
+    // 2e.isLeadlessPlatformSignal. Payload: hsPfpIntakeDeadDataSchema.
+    category: "SYSTEM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
   "home-scout.preferred_option_selected": {
     type: "home-scout.preferred_option_selected",
     weight: 3,
@@ -4003,6 +4016,20 @@ var hsTourStopRatedDataSchema = z3.object({
   /** Whether the buyer left notes — NEVER the notes text (PII floor). */
   hasNotes: z3.boolean()
 });
+var hsPfpIntakeDeadDataSchema = z3.object({
+  /** Home Scout FailedPfpIntake row id. */
+  failedPfpIntakeId: z3.string().min(1),
+  /** The intake's idempotency key (PFP caps it at 64 chars). */
+  sendIdempotencyKey: z3.string().min(1).max(64),
+  /** Owner tenant; null when the row's agent could not be resolved. */
+  tenantId: z3.string().min(1).nullable(),
+  /** PathfinderPro's last HTTP status; null when it never answered. */
+  lastHttpStatus: z3.number().int().min(100).max(599).nullable(),
+  /** Last failure reason, PII-scrubbed and capped by the emitter. */
+  lastError: z3.string().max(500),
+  /** Attempts recorded when the row went dead. */
+  attempt: z3.number().int().min(0)
+}).strict();
 
 // src/schemas/harvest-home.ts
 import { z as z4 } from "zod";
@@ -4078,6 +4105,7 @@ export {
   hhLeadIntakeDataSchema,
   homeReadyIntentTargetCrossedDataSchema,
   hsLeadMagnetSubmittedDataSchema,
+  hsPfpIntakeDeadDataSchema,
   hsTourStopRatedDataSchema,
   isGoalShiftSignal,
   isNarrativeMaterial,

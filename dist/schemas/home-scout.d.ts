@@ -25,5 +25,14 @@ declare const hsTourStopRatedDataSchema: z.ZodObject<{
     hasNotes: z.ZodBoolean;
 }, z.core.$strip>;
 type HsTourStopRatedData = z.infer<typeof hsTourStopRatedDataSchema>;
+declare const hsPfpIntakeDeadDataSchema: z.ZodObject<{
+    failedPfpIntakeId: z.ZodString;
+    sendIdempotencyKey: z.ZodString;
+    tenantId: z.ZodNullable<z.ZodString>;
+    lastHttpStatus: z.ZodNullable<z.ZodNumber>;
+    lastError: z.ZodString;
+    attempt: z.ZodNumber;
+}, z.core.$strict>;
+type HsPfpIntakeDeadData = z.infer<typeof hsPfpIntakeDeadDataSchema>;
 
-export { type HsLeadMagnetSubmittedData, type HsTourStopRatedData, hsLeadMagnetSubmittedDataSchema, hsTourStopRatedDataSchema };
+export { type HsLeadMagnetSubmittedData, type HsPfpIntakeDeadData, type HsTourStopRatedData, hsLeadMagnetSubmittedDataSchema, hsPfpIntakeDeadDataSchema, hsTourStopRatedDataSchema };

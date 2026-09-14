@@ -50,7 +50,7 @@ const LEAD_INTENT = (c) => c !== "SYSTEM";
  * not something a lead did.
  */
 const OPERATIONAL_SHAPE =
-  /(_injection_failed|_injected$|\.export\.permanently_failed|_handoff_failed|_handoff_exhausted|_dead_letter|_dlq_|retry_exhausted)/i;
+  /(_injection_failed|_injected$|\.export\.permanently_failed|_handoff_failed|_handoff_exhausted|_dead_letter|_intake_dead|_dlq_|retry_exhausted)/i;
 
 /**
  * Signals whose NAME matches the operational shape but which genuinely record a

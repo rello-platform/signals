@@ -41,3 +41,29 @@ export const hsTourStopRatedDataSchema = z.object({
 });
 
 export type HsTourStopRatedData = z.infer<typeof hsTourStopRatedDataSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// C-23 (a) (v0.32.0) — `home-scout.pfp_intake_dead`.
+// Emitted by Home Scout ONCE, leadless, when a Home Scout → PathfinderPro
+// loan-application handoff exhausts its retries (FailedPfpIntake.dead = true).
+// Identifiers and failure evidence only. `.strict()` refuses any other field,
+// so borrower PII (name, email, phone, the intake payload) can never ride it.
+// ─────────────────────────────────────────────────────────────────────────────
+export const hsPfpIntakeDeadDataSchema = z
+  .object({
+    /** Home Scout FailedPfpIntake row id. */
+    failedPfpIntakeId: z.string().min(1),
+    /** The intake's idempotency key (PFP caps it at 64 chars). */
+    sendIdempotencyKey: z.string().min(1).max(64),
+    /** Owner tenant; null when the row's agent could not be resolved. */
+    tenantId: z.string().min(1).nullable(),
+    /** PathfinderPro's last HTTP status; null when it never answered. */
+    lastHttpStatus: z.number().int().min(100).max(599).nullable(),
+    /** Last failure reason, PII-scrubbed and capped by the emitter. */
+    lastError: z.string().max(500),
+    /** Attempts recorded when the row went dead. */
+    attempt: z.number().int().min(0),
+  })
+  .strict();
+
+export type HsPfpIntakeDeadData = z.infer<typeof hsPfpIntakeDeadDataSchema>;
