@@ -88,7 +88,7 @@ Each schema file is keyed by the **emitting app** (the canonical owner per APP-O
 
 ```bash
 npm install
-npm run build
+npm run compile
 npm run typecheck
 ```
 
