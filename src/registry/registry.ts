@@ -2589,6 +2589,21 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       tier: "telemetry",
       lifecycle: "active",
     },
+    // C-26 (2026-09-16): a Lead audited as created no longer exists and no
+    // lead_deleted / lead_merged / merge-metadata row explains it — the writer
+    // was not our code (an out-of-repo script), so no write-time guard can see
+    // it; the daily report reconciles AuditLog against public."Lead" and emits
+    // ONE of these per untraced lead (leadless → AuditLog; the row itself lives
+    // in LeadUntracedDisappearance and is closed, not deleted, when a trace
+    // appears). Measured at arm: 1,105 in 90 days, 801 of them ClearPath's.
+    "rello.lead_untraced_disappearance": {
+      type: "rello.lead_untraced_disappearance",
+      weight: 1,
+      category: "SYSTEM",
+      goalShiftSemantics: false,
+      tier: "telemetry",
+      lifecycle: "active",
+    },
     "rello.billing_upgrade_converted": {
       type: "rello.billing_upgrade_converted",
       weight: 1,

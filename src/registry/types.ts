@@ -390,6 +390,7 @@ export type ExactCanonicalSignalType =
   | "rello.nurture_preempt_rate_anomaly"
   | "rello.vault_failure_rate_high"
   | "rello.trigger_dev_poll_circuit_broken"
+  | "rello.lead_untraced_disappearance"
   | "rello.billing_upgrade_converted"
   | "rello.call_completed"
   | "rello.call_exhausted"
