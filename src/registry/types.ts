@@ -78,6 +78,7 @@ export type ExactCanonicalSignalType =
   | "checkpoint.call_requested"
   | "checkpoint.responded"
   | "checkpoint.update_started"
+  | "consent.captured"
   | "consent.email_granted"
   | "consent.email_revoked"
   | "consent.sms_granted"

@@ -68,6 +68,8 @@ export * from "./schemas/home-ready.js";
 export * from "./schemas/report-engine.js";
 // PFP
 export * from "./schemas/pathfinder-pro.js";
+// Consent (global `consent.*` namespace — v0.36.0 D-245 `consent.captured`)
+export * from "./schemas/consent.js";
 
 // Future: a discriminator-style schema map for runtime signalType-keyed validation.
 // Not in v0.1.0; consumers import the specific schema they expect at receiver.

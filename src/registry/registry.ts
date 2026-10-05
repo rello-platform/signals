@@ -294,6 +294,22 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // v0.36.0 (D-245, R-73): a person ticked a worded consent box on a named
+    // surface (first: check-your-rate:text-quote). Payload:
+    // consentCapturedDataSchema. Rello processes it IN-REQUEST at
+    // /api/signals/batch (tenant from the ApiKey, one ConsentCapture per
+    // idempotencyKey) and never routes it to scoring; BEHAVIORAL / 3 matches
+    // the other consent.* keys and stays below buying_surge's weight floor.
+    // goalShiftSemantics:false — agreeing to be contacted says nothing about
+    // what the person is trying to do (the true on the other consent.* keys is
+    // the v0.6.0 seed default, not a ruling).
+    "consent.captured": {
+      type: "consent.captured",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     "consent.email_granted": {
       type: "consent.email_granted",
       weight: 3,
