@@ -122,7 +122,9 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // v0.35.0 (+1): rello.lead_untraced_disappearance (C-26 — a created Lead
     // that ceased to exist with no audit trace), so 375→376.
     // v0.36.0 (+1): consent.captured (active — D-245, R-73 worded consent capture), so 376→377.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 377);
+    // v0.37.0 (−2): pathfinder-pro.compliance.gate_blocked + .config_changed
+    // retired (ruling 270; no emitter, no SignalLog row, no SignalRule), so 377→375.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 375);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -247,10 +249,6 @@ describe("normalizeSignalType — seeded forms fold to canonical (non-null)", ()
       normalizeSignalType("pfp.export.queued"),
       "pathfinder-pro.export.queued",
     );
-    assert.equal(
-      normalizeSignalType("pfp.compliance.gate_blocked"),
-      "pathfinder-pro.compliance.gate_blocked",
-    );
   });
   it("Wave-B: newsletter_studio.email_* (receiver-prefixed underscore) → canonical hyphen slug", () => {
     assert.equal(
@@ -264,16 +262,6 @@ describe("normalizeSignalType — seeded forms fold to canonical (non-null)", ()
     assert.equal(
       normalizeSignalType("newsletter_studio.email_bounced"),
       "newsletter-studio.email_bounced",
-    );
-  });
-  it("§2.1 bare compliance. alias → pathfinder-pro.compliance. (PFP bare domain emit)", () => {
-    assert.equal(
-      normalizeSignalType("compliance.config_changed"),
-      "pathfinder-pro.compliance.config_changed",
-    );
-    assert.equal(
-      normalizeSignalType("compliance.gate_blocked"),
-      "pathfinder-pro.compliance.gate_blocked",
     );
   });
   it("family fold: scout→home-scout slug + hyphen→underscore verb (cta_clicked family)", () => {
@@ -1005,24 +993,17 @@ describe("DEPRECATED_SIGNALTYPE_PREFIX_ALIASES", () => {
     );
     assert.equal(DEPRECATED_SIGNALTYPE_PREFIX_ALIASES["mlo."].deprecated, true);
   });
-  it("maps bare compliance. → pathfinder-pro.compliance. (Wave B; PFP bare domain emit, no-regression read-bridge)", () => {
-    assert.equal(
-      DEPRECATED_SIGNALTYPE_PREFIX_ALIASES["compliance."].to,
-      "pathfinder-pro.compliance.",
-    );
-    assert.equal(
-      DEPRECATED_SIGNALTYPE_PREFIX_ALIASES["compliance."].deprecated,
-      true,
-    );
-  });
 });
 
 // ── isGoalShiftSignal (Wave-B fix primitive) ────────────────────────────────
 describe("isGoalShiftSignal", () => {
-  it("returns false only for registered + goalShiftSemantics:false (compliance)", () => {
-    assert.equal(isGoalShiftSignal("pathfinder-pro.compliance.gate_blocked"), false);
-    assert.equal(isGoalShiftSignal("pfp.compliance.config_changed"), false); // pfp. alias-folded
-    assert.equal(isGoalShiftSignal("compliance.config_changed"), false); // bare compliance. alias-folded (Wave B)
+  it("returns false only for registered + goalShiftSemantics:false", () => {
+    // Was the PFP compliance pair until v0.37.0 retired them (ruling 270).
+    assert.equal(isGoalShiftSignal("consent.captured"), false);
+    assert.equal(isGoalShiftSignal("rello.nurture_escalate_injected"), false);
+    // The retired pair and its bare spelling are now unregistered → fail open.
+    assert.equal(isGoalShiftSignal("pathfinder-pro.compliance.gate_blocked"), true);
+    assert.equal(isGoalShiftSignal("compliance.config_changed"), true);
   });
   it("Wave-B FIX: receiver-prefixed newsletter_studio.email_* → false (the live bug form)", () => {
     // Pre-Wave-B these fell through `inferNurtureGoal`'s bare-name set to
@@ -1127,7 +1108,8 @@ describe("listActiveSignalTypes", () => {
     // goalShift:false, leadless operational) — lifecycle:"active", so 366→367.
     // v0.35.0 (+1): rello.lead_untraced_disappearance (active), so 367→368.
     // v0.36.0 (+1): consent.captured (active), so 368→369.
-    assert.equal(listActiveSignalTypes().length, 369);
+    // v0.37.0 (−2): the PFP compliance pair retired (ruling 270), so 369→367.
+    assert.equal(listActiveSignalTypes().length, 367);
   });
 });
 
@@ -1169,7 +1151,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (369)", () => {
+  it("exactKeys count == active exact registry entries (367)", () => {
     // v0.21.0 (+2): pathfinder-pro.quick_estimate_completed +
     // pathfinder-pro.prequal_verdict_received (both active), so 358→360.
     // v0.22.0 (+1): pathfinder-pro.hecm_lead_saved (active), so 360→361.
@@ -1181,7 +1163,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     // v0.32.0 (+1): home-scout.pfp_intake_dead (active), so 366→367.
     // v0.35.0 (+1): rello.lead_untraced_disappearance (active), so 367→368.
     // v0.36.0 (+1): consent.captured (active), so 368→369.
-    assert.equal(keyset.exactKeys.length, 369);
+    // v0.37.0 (−2): the PFP compliance pair retired (ruling 270), so 369→367.
+    assert.equal(keyset.exactKeys.length, 367);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
