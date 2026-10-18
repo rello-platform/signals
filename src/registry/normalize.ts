@@ -67,7 +67,7 @@ const GLOBAL_PREFIXES = [
  *   it lives here, not in the slugs package (Q4).
  * - `mlo.` is a Drumbeat engine/domain prefix; the slug position held a domain,
  *   not a slug. Canonicalizes to `the-drumbeat.mlo.<verb>` (slug-owns-prefix,
- *   domain as sub-segment — the shipped `pathfinder-pro.export.*`/`compliance.*`
+ *   domain as sub-segment — the shipped `pathfinder-pro.export.*`
  *   precedent). Q-mlo / decision 24.
  *
  * Ordered longest-prefix-first is unnecessary here (prefixes are disjoint), but
@@ -78,18 +78,10 @@ export const DEPRECATED_SIGNALTYPE_PREFIX_ALIASES: Readonly<
 > = {
   "pfp.": { to: "pathfinder-pro.", deprecated: true },
   "mlo.": { to: "the-drumbeat.mlo.", deprecated: true },
-  // `compliance.` is a bare PFP domain prefix (the `mlo.` precedent): PFP emits
-  // `compliance.config_changed` BARE (`PathfinderPro admin/compliance/config/
-  // route.ts:323`, SURFACE-MAP §1.6) and — since it already contains a dot —
-  // the receiver does NOT namespace-prefix it, so it persists as the bare
-  // domain form, which `normalizeSlug` can't fold (`compliance` is not a slug).
-  // Per §2.1 a bare domain prefix is never first-class; it canonicalizes under
-  // its emitting spoke's slug → `pathfinder-pro.compliance.<verb>` (the
-  // registered `goalShiftSemantics:false` family). This preserves the
-  // pre-Wave-B `NON_GOAL_SHIFT_SIGNAL_PREFIXES = ['compliance.']` exclusion that
-  // Wave B removes from `nurture-goals` (no-regression read-bridge; retired
-  // Wave E once the receiver canonicalizes at ingest in Wave D).
-  "compliance.": { to: "pathfinder-pro.compliance.", deprecated: true },
+  // `compliance.` (bare PFP domain prefix → `pathfinder-pro.compliance.`)
+  // retired v0.37.0 with the two keys it folded to (ruling 270). PFP no
+  // longer emits `compliance.config_changed`; a bare `compliance.*` type now
+  // resolves to null like any other unregistered form.
   // `drumbeat.` is handled by normalizeSlug (drumbeat→the-drumbeat); no entry.
 };
 

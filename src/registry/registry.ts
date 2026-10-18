@@ -138,25 +138,10 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       lifecycle: "active",
     },
 
-    // ── Pathfinder Pro — compliance family ──
-    "pathfinder-pro.compliance.gate_blocked": {
-      type: "pathfinder-pro.compliance.gate_blocked",
-      weight: 5, // constants.ts:240
-      category: "BEHAVIORAL", // constants.ts:562
-      priority: "HIGH", // constants.ts:780
-      // compliance.* is a NON_GOAL_SHIFT prefix in nurture-goals
-      // (`infer.ts:96`) — honest goalShiftSemantics:false. Wave B wires
-      // isGoalShiftSignal() into inferNurtureGoal.
-      goalShiftSemantics: false,
-      lifecycle: "active",
-    },
-    "pathfinder-pro.compliance.config_changed": {
-      type: "pathfinder-pro.compliance.config_changed",
-      weight: 2, // constants.ts:241
-      category: "ENGAGEMENT", // constants.ts:563
-      goalShiftSemantics: false, // NON_GOAL_SHIFT compliance.* (infer.ts:96)
-      lifecycle: "active",
-    },
+    // Pathfinder Pro compliance keys `pathfinder-pro.compliance.gate_blocked` and
+    // `pathfinder-pro.compliance.config_changed` retired v0.37.0 (Kelly walk
+    // 2026-06-10; Nurture KA ruling 270). Neither had a live emitter, a
+    // SignalLog row or a SignalRule. The `pathfinder-pro.export.*` keys stay.
 
     // ── Rello — nurture escalate family ──
     // weight + priority from the emit-site caller-hints

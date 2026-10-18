@@ -50,9 +50,6 @@ export type ExactCanonicalSignalType =
   | "pathfinder-pro.export.success"
   | "pathfinder-pro.export.failed"
   | "pathfinder-pro.export.permanently_failed"
-  // PFP compliance family
-  | "pathfinder-pro.compliance.gate_blocked"
-  | "pathfinder-pro.compliance.config_changed"
   // Rello nurture escalate family
   | "rello.nurture_escalate_injected"
   | "rello.nurture_escalate_deduped"
