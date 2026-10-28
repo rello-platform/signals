@@ -17,7 +17,8 @@ var marketIntelRealtorProspectIntakeReceivedDataSchema = z.object({
   subscriberId: z.string().min(1),
   firstName: z.string(),
   lastName: z.string(),
-  email: z.string().email(),
+  /** Trimmed before it is checked: surrounding whitespace is never a refusal. */
+  email: z.string().trim().email(),
   brokerage: z.string().nullable(),
   publicationId: z.string().nullable(),
   publicationName: z.string().nullable(),

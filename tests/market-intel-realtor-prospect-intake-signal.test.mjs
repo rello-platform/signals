@@ -65,6 +65,12 @@ describe(`${KEY} (v0.38.0)`, () => {
     assert.equal(r.success, true);
   });
 
+  it("trims surrounding whitespace from the email instead of refusing it", () => {
+    const r = schema.safeParse({ ...valid, email: "  Avery.Fixture@Example.com " });
+    assert.equal(r.success, true);
+    assert.equal(r.data.email, "Avery.Fixture@Example.com");
+  });
+
   it("drops an unknown extra field instead of refusing", () => {
     const r = schema.safeParse({ ...valid, somethingNew: "x" });
     assert.equal(r.success, true);

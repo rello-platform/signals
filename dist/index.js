@@ -4130,7 +4130,8 @@ var marketIntelRealtorProspectIntakeReceivedDataSchema = z8.object({
   subscriberId: z8.string().min(1),
   firstName: z8.string(),
   lastName: z8.string(),
-  email: z8.string().email(),
+  /** Trimmed before it is checked: surrounding whitespace is never a refusal. */
+  email: z8.string().trim().email(),
   brokerage: z8.string().nullable(),
   publicationId: z8.string().nullable(),
   publicationName: z8.string().nullable(),
