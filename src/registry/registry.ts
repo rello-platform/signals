@@ -1455,6 +1455,21 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     }, // DEFAULT (no constants row)
+    // MARKET INTEL INGEST R-1 (v0.38.0): an agent signed up for Market Intel.
+    // Rello consumes it IN-REQUEST at /api/signals/batch (the realtor-prospect
+    // intake carve-out) and writes a RealtorProspect, never a Lead, so it never
+    // reaches SignalLog or the lead scoring path. weight/category mirror the
+    // PFP sibling pathfinder-pro.realtor_prospect.intake_received (DEFAULT 3 /
+    // BEHAVIORAL: a person acted). goalShiftSemantics is false, like the other
+    // in-request carve-out consent.captured: it is not a lead's nurture-goal
+    // event. Payload schema: src/schemas/market-intel.ts.
+    "market-intel.realtor_prospect.intake_received": {
+      type: "market-intel.realtor_prospect.intake_received",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     "market-intel.snapshot_shared": {
       type: "market-intel.snapshot_shared",
       weight: 3,
