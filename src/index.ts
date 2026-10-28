@@ -68,6 +68,8 @@ export * from "./schemas/home-ready.js";
 export * from "./schemas/report-engine.js";
 // PFP
 export * from "./schemas/pathfinder-pro.js";
+// Market Intel (v0.38.0 MARKET INTEL INGEST R-1 realtor-prospect intake)
+export * from "./schemas/market-intel.js";
 // Consent (global `consent.*` namespace — v0.36.0 D-245 `consent.captured`)
 export * from "./schemas/consent.js";
 

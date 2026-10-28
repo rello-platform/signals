@@ -233,6 +233,7 @@ export type ExactCanonicalSignalType =
   | "market-intel.digest_generated"
   | "market-intel.digest_opened"
   | "market-intel.podcast_played"
+  | "market-intel.realtor_prospect.intake_received"
   | "market-intel.report_generated"
   | "market-intel.snapshot_shared"
   | "market-intel.subscribed"

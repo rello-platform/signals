@@ -1563,6 +1563,21 @@ var EXACT_REGISTRY = {
     lifecycle: "active"
   },
   // DEFAULT (no constants row)
+  // MARKET INTEL INGEST R-1 (v0.38.0): an agent signed up for Market Intel.
+  // Rello consumes it IN-REQUEST at /api/signals/batch (the realtor-prospect
+  // intake carve-out) and writes a RealtorProspect, never a Lead, so it never
+  // reaches SignalLog or the lead scoring path. weight/category mirror the
+  // PFP sibling pathfinder-pro.realtor_prospect.intake_received (DEFAULT 3 /
+  // BEHAVIORAL: a person acted). goalShiftSemantics is false, like the other
+  // in-request carve-out consent.captured: it is not a lead's nurture-goal
+  // event. Payload schema: src/schemas/market-intel.ts.
+  "market-intel.realtor_prospect.intake_received": {
+    type: "market-intel.realtor_prospect.intake_received",
+    weight: 3,
+    category: "BEHAVIORAL",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
   "market-intel.snapshot_shared": {
     type: "market-intel.snapshot_shared",
     weight: 3,
@@ -4096,31 +4111,64 @@ var pfpComplianceConfigChangedDataSchema = z7.object({
   pfp_change_summary: z7.string().nullable().optional()
 });
 
-// src/schemas/consent.ts
+// src/schemas/market-intel.ts
 import { z as z8 } from "zod";
+var MARKET_INTEL_REALTOR_PROSPECT_INTAKE_SIGNAL_TYPE = "market-intel.realtor_prospect.intake_received";
+var MARKET_INTEL_INTAKE_ACTIONS = [
+  "public_signup",
+  "resubscribe",
+  "access_request",
+  "admin_invite"
+];
+var MARKET_INTEL_CONSENT_BASES = [
+  "form_submitted",
+  "admin_invited",
+  "access_requested"
+];
+var marketIntelRealtorProspectIntakeReceivedDataSchema = z8.object({
+  /** MI Subscriber.id. */
+  subscriberId: z8.string().min(1),
+  firstName: z8.string(),
+  lastName: z8.string(),
+  /** Trimmed before it is checked: surrounding whitespace is never a refusal. */
+  email: z8.string().trim().email(),
+  brokerage: z8.string().nullable(),
+  publicationId: z8.string().nullable(),
+  publicationName: z8.string().nullable(),
+  intakeAction: z8.enum(MARKET_INTEL_INTAKE_ACTIONS),
+  consentBasis: z8.enum(MARKET_INTEL_CONSENT_BASES),
+  /** ISO-8601 instant the signup was submitted. */
+  submittedAt: z8.string().datetime({ offset: true }),
+  /** Rello Agent.id of a named MLO. MI has none today and always sends null. */
+  assignedMloAgentId: z8.string().min(1).nullable()
+});
+var REALTOR_PROSPECT_INTAKE_OUTCOMES = ["created", "repeat", "rejected"];
+
+// src/schemas/consent.ts
+import { z as z9 } from "zod";
 var CONSENT_CAPTURE_SURFACE_CHANNELS = {
   "check-your-rate:text-quote": ["CALL", "CONSENT_SMS"]
 };
 var SURFACES = Object.keys(CONSENT_CAPTURE_SURFACE_CHANNELS);
 var SHA256_HEX = /^[0-9a-f]{64}$/;
 var E164 = /^\+[1-9][0-9]{7,14}$/;
-var consentCapturedDataSchema = z8.object({
+var consentCapturedDataSchema = z9.object({
   /** The checkbox sentence EXACTLY as rendered. Stored verbatim — never trim or normalise it. */
-  sentence: z8.string().max(4e3).refine((s) => s.trim() !== "", { message: "sentence is empty or whitespace" }),
+  sentence: z9.string().max(4e3).refine((s) => s.trim() !== "", { message: "sentence is empty or whitespace" }),
   /** Lowercase hex SHA-256 of `sentence`'s UTF-8 bytes, as sent. */
-  sentenceSha256: z8.string().regex(SHA256_HEX, "lowercase hex SHA-256"),
+  sentenceSha256: z9.string().regex(SHA256_HEX, "lowercase hex SHA-256"),
   /** The wording's version label. */
-  sentenceVersion: z8.string().min(1).max(64).refine((s) => s.trim() !== "", { message: "sentenceVersion is blank" }),
-  surface: z8.enum(SURFACES),
+  sentenceVersion: z9.string().min(1).max(64).refine((s) => s.trim() !== "", { message: "sentenceVersion is blank" }),
+  surface: z9.enum(SURFACES),
   /** The number the person typed, E.164 (`+18015550101`). */
-  phoneE164: z8.string().regex(E164, "E.164, e.g. +18015550101"),
+  phoneE164: z9.string().regex(E164, "E.164, e.g. +18015550101"),
   /** Exactly the surface's channels, any order, no duplicates. */
-  channels: z8.array(z8.enum(["CALL", "CONSENT_SMS"])).min(1),
+  channels: z9.array(z9.enum(["CALL", "CONSENT_SMS"])).min(1),
   /** ISO-8601 instant of the submit (Rello refuses > 5 min ahead or > 30 days old). */
-  capturedAt: z8.string().datetime({ offset: true }),
+  capturedAt: z9.string().datetime({ offset: true }),
   /** Optional lowercase hex SHA-256 of the submitter's IP — never the raw IP. */
-  ipHash: z8.string().regex(SHA256_HEX, "lowercase hex SHA-256").nullable().optional(),
-  userAgent: z8.string().max(512).nullable().optional()
+  ipHash: z9.string().regex(SHA256_HEX, "lowercase hex SHA-256").nullable().optional(),
+  userAgent: z9.string().max(512).nullable().optional()
 }).strict().superRefine((d, ctx) => {
   const want = CONSENT_CAPTURE_SURFACE_CHANNELS[d.surface];
   const ok = d.channels.length === want.length && new Set(d.channels).size === d.channels.length && want.every((c) => d.channels.includes(c));
@@ -4147,6 +4195,10 @@ export {
   EXACT_REGISTRY,
   FAMILY_REGISTRY,
   LEGACY_SIGNALTYPE_EXACT_ALIASES,
+  MARKET_INTEL_CONSENT_BASES,
+  MARKET_INTEL_INTAKE_ACTIONS,
+  MARKET_INTEL_REALTOR_PROSPECT_INTAKE_SIGNAL_TYPE,
+  REALTOR_PROSPECT_INTAKE_OUTCOMES,
   SIGNAL_CATEGORIES,
   SIGNAL_PRIORITIES,
   SIGNAL_PRIORITY_RANK,
@@ -4164,6 +4216,7 @@ export {
   listActiveSignalTypes,
   lookupExact,
   lookupFamily,
+  marketIntelRealtorProspectIntakeReceivedDataSchema,
   meetsMinPriority,
   mergeCustomFieldsIntoData,
   normalizeSignalType,
