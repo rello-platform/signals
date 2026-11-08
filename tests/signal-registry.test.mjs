@@ -126,7 +126,9 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // retired (ruling 270; no emitter, no SignalLog row, no SignalRule), so 377→375.
     // v0.38.0 (+1): market-intel.realtor_prospect.intake_received (active — MARKET
     // INTEL INGEST R-1, an agent's MI signup becomes a RealtorProspect), so 375→376.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 376);
+    // v0.39.0 (+1): home-scout.realtor_prospect.intake_received (active — REALTOR
+    // REFERRAL NURTURE P2, an agent's Home Scout /realtors form), so 376→377.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 377);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -1112,7 +1114,8 @@ describe("listActiveSignalTypes", () => {
     // v0.36.0 (+1): consent.captured (active), so 368→369.
     // v0.37.0 (−2): the PFP compliance pair retired (ruling 270), so 369→367.
     // v0.38.0 (+1): market-intel.realtor_prospect.intake_received (active), so 367→368.
-    assert.equal(listActiveSignalTypes().length, 368);
+    // v0.39.0 (+1): home-scout.realtor_prospect.intake_received (active), so 368→369.
+    assert.equal(listActiveSignalTypes().length, 369);
   });
 });
 
@@ -1154,7 +1157,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (368)", () => {
+  it("exactKeys count == active exact registry entries (369)", () => {
     // v0.21.0 (+2): pathfinder-pro.quick_estimate_completed +
     // pathfinder-pro.prequal_verdict_received (both active), so 358→360.
     // v0.22.0 (+1): pathfinder-pro.hecm_lead_saved (active), so 360→361.
@@ -1168,7 +1171,8 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     // v0.36.0 (+1): consent.captured (active), so 368→369.
     // v0.37.0 (−2): the PFP compliance pair retired (ruling 270), so 369→367.
     // v0.38.0 (+1): market-intel.realtor_prospect.intake_received (active), so 367→368.
-    assert.equal(keyset.exactKeys.length, 368);
+    // v0.39.0 (+1): home-scout.realtor_prospect.intake_received (active), so 368→369.
+    assert.equal(keyset.exactKeys.length, 369);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
