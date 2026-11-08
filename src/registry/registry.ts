@@ -1025,6 +1025,21 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // REALTOR REFERRAL NURTURE P2 (v0.39.0): a real estate agent used one of
+    // the two forms on an MLO's Home Scout /realtors page (get updates; ask a
+    // financing question). Rello consumes it IN-REQUEST at /api/signals/batch
+    // (the realtor-prospect intake carve-out) and writes a RealtorProspect,
+    // never a Lead, so it never reaches SignalLog or lead scoring.
+    // weight/category mirror the PFP and Market Intel siblings (3 /
+    // BEHAVIORAL: a person acted); goalShiftSemantics false like them.
+    // Payload schema: src/schemas/home-scout.ts.
+    "home-scout.realtor_prospect.intake_received": {
+      type: "home-scout.realtor_prospect.intake_received",
+      weight: 3,
+      category: "BEHAVIORAL",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     "home-scout.referral_submitted": {
       type: "home-scout.referral_submitted",
       weight: 7,

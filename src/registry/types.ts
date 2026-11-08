@@ -175,6 +175,7 @@ export type ExactCanonicalSignalType =
   // (scout_pre_approved === "no") is a high-intent "connect me to a lender"
   // readiness event → hand off to the agent's MLO partner for pre-approval.
   | "home-scout.re_buyer_needs_preapproval"
+  | "home-scout.realtor_prospect.intake_received"
   | "home-scout.referral_submitted"
   | "home-scout.refi_consideration_signal"
   | "home-scout.reverse_mortgage_estimate_requested"
