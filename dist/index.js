@@ -3499,6 +3499,24 @@ var AUDIT_FAMILIES = APP_SLUGS.map((slug) => ({
   goalShiftSemantics: false,
   lifecycle: "active"
 }));
+var UPSELL_SOURCE_APPS = [
+  "harvest-home",
+  "home-ready",
+  "home-stretch",
+  "newsletter-studio",
+  "open-house-hub",
+  "market-intel",
+  "pathfinder-pro",
+  "the-drumbeat"
+];
+var UPSELL_FAMILIES = UPSELL_SOURCE_APPS.map((slug) => ({
+  prefix: `${slug}.upsell.`,
+  weight: 2,
+  category: "ENGAGEMENT",
+  priority: "LOW",
+  goalShiftSemantics: false,
+  lifecycle: "active"
+}));
 var FAMILY_REGISTRY = [
   // Home Scout dynamic CTA variants (45+). Canonical prefix is
   // `home-scout.cta_clicked.` — `normalizeSlug` folds the legacy `scout`
@@ -3512,17 +3530,9 @@ var FAMILY_REGISTRY = [
     goalShiftSemantics: true,
     lifecycle: "active"
   },
-  // The-Drumbeat upsell-nudge clicks: `the-drumbeat.upsell.<seam>.clicked`
-  // (the-drumbeat `src/app/api/upsell/track-click/route.ts:58`, emitted "low"
-  // priority). MLO-facing product telemetry, not lead-nurture.
-  {
-    prefix: "the-drumbeat.upsell.",
-    weight: 2,
-    category: "ENGAGEMENT",
-    priority: "LOW",
-    goalShiftSemantics: false,
-    lifecycle: "active"
-  },
+  // Upsell telemetry: one `<app>.upsell.` family per standalone app
+  // (UPSELL_SOURCE_APPS above). `the-drumbeat.upsell.` keeps its v0.39.0 shape.
+  ...UPSELL_FAMILIES,
   // Home-Scout tool-engagement global namespace: `signal.tool.<slug>.<action>`
   // (Q-NEW-3 canonical; ~22 per-tool variants, SURFACE-MAP §1.3). Lead-tool
   // engagement → goal-shift; DEFAULT-tier weight pending Wave-C per-tool review.
@@ -4377,6 +4387,7 @@ export {
   SIGNAL_CATEGORIES,
   SIGNAL_PRIORITIES,
   SIGNAL_PRIORITY_RANK,
+  UPSELL_SOURCE_APPS,
   consentCapturedDataSchema,
   createSignalEmitter,
   hhLeadIntakeDataSchema,

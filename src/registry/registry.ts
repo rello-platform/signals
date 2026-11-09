@@ -27,7 +27,7 @@
  * caller-hints; category falls to the current DEFAULT `BEHAVIORAL`).
  */
 
-import { APP_SLUGS } from "@rello-platform/slugs";
+import { APP_SLUGS, type AppSlug } from "@rello-platform/slugs";
 import type {
   ExactCanonicalSignalType,
   SignalTypeEntry,
@@ -3317,6 +3317,48 @@ const AUDIT_FAMILIES: readonly SignalTypeFamily[] = APP_SLUGS.map((slug) => ({
 }));
 
 /**
+ * The apps sold on their own, each with an upgrade path to Rello (RELLO UPSELL;
+ * Kelly 2026-11-07). These are the only sources of `<app>.upsell.<seam>.<event>`
+ * telemetry: the spoke's own seam events (`shown`, `clicked`, `dismissed`,
+ * `engaged`, …) and Rello trial-start's `<source>.upsell.<seam>.converted`.
+ * Rello itself (the bundle) and The Oven / The Home Scout (Rello features,
+ * never sold alone) have nothing to upsell, so they get no family.
+ *
+ * Each entry is an `AppSlug` from @rello-platform/slugs, so a misspelling is a
+ * compile error. Which slugs are standalone is a product fact slugs does not
+ * carry; the locked product map is @rello-platform/upgrade-content's
+ * GROWTH_PRODUCTS (kind "standalone"), and tests/upsell-families.test.mjs fails
+ * if this list and that map ever differ.
+ */
+export const UPSELL_SOURCE_APPS = [
+  "harvest-home",
+  "home-ready",
+  "home-stretch",
+  "newsletter-studio",
+  "open-house-hub",
+  "market-intel",
+  "pathfinder-pro",
+  "the-drumbeat",
+] as const satisfies readonly AppSlug[];
+
+/**
+ * Upsell-nudge telemetry families, one `<app>.upsell.` per UPSELL_SOURCE_APPS
+ * entry. The shape is the v0.39.0 Drumbeat entry's (the-drumbeat
+ * `src/app/api/upsell/track-click/route.ts:58`, emitted "low" priority):
+ * MLO-facing product telemetry, not lead nurture. Weight 2, ENGAGEMENT, LOW,
+ * non-goal-shift. The spec (RELLO-UPSELL.md) names no different weight or
+ * category for `converted`, so every event shares it.
+ */
+const UPSELL_FAMILIES: readonly SignalTypeFamily[] = UPSELL_SOURCE_APPS.map((slug) => ({
+  prefix: `${slug}.upsell.` as `${string}.`,
+  weight: 2,
+  category: "ENGAGEMENT" as const,
+  priority: "LOW" as const,
+  goalShiftSemantics: false,
+  lifecycle: "active" as const,
+}));
+
+/**
  * Dynamic prefix-families. Completeness = "every emitted literal is an exact
  * registered key OR matches a registered family prefix" (SPEC §1).
  */
@@ -3333,17 +3375,9 @@ export const FAMILY_REGISTRY: readonly SignalTypeFamily[] = [
     goalShiftSemantics: true,
     lifecycle: "active",
   },
-  // The-Drumbeat upsell-nudge clicks: `the-drumbeat.upsell.<seam>.clicked`
-  // (the-drumbeat `src/app/api/upsell/track-click/route.ts:58`, emitted "low"
-  // priority). MLO-facing product telemetry, not lead-nurture.
-  {
-    prefix: "the-drumbeat.upsell.",
-    weight: 2,
-    category: "ENGAGEMENT",
-    priority: "LOW",
-    goalShiftSemantics: false,
-    lifecycle: "active",
-  },
+  // Upsell telemetry: one `<app>.upsell.` family per standalone app
+  // (UPSELL_SOURCE_APPS above). `the-drumbeat.upsell.` keeps its v0.39.0 shape.
+  ...UPSELL_FAMILIES,
   // Home-Scout tool-engagement global namespace: `signal.tool.<slug>.<action>`
   // (Q-NEW-3 canonical; ~22 per-tool variants, SURFACE-MAP §1.3). Lead-tool
   // engagement → goal-shift; DEFAULT-tier weight pending Wave-C per-tool review.

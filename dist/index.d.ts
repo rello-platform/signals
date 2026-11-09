@@ -269,6 +269,21 @@ type SignalType = ExactCanonicalSignalType;
  */
 declare const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry>;
 /**
+ * The apps sold on their own, each with an upgrade path to Rello (RELLO UPSELL;
+ * Kelly 2026-11-07). These are the only sources of `<app>.upsell.<seam>.<event>`
+ * telemetry: the spoke's own seam events (`shown`, `clicked`, `dismissed`,
+ * `engaged`, …) and Rello trial-start's `<source>.upsell.<seam>.converted`.
+ * Rello itself (the bundle) and The Oven / The Home Scout (Rello features,
+ * never sold alone) have nothing to upsell, so they get no family.
+ *
+ * Each entry is an `AppSlug` from @rello-platform/slugs, so a misspelling is a
+ * compile error. Which slugs are standalone is a product fact slugs does not
+ * carry; the locked product map is @rello-platform/upgrade-content's
+ * GROWTH_PRODUCTS (kind "standalone"), and tests/upsell-families.test.mjs fails
+ * if this list and that map ever differ.
+ */
+declare const UPSELL_SOURCE_APPS: readonly ["harvest-home", "home-ready", "home-stretch", "newsletter-studio", "open-house-hub", "market-intel", "pathfinder-pro", "the-drumbeat"];
+/**
  * Dynamic prefix-families. Completeness = "every emitted literal is an exact
  * registered key OR matches a registered family prefix" (SPEC §1).
  */
@@ -414,4 +429,4 @@ declare function isNarrativeMaterial(category: SignalCategory, weight: number): 
  */
 declare function shouldAblyBroadcast(priority: SignalPriority): boolean;
 
-export { type CanonicalSignalType, DEPRECATED_SIGNALTYPE_PREFIX_ALIASES, EXACT_REGISTRY, type ExactCanonicalSignalType, FAMILY_REGISTRY, type FamilyCanonicalSignalType, LEGACY_SIGNALTYPE_EXACT_ALIASES, SIGNAL_CATEGORIES, SIGNAL_PRIORITIES, SIGNAL_PRIORITY_RANK, type SignalCategory, type SignalPriority, type SignalType, type SignalTypeEntry, type SignalTypeFamily, isGoalShiftSignal, isNarrativeMaterial, isSignalCategory, isSignalPriority, listActiveSignalTypes, lookupExact, lookupFamily, meetsMinPriority, normalizeSignalType, shouldAblyBroadcast };
+export { type CanonicalSignalType, DEPRECATED_SIGNALTYPE_PREFIX_ALIASES, EXACT_REGISTRY, type ExactCanonicalSignalType, FAMILY_REGISTRY, type FamilyCanonicalSignalType, LEGACY_SIGNALTYPE_EXACT_ALIASES, SIGNAL_CATEGORIES, SIGNAL_PRIORITIES, SIGNAL_PRIORITY_RANK, type SignalCategory, type SignalPriority, type SignalType, type SignalTypeEntry, type SignalTypeFamily, UPSELL_SOURCE_APPS, isGoalShiftSignal, isNarrativeMaterial, isSignalCategory, isSignalPriority, listActiveSignalTypes, lookupExact, lookupFamily, meetsMinPriority, normalizeSignalType, shouldAblyBroadcast };

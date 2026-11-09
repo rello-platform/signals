@@ -24,6 +24,7 @@ export {
   FAMILY_REGISTRY,
   lookupExact,
   lookupFamily,
+  UPSELL_SOURCE_APPS,
 } from "./registry/registry.js";
 export {
   DEPRECATED_SIGNALTYPE_PREFIX_ALIASES,
