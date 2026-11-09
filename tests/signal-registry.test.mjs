@@ -1176,9 +1176,11 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
-  it("familyPrefixes count == 18 (6 explicit + 12 APP_SLUGS audit families)", () => {
+  it("familyPrefixes count == 25 (5 explicit + 8 standalone-app upsell + 12 APP_SLUGS audit families)", () => {
     // +1 vs v0.6.0: PHASE-B1 `score.crossed_` threshold family.
-    assert.equal(keyset.familyPrefixes.length, 18);
+    // v0.40.0 (+7): the Drumbeat upsell entry became one `<app>.upsell.` family
+    // per UPSELL_SOURCE_APPS entry (8), so 6 explicit -> 5 explicit + 8 upsell.
+    assert.equal(keyset.familyPrefixes.length, 25);
   });
 
   it("carries the prod silent-kill forms (canonical) that drove this workstream", () => {
