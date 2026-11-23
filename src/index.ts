@@ -74,5 +74,8 @@ export * from "./schemas/market-intel.js";
 // Consent (global `consent.*` namespace — v0.36.0 D-245 `consent.captured`)
 export * from "./schemas/consent.js";
 
+// Tracking engine (v0.41.0 PROPOSED, PLATFORM TRACKING S7-S: `tracking.visit_summary`)
+export * from "./schemas/tracking.js";
+
 // Future: a discriminator-style schema map for runtime signalType-keyed validation.
 // Not in v0.1.0; consumers import the specific schema they expect at receiver.

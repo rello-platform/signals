@@ -81,6 +81,7 @@ Each schema file is keyed by the **emitting app** (the canonical owner per APP-O
 - `src/schemas/harvest-home.ts` — HH-emitted signals
 - `src/schemas/report-engine.ts` — Report-Engine-emitted signals
 - `src/schemas/pathfinder-pro.ts` — PFP-emitted signals
+- `src/schemas/tracking.ts` — Tracking-Engine-emitted signals (`tracking.visit_summary`; v0.41.0 proposed)
 
 ## Build
 

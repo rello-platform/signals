@@ -371,7 +371,8 @@
     "the-oven.revival_completed",
     "the-oven.revival_dead",
     "the-oven.revival_started",
-    "the-oven.temperature_changed"
+    "the-oven.temperature_changed",
+    "tracking.visit_summary"
   ],
   "familyPrefixes": [
     "arive.audit.",

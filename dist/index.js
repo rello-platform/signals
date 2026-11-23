@@ -2874,6 +2874,23 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: true,
     lifecycle: "active"
   },
+  // S7-S (v0.41.0 PROPOSED): the tracking engine's one-per-identified-visit
+  // summary (PLATFORM-TRACKING-SYSTEM plan §6; payload schema
+  // `trackingVisitSummaryDataSchema`). A visit is lead ENGAGEMENT, never a
+  // buying-intent or story event, so it is classified like the other
+  // telemetry-grade engagement families (the `<app>.upsell.` families: weight
+  // 2, ENGAGEMENT, LOW, no goal shift) and not at the unregistered DEFAULT
+  // (weight 3 BEHAVIORAL, which reaches buying_surge's category allow-list).
+  // The plan names no weight or category: the KA may change them before the tag.
+  // `tracking.` is a global namespace (GLOBAL_PREFIXES): not a slug.
+  "tracking.visit_summary": {
+    type: "tracking.visit_summary",
+    weight: 2,
+    category: "ENGAGEMENT",
+    priority: "LOW",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
   // Real Rello-internal BEHAVIORAL signal, emitted BARE/dotless
   // `ticket_created` (`journeyStepStalled.ts:439` + `support/
   // inbound-email.ts:185`, category:"BEHAVIORAL" weight:5). Dotless →
@@ -3617,7 +3634,13 @@ var GLOBAL_PREFIXES = [
   // `agent.`/`rate.`/`data.` — it cannot be slug-folded and must match here as
   // a global first-class namespace. The receiver leaves already-dotted forms
   // un-prefixed, so the live emit resolves directly (no emit-flip owed).
-  "email."
+  "email.",
+  // S7-S (v0.41.0): the tracking engine's `tracking.visit_summary`. `tracking`
+  // is not a `@rello-platform/slugs` slug (v0.7.0 lists no tracking engine or
+  // app), so `normalizeSlug("tracking")` is null and the slug fold would drop
+  // the key; like `email.` it matches here as a global first-class namespace.
+  // The receiver stores an already-dotted type as sent, so no emit-flip is owed.
+  "tracking."
 ];
 var DEPRECATED_SIGNALTYPE_PREFIX_ALIASES = {
   "pfp.": { to: "pathfinder-pro.", deprecated: true },
@@ -4368,6 +4391,40 @@ var CONSENT_CAPTURE_OUTCOMES = [
   "refused_phone_not_leads",
   "refused_idempotency_conflict"
 ];
+
+// src/schemas/tracking.ts
+import { z as z10 } from "zod";
+var TRACKING_VISIT_SUMMARY_SIGNAL_TYPE = "tracking.visit_summary";
+var TRACKING_VISIT_SUMMARY_MAX_TOPICS = 5;
+var TRACKING_VISIT_SUMMARY_MAX_BYTES = 2048;
+var TRACKING_TOPIC_PATTERN = /^[a-z0-9][a-z0-9_-]*(:[a-z0-9][a-z0-9_-]*)?$/;
+var trackingTopicSchema = z10.object({
+  topic: z10.string().max(256).regex(TRACKING_TOPIC_PATTERN, "a data-section style id, optionally <app>:<id>"),
+  /** The person's interest score in this topic. Zero is a real score. */
+  score: z10.number().finite().min(0)
+}).strict();
+var trackingVisitSummaryDataSchema = z10.object({
+  /** The engine's visit id. Opaque; the idempotency key is derived from it. */
+  visitId: z10.string().min(1).max(512),
+  /** ISO-8601 instant of the visit's first event. */
+  startedAt: z10.string().datetime({ offset: true }),
+  /** ISO-8601 instant of the visit's last event. */
+  endedAt: z10.string().datetime({ offset: true }),
+  /** Page views in the visit. */
+  pageViews: z10.number().int().min(0),
+  /** The person's current top topics, highest first. `[]` when the person has none. */
+  topics: z10.array(trackingTopicSchema).max(TRACKING_VISIT_SUMMARY_MAX_TOPICS),
+  /** When `topics` was computed (ISO-8601). `null` when `topics` is empty. */
+  topicsComputedAt: z10.string().datetime({ offset: true }).nullable()
+}).strict().superRefine((d, ctx) => {
+  const size = new TextEncoder().encode(JSON.stringify(d)).length;
+  if (size > TRACKING_VISIT_SUMMARY_MAX_BYTES) {
+    ctx.addIssue({
+      code: "custom",
+      message: `payload is ${size} bytes; the cap is ${TRACKING_VISIT_SUMMARY_MAX_BYTES} bytes (2 KB)`
+    });
+  }
+});
 export {
   CONSENT_CAPTURE_OUTCOMES,
   CONSENT_CAPTURE_SURFACE_CHANNELS,
@@ -4387,6 +4444,10 @@ export {
   SIGNAL_CATEGORIES,
   SIGNAL_PRIORITIES,
   SIGNAL_PRIORITY_RANK,
+  TRACKING_TOPIC_PATTERN,
+  TRACKING_VISIT_SUMMARY_MAX_BYTES,
+  TRACKING_VISIT_SUMMARY_MAX_TOPICS,
+  TRACKING_VISIT_SUMMARY_SIGNAL_TYPE,
   UPSELL_SOURCE_APPS,
   consentCapturedDataSchema,
   createSignalEmitter,
@@ -4436,6 +4497,7 @@ export {
   relloHomePurchasedDataSchema,
   relloHomeSoldDataSchema,
   reportEngineReportReadyDataSchema,
-  shouldAblyBroadcast
+  shouldAblyBroadcast,
+  trackingVisitSummaryDataSchema
 };
 //# sourceMappingURL=index.js.map
