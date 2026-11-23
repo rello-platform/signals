@@ -2,9 +2,9 @@
 
 Release notes before v0.41.0 live in the commit messages of each version's PR (`git log --oneline`); this file starts at the version below.
 
-## v0.41.0 — PROPOSED, not tagged
+## v0.41.0 — 2026-11-23
 
-PLATFORM TRACKING SYSTEM S7-S (Platform KA prompt 1746). Nothing here is published or tagged; `package.json` still says 0.40.0.
+PLATFORM TRACKING SYSTEM S7-S (Platform KA prompt 1746). Tagged v0.41.0.
 
 - Registers `tracking.visit_summary` (exact key, active; weight 2, ENGAGEMENT, LOW, no goal shift) so Rello's receiver and classifier resolve it. Unregistered, Rello parks the signal as a failed inbound signal and dead-letters it.
 - `tracking.` is added to the normalizer's global namespaces (`src/registry/normalize.ts`): `tracking` is not a `@rello-platform/slugs` slug, so without it the key cannot resolve.
