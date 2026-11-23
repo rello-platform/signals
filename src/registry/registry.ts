@@ -2714,6 +2714,23 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     },
+    // S7-S (v0.41.0 PROPOSED): the tracking engine's one-per-identified-visit
+    // summary (PLATFORM-TRACKING-SYSTEM plan §6; payload schema
+    // `trackingVisitSummaryDataSchema`). A visit is lead ENGAGEMENT, never a
+    // buying-intent or story event, so it is classified like the other
+    // telemetry-grade engagement families (the `<app>.upsell.` families: weight
+    // 2, ENGAGEMENT, LOW, no goal shift) and not at the unregistered DEFAULT
+    // (weight 3 BEHAVIORAL, which reaches buying_surge's category allow-list).
+    // The plan names no weight or category: the KA may change them before the tag.
+    // `tracking.` is a global namespace (GLOBAL_PREFIXES): not a slug.
+    "tracking.visit_summary": {
+      type: "tracking.visit_summary",
+      weight: 2,
+      category: "ENGAGEMENT",
+      priority: "LOW",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     // Real Rello-internal BEHAVIORAL signal, emitted BARE/dotless
     // `ticket_created` (`journeyStepStalled.ts:439` + `support/
     // inbound-email.ts:185`, category:"BEHAVIORAL" weight:5). Dotless →

@@ -455,6 +455,11 @@ export type ExactCanonicalSignalType =
   // GLOBAL_PREFIXES); the receiver does not namespace-prefix already-dotted
   // forms, so the live emit resolves with NO emit-flip owed.
   | "email.received"
+  // S7-S (v0.41.0 PROPOSED) — the tracking engine's one-per-identified-visit
+  // summary (PLATFORM-TRACKING-SYSTEM plan §6): visit counts + the person's top
+  // topics, sent to Rello at visit end. Global `tracking.` first-class key
+  // (`tracking.` added to GLOBAL_PREFIXES; not a slug).
+  | "tracking.visit_summary"
   // `ticket_created` is a real Rello-internal BEHAVIORAL signal (emitted
   // `journeyStepStalled.ts:439` + `support/inbound-email.ts:185`, weight 5).
   // Emitted BARE/dotless → normalizeSignalType("ticket_created") returns null

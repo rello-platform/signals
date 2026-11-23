@@ -53,6 +53,12 @@ const GLOBAL_PREFIXES = [
   // a global first-class namespace. The receiver leaves already-dotted forms
   // un-prefixed, so the live emit resolves directly (no emit-flip owed).
   "email.",
+  // S7-S (v0.41.0): the tracking engine's `tracking.visit_summary`. `tracking`
+  // is not a `@rello-platform/slugs` slug (v0.7.0 lists no tracking engine or
+  // app), so `normalizeSlug("tracking")` is null and the slug fold would drop
+  // the key; like `email.` it matches here as a global first-class namespace.
+  // The receiver stores an already-dotted type as sent, so no emit-flip is owed.
+  "tracking.",
 ] as const;
 
 /**
