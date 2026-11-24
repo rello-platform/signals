@@ -372,6 +372,10 @@
     "the-oven.revival_dead",
     "the-oven.revival_started",
     "the-oven.temperature_changed",
+    "tracking.hot.demo_click",
+    "tracking.hot.pricing_visit",
+    "tracking.hot.repeat_visits",
+    "tracking.hot.trial_inactive",
     "tracking.visit_summary"
   ],
   "familyPrefixes": [

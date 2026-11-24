@@ -460,6 +460,13 @@ export type ExactCanonicalSignalType =
   // topics, sent to Rello at visit end. Global `tracking.` first-class key
   // (`tracking.` added to GLOBAL_PREFIXES; not a slug).
   | "tracking.visit_summary"
+  // S8-A (v0.42.0 PROPOSED) — the tracking engine's four hot moments (plan §7),
+  // decided once per person, kind and day and sent to Rello at once; Rello's
+  // router hands them to Growth's handler. Global `tracking.` namespace.
+  | "tracking.hot.pricing_visit"
+  | "tracking.hot.demo_click"
+  | "tracking.hot.repeat_visits"
+  | "tracking.hot.trial_inactive"
   // `ticket_created` is a real Rello-internal BEHAVIORAL signal (emitted
   // `journeyStepStalled.ts:439` + `support/inbound-email.ts:185`, weight 5).
   // Emitted BARE/dotless → normalizeSignalType("ticket_created") returns null
