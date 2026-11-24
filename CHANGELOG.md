@@ -2,7 +2,7 @@
 
 Release notes before v0.41.0 live in the commit messages of each version's PR (`git log --oneline`); this file starts at the version below.
 
-## v0.42.0 — PROPOSED, not tagged
+## v0.42.0
 
 PLATFORM TRACKING SYSTEM S8, part A (Platform KA prompt 1824). Nothing here is published or tagged; `package.json` still says 0.41.0.
 
