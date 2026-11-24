@@ -2891,6 +2891,52 @@ var EXACT_REGISTRY = {
     goalShiftSemantics: false,
     lifecycle: "active"
   },
+  // S8-A (v0.42.0 PROPOSED): the engine's four hot moments (plan §7; payload
+  // schemas `trackingHotSignalSchemas`). Unlike `tracking.visit_summary` these
+  // are ROUTED: Rello's router hands each to Growth's handler, which is a
+  // type-keyed guard on the PER-LEAD path, so the category must not be SYSTEM
+  // (`classifyKey` in Rello's check-signal-handlers sends a SYSTEM key down the
+  // leadless-audit path, and the lead path never sees it). They are marketing-
+  // site / trial telemetry about a house-tenant prospect, not buying intent, so
+  // ENGAGEMENT: `isNarrativeMaterial` is false for it (no Context Cache rebuild),
+  // it is outside buying_surge's READINESS/BEHAVIORAL allow-list, and goal shift
+  // is off. MEDIUM, not HIGH: `shouldAblyBroadcast` pushes only CRITICAL/HIGH to
+  // an agent's dashboard, and Growth, not the CRM agent, acts on these. Weights
+  // follow the engine's own `tracking.weights` order (demo/book click 5, pricing 4,
+  // repeat visits 3, trial inactive 2). The plan names no weight or category: the
+  // KA may change them before the tag.
+  "tracking.hot.pricing_visit": {
+    type: "tracking.hot.pricing_visit",
+    weight: 4,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "tracking.hot.demo_click": {
+    type: "tracking.hot.demo_click",
+    weight: 5,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "tracking.hot.repeat_visits": {
+    type: "tracking.hot.repeat_visits",
+    weight: 3,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
+  "tracking.hot.trial_inactive": {
+    type: "tracking.hot.trial_inactive",
+    weight: 2,
+    category: "ENGAGEMENT",
+    priority: "MEDIUM",
+    goalShiftSemantics: false,
+    lifecycle: "active"
+  },
   // Real Rello-internal BEHAVIORAL signal, emitted BARE/dotless
   // `ticket_created` (`journeyStepStalled.ts:439` + `support/
   // inbound-email.ts:185`, category:"BEHAVIORAL" weight:5). Dotless →
@@ -4425,6 +4471,58 @@ var trackingVisitSummaryDataSchema = z10.object({
     });
   }
 });
+var TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE = "tracking.hot.pricing_visit";
+var TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE = "tracking.hot.demo_click";
+var TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE = "tracking.hot.repeat_visits";
+var TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE = "tracking.hot.trial_inactive";
+var TRACKING_HOT_SIGNAL_TYPES = [
+  TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE,
+  TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE,
+  TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE,
+  TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE
+];
+var TRACKING_HOT_CTA_IDS = ["demo", "book", "trial", "contact"];
+var TRACKING_HOT_REPEAT_VISITS_MIN_SESSIONS = 3;
+var hotAppSchema = z10.string().max(64).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "a lowercase hyphenated app slug");
+var hotPathSchema = z10.string().min(1).max(512).regex(/^\/[^?#\s]*$/, "a pathname: no query, no fragment, no host");
+var hotTopicSchema = z10.string().max(256).regex(TRACKING_TOPIC_PATTERN, "a data-section style id, optionally <app>:<id>");
+var hotAtSchema = z10.string().datetime({ offset: true });
+var hotLeadIdSchema = z10.string().min(1).max(256);
+var trackingHotPricingVisitDataSchema = z10.object({
+  leadId: hotLeadIdSchema,
+  kind: z10.literal("pricing_visit"),
+  app: hotAppSchema,
+  topic: hotTopicSchema.optional(),
+  path: hotPathSchema.optional(),
+  at: hotAtSchema
+}).strict();
+var trackingHotDemoClickDataSchema = z10.object({
+  leadId: hotLeadIdSchema,
+  kind: z10.literal("demo_click"),
+  app: hotAppSchema,
+  ctaId: z10.enum(TRACKING_HOT_CTA_IDS),
+  path: hotPathSchema.optional(),
+  at: hotAtSchema
+}).strict();
+var trackingHotRepeatVisitsDataSchema = z10.object({
+  leadId: hotLeadIdSchema,
+  kind: z10.literal("repeat_visits"),
+  app: hotAppSchema,
+  sessionCount: z10.number().int().min(TRACKING_HOT_REPEAT_VISITS_MIN_SESSIONS).max(1e4),
+  at: hotAtSchema
+}).strict();
+var trackingHotTrialInactiveDataSchema = z10.object({
+  leadId: hotLeadIdSchema,
+  kind: z10.literal("trial_inactive"),
+  app: hotAppSchema,
+  at: hotAtSchema
+}).strict();
+var trackingHotSignalSchemas = {
+  [TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE]: trackingHotPricingVisitDataSchema,
+  [TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE]: trackingHotDemoClickDataSchema,
+  [TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE]: trackingHotRepeatVisitsDataSchema,
+  [TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE]: trackingHotTrialInactiveDataSchema
+};
 export {
   CONSENT_CAPTURE_OUTCOMES,
   CONSENT_CAPTURE_SURFACE_CHANNELS,
@@ -4444,6 +4542,13 @@ export {
   SIGNAL_CATEGORIES,
   SIGNAL_PRIORITIES,
   SIGNAL_PRIORITY_RANK,
+  TRACKING_HOT_CTA_IDS,
+  TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE,
+  TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE,
+  TRACKING_HOT_REPEAT_VISITS_MIN_SESSIONS,
+  TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE,
+  TRACKING_HOT_SIGNAL_TYPES,
+  TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE,
   TRACKING_TOPIC_PATTERN,
   TRACKING_VISIT_SUMMARY_MAX_BYTES,
   TRACKING_VISIT_SUMMARY_MAX_TOPICS,
@@ -4498,6 +4603,11 @@ export {
   relloHomeSoldDataSchema,
   reportEngineReportReadyDataSchema,
   shouldAblyBroadcast,
+  trackingHotDemoClickDataSchema,
+  trackingHotPricingVisitDataSchema,
+  trackingHotRepeatVisitsDataSchema,
+  trackingHotSignalSchemas,
+  trackingHotTrialInactiveDataSchema,
   trackingVisitSummaryDataSchema
 };
 //# sourceMappingURL=index.js.map

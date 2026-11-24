@@ -2731,6 +2731,52 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: false,
       lifecycle: "active",
     },
+    // S8-A (v0.42.0 PROPOSED): the engine's four hot moments (plan §7; payload
+    // schemas `trackingHotSignalSchemas`). Unlike `tracking.visit_summary` these
+    // are ROUTED: Rello's router hands each to Growth's handler, which is a
+    // type-keyed guard on the PER-LEAD path, so the category must not be SYSTEM
+    // (`classifyKey` in Rello's check-signal-handlers sends a SYSTEM key down the
+    // leadless-audit path, and the lead path never sees it). They are marketing-
+    // site / trial telemetry about a house-tenant prospect, not buying intent, so
+    // ENGAGEMENT: `isNarrativeMaterial` is false for it (no Context Cache rebuild),
+    // it is outside buying_surge's READINESS/BEHAVIORAL allow-list, and goal shift
+    // is off. MEDIUM, not HIGH: `shouldAblyBroadcast` pushes only CRITICAL/HIGH to
+    // an agent's dashboard, and Growth, not the CRM agent, acts on these. Weights
+    // follow the engine's own `tracking.weights` order (demo/book click 5, pricing 4,
+    // repeat visits 3, trial inactive 2). The plan names no weight or category: the
+    // KA may change them before the tag.
+    "tracking.hot.pricing_visit": {
+      type: "tracking.hot.pricing_visit",
+      weight: 4,
+      category: "ENGAGEMENT",
+      priority: "MEDIUM",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
+    "tracking.hot.demo_click": {
+      type: "tracking.hot.demo_click",
+      weight: 5,
+      category: "ENGAGEMENT",
+      priority: "MEDIUM",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
+    "tracking.hot.repeat_visits": {
+      type: "tracking.hot.repeat_visits",
+      weight: 3,
+      category: "ENGAGEMENT",
+      priority: "MEDIUM",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
+    "tracking.hot.trial_inactive": {
+      type: "tracking.hot.trial_inactive",
+      weight: 2,
+      category: "ENGAGEMENT",
+      priority: "MEDIUM",
+      goalShiftSemantics: false,
+      lifecycle: "active",
+    },
     // Real Rello-internal BEHAVIORAL signal, emitted BARE/dotless
     // `ticket_created` (`journeyStepStalled.ts:439` + `support/
     // inbound-email.ts:185`, category:"BEHAVIORAL" weight:5). Dotless →

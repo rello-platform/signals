@@ -73,3 +73,112 @@ export const trackingVisitSummaryDataSchema = z
   });
 
 export type TrackingVisitSummaryData = z.infer<typeof trackingVisitSummaryDataSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLATFORM TRACKING SYSTEM S8-A (v0.42.0, PROPOSED) — the four `tracking.hot.*`
+// signal types (plan §7, "Hot moments: to Growth within minutes").
+//
+// The engine DECIDES a hot moment (once per person, kind and day, in its own
+// `hot_moment` table) and sends it over `POST /api/signals/batch`; Rello's router
+// hands it to Growth's handler. Unlike `tracking.visit_summary` these are ROUTED.
+//
+// The payload is plan §7's "Growth receives" shape, per type only the fields
+// that type uses, and `.strict()`: { leadId, kind, app, topic?, path?, ctaId?,
+// sessionCount?, at }. `leadId` is the house-tenant lead. No name, email, phone,
+// address, query string or IP can ride along: an extra key is a refusal.
+//
+// Not a gate (§23): the engine decides these from events it holds. A moment whose
+// data is missing is simply not decided; nothing here holds or blocks anything
+// else, and the optional fields (`topic`, `path`) may be absent.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE = "tracking.hot.pricing_visit" as const;
+export const TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE = "tracking.hot.demo_click" as const;
+export const TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE = "tracking.hot.repeat_visits" as const;
+export const TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE = "tracking.hot.trial_inactive" as const;
+
+/** The four hot-moment signal types, in plan §7's order. */
+export const TRACKING_HOT_SIGNAL_TYPES = [
+  TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE,
+  TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE,
+  TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE,
+  TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE,
+] as const;
+
+/** `cta.click` ids that make a demo-or-book moment (plan §7: `ctaId ∈ {demo, book, trial, contact}`). */
+export const TRACKING_HOT_CTA_IDS = ["demo", "book", "trial", "contact"] as const;
+
+/** A repeat-visit moment is the 3rd distinct session in 7 days (plan §7), so a count below 3 is never one. */
+export const TRACKING_HOT_REPEAT_VISITS_MIN_SESSIONS = 3;
+
+/** An app slug as the platform spells them: lowercase, hyphenated. */
+const hotAppSchema = z.string().max(64).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "a lowercase hyphenated app slug");
+
+/** A pathname only: starts with `/`, no query, no fragment, no host (the engine strips paths the same way). */
+const hotPathSchema = z.string().min(1).max(512).regex(/^\/[^?#\s]*$/, "a pathname: no query, no fragment, no host");
+
+const hotTopicSchema = z.string().max(256).regex(TRACKING_TOPIC_PATTERN, "a data-section style id, optionally <app>:<id>");
+
+const hotAtSchema = z.string().datetime({ offset: true });
+
+const hotLeadIdSchema = z.string().min(1).max(256);
+
+/** `tracking.hot.pricing_visit` — an identified person's pricing-page `page.view`. */
+export const trackingHotPricingVisitDataSchema = z
+  .object({
+    leadId: hotLeadIdSchema,
+    kind: z.literal("pricing_visit"),
+    app: hotAppSchema,
+    topic: hotTopicSchema.optional(),
+    path: hotPathSchema.optional(),
+    at: hotAtSchema,
+  })
+  .strict();
+
+/** `tracking.hot.demo_click` — a `cta.click` whose `ctaId` is in the set. */
+export const trackingHotDemoClickDataSchema = z
+  .object({
+    leadId: hotLeadIdSchema,
+    kind: z.literal("demo_click"),
+    app: hotAppSchema,
+    ctaId: z.enum(TRACKING_HOT_CTA_IDS),
+    path: hotPathSchema.optional(),
+    at: hotAtSchema,
+  })
+  .strict();
+
+/** `tracking.hot.repeat_visits` — the 3rd (or later) distinct session in 7 days for one person. */
+export const trackingHotRepeatVisitsDataSchema = z
+  .object({
+    leadId: hotLeadIdSchema,
+    kind: z.literal("repeat_visits"),
+    app: hotAppSchema,
+    sessionCount: z.number().int().min(TRACKING_HOT_REPEAT_VISITS_MIN_SESSIONS).max(10_000),
+    at: hotAtSchema,
+  })
+  .strict();
+
+/** `tracking.hot.trial_inactive` — a trial ending in 3 days with no use in 5 (decided by Rello's Rail-1 run). */
+export const trackingHotTrialInactiveDataSchema = z
+  .object({
+    leadId: hotLeadIdSchema,
+    kind: z.literal("trial_inactive"),
+    app: hotAppSchema,
+    at: hotAtSchema,
+  })
+  .strict();
+
+/** The payload schema for each signal type, keyed by the type. */
+export const trackingHotSignalSchemas = {
+  [TRACKING_HOT_PRICING_VISIT_SIGNAL_TYPE]: trackingHotPricingVisitDataSchema,
+  [TRACKING_HOT_DEMO_CLICK_SIGNAL_TYPE]: trackingHotDemoClickDataSchema,
+  [TRACKING_HOT_REPEAT_VISITS_SIGNAL_TYPE]: trackingHotRepeatVisitsDataSchema,
+  [TRACKING_HOT_TRIAL_INACTIVE_SIGNAL_TYPE]: trackingHotTrialInactiveDataSchema,
+} as const;
+
+export type TrackingHotSignalType = (typeof TRACKING_HOT_SIGNAL_TYPES)[number];
+export type TrackingHotCtaId = (typeof TRACKING_HOT_CTA_IDS)[number];
+export type TrackingHotPricingVisitData = z.infer<typeof trackingHotPricingVisitDataSchema>;
+export type TrackingHotDemoClickData = z.infer<typeof trackingHotDemoClickDataSchema>;
+export type TrackingHotRepeatVisitsData = z.infer<typeof trackingHotRepeatVisitsDataSchema>;
+export type TrackingHotTrialInactiveData = z.infer<typeof trackingHotTrialInactiveDataSchema>;
