@@ -849,6 +849,25 @@ export const EXACT_REGISTRY: Record<ExactCanonicalSignalType, SignalTypeEntry> =
       goalShiftSemantics: true,
       lifecycle: "active",
     }, // DEFAULT (no constants row)
+    // ── HOME INSIGHT HI-02 (v0.43.0) ──
+    // A homeowner corrects their loan on their Home Insight page ("Loan info
+    // not correct?": balance, rate, payment, lender, or refinanced elsewhere).
+    // Rello records it (POST /api/homeowner/loan-corrections, HI-30; the values
+    // are stored once, in Property Engine's lien overrides) and emits this with
+    // `{ fields[], refinancedElsewhere }` (spec RELLO-HOME-INSIGHT §6 X-10).
+    // Narrative-material: the Lead Story is rebuilt, and refinancedElsewhere
+    // gives the "refinanced elsewhere" reason (HI-58). Rello derives
+    // narrativeMaterial from (category, weight) and reads no override, so
+    // BEHAVIORAL needs weight >= 5; 5 bands to MEDIUM. The one loan signal
+    // (spec H-2): part A's `home-scout.loan_info_updated` is not registered.
+    "home-scout.homeowner_loan_corrected": {
+      type: "home-scout.homeowner_loan_corrected",
+      weight: 5,
+      category: "BEHAVIORAL",
+      priority: "MEDIUM",
+      goalShiftSemantics: true,
+      lifecycle: "active",
+    },
     "home-scout.homeowner_magic_link_issued": {
       type: "home-scout.homeowner_magic_link_issued",
       weight: 3,
@@ -3380,18 +3399,27 @@ const AUDIT_FAMILIES: readonly SignalTypeFamily[] = APP_SLUGS.map((slug) => ({
 }));
 
 /**
- * The apps sold on their own, each with an upgrade path to Rello (RELLO UPSELL;
- * Kelly 2026-11-07). These are the only sources of `<app>.upsell.<seam>.<event>`
- * telemetry: the spoke's own seam events (`shown`, `clicked`, `dismissed`,
- * `engaged`, …) and Rello trial-start's `<source>.upsell.<seam>.converted`.
- * Rello itself (the bundle) and The Oven / The Home Scout (Rello features,
+ * The sources of `<app>.upsell.<seam>.<event>` telemetry: the apps sold on
+ * their own, each with an upgrade path to Rello (RELLO UPSELL; Kelly
+ * 2026-11-07), plus Rello itself. The spoke's own seam events (`shown`,
+ * `clicked`, `dismissed`, `engaged`, …) and Rello trial-start's
+ * `<source>.upsell.<seam>.converted`.
+ *
+ * `rello` (v0.43.0, Home Insight HI-02): the one source that is not a
+ * standalone app. On the Home Insight plan (Rello `Plan.access` GRANTS_ONLY)
+ * Rello's own cards, banners, tabs and dialogs are locked, and Rello emits
+ * `rello.upsell.<surface>.<shown|clicked|dismissed>` from them (spec
+ * RELLO-HOME-INSIGHT §14; Rello units HI-45, HI-49). Rello's Growth reader
+ * builds its pattern from this list (Rello
+ * `src/lib/growth/upgrades-account.ts:242`), so the roster grows from 8
+ * standalone emitters to 9 sources. The Oven / The Home Scout (Rello features,
  * never sold alone) have nothing to upsell, so they get no family.
  *
  * Each entry is an `AppSlug` from @rello-platform/slugs, so a misspelling is a
  * compile error. Which slugs are standalone is a product fact slugs does not
  * carry; the locked product map is @rello-platform/upgrade-content's
  * GROWTH_PRODUCTS (kind "standalone"), and tests/upsell-families.test.mjs fails
- * if this list and that map ever differ.
+ * if this list ever differs from that map's standalone apps plus `rello`.
  */
 export const UPSELL_SOURCE_APPS = [
   "harvest-home",
@@ -3402,6 +3430,7 @@ export const UPSELL_SOURCE_APPS = [
   "market-intel",
   "pathfinder-pro",
   "the-drumbeat",
+  "rello",
 ] as const satisfies readonly AppSlug[];
 
 /**

@@ -2,6 +2,16 @@
 
 Release notes before v0.41.0 live in the commit messages of each version's PR (`git log --oneline`); this file starts at the version below.
 
+## v0.43.0
+
+Home Insight HI-02 (spec `RELLO TO BE BUILT/BUILD-|-WORKSTREAM/RELLO-HOME-INSIGHT/_SPEC-FEATURE.md` §9 HI-02, §14). Not tagged: the Platform KA reviews before the tag.
+
+- **The upsell source roster grows from 8 standalone emitters to 9 sources:** `"rello"` joins `UPSELL_SOURCE_APPS`, so `rello.upsell.` is a registered family (weight 2, `ENGAGEMENT`, `LOW`, no goal shift, the shape every upsell family has). Rello itself emits `rello.upsell.<surface>.<shown|clicked|dismissed>` from its own locked cards, banners, tabs and dialogs on the Home Insight plan (Rello `Plan.access` GRANTS_ONLY): Rello unit HI-45 locks the surfaces, HI-49 emits the events, with surface = the locked surface key without its `rello-` prefix. Rello's Growth reader builds its pattern from this list (Rello `src/lib/growth/upgrades-account.ts:242`), so a reach count over `public."AuditLog"` (`entityType = 'PlatformSignal'`, `"entityName" LIKE '%.upsell.%'`) reads against 9 sources from this release on, not 8.
+- `tests/upsell-families.test.mjs` now pins the list to upgrade-content's standalone products **plus the one hub slug `rello`**, named once in the test with its reason; `rello.upsell.x.converted` left the "stays unregistered" list.
+- Registers `home-scout.homeowner_loan_corrected` (exact, active; `BEHAVIORAL`, weight 5, `MEDIUM`, goal-shifting). Rello emits it with `{ fields[], refinancedElsewhere }` when a homeowner corrects their loan (spec §6 X-10, Rello HI-30). Weight 5 is what makes it narrative-material: Rello derives `narrativeMaterial` from (category, weight) and reads no per-entry override. Part A's `home-scout.loan_info_updated` is deliberately **not** registered (spec H-2, one loan signal). No payload schema: the spec names none for this unit.
+- Counts: exact registry 382 → 383, active keys and `dist/signal-registry-keyset.json` exactKeys 374 → 375, family prefixes 25 → 26.
+- Consumers: Rello re-pins in HI-06. No Growth code changes.
+
 ## v0.42.0
 
 PLATFORM TRACKING SYSTEM S8, part A (Platform KA prompt 1824). Nothing here is published or tagged; `package.json` still says 0.41.0.

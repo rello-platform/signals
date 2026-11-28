@@ -130,7 +130,8 @@ describe("EXACT_REGISTRY — per-entry completeness", () => {
     // REFERRAL NURTURE P2, an agent's Home Scout /realtors form), so 376→377.
     // v0.41.0 (+1, PROPOSED): tracking.visit_summary (active — PLATFORM TRACKING S7-S), so 377→378.
     // v0.42.0 (+4, PROPOSED): the four tracking.hot.* types (active — PLATFORM TRACKING S8-A), so 378→382.
-    assert.equal(Object.keys(EXACT_REGISTRY).length, 382);
+    // v0.43.0 (+1): home-scout.homeowner_loan_corrected (active — Home Insight HI-02), so 382→383.
+    assert.equal(Object.keys(EXACT_REGISTRY).length, 383);
   });
 
   it("every entry declares weight(1-10) + category + goalShiftSemantics + lifecycle, and key matches .type", () => {
@@ -1119,7 +1120,8 @@ describe("listActiveSignalTypes", () => {
     // v0.39.0 (+1): home-scout.realtor_prospect.intake_received (active), so 368→369.
     // v0.41.0 (+1, PROPOSED): tracking.visit_summary (active), so 369→370.
     // v0.42.0 (+4, PROPOSED): the four tracking.hot.* types (active), so 370→374.
-    assert.equal(listActiveSignalTypes().length, 374);
+    // v0.43.0 (+1): home-scout.homeowner_loan_corrected (active), so 374→375.
+    assert.equal(listActiveSignalTypes().length, 375);
   });
 });
 
@@ -1161,7 +1163,7 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     ),
   );
 
-  it("exactKeys count == active exact registry entries (374)", () => {
+  it("exactKeys count == active exact registry entries (375)", () => {
     // v0.21.0 (+2): pathfinder-pro.quick_estimate_completed +
     // pathfinder-pro.prequal_verdict_received (both active), so 358→360.
     // v0.22.0 (+1): pathfinder-pro.hecm_lead_saved (active), so 360→361.
@@ -1178,15 +1180,17 @@ describe("dist/signal-registry-keyset.json — full emitted keyspace", () => {
     // v0.39.0 (+1): home-scout.realtor_prospect.intake_received (active), so 368→369.
     // v0.41.0 (+1, PROPOSED): tracking.visit_summary (active), so 369→370.
     // v0.42.0 (+4, PROPOSED): the four tracking.hot.* types (active), so 370→374.
-    assert.equal(keyset.exactKeys.length, 374);
+    // v0.43.0 (+1): home-scout.homeowner_loan_corrected (active), so 374→375.
+    assert.equal(keyset.exactKeys.length, 375);
     assert.equal(keyset.exactKeys.length, listActiveSignalTypes().length);
   });
 
-  it("familyPrefixes count == 25 (5 explicit + 8 standalone-app upsell + 12 APP_SLUGS audit families)", () => {
+  it("familyPrefixes count == 26 (5 explicit + 9 upsell (8 standalone + rello) + 12 APP_SLUGS audit families)", () => {
     // +1 vs v0.6.0: PHASE-B1 `score.crossed_` threshold family.
     // v0.40.0 (+7): the Drumbeat upsell entry became one `<app>.upsell.` family
     // per UPSELL_SOURCE_APPS entry (8), so 6 explicit -> 5 explicit + 8 upsell.
-    assert.equal(keyset.familyPrefixes.length, 25);
+    // v0.43.0 (+1): `rello.upsell.` (Home Insight HI-02), so 25 -> 26.
+    assert.equal(keyset.familyPrefixes.length, 26);
   });
 
   it("carries the prod silent-kill forms (canonical) that drove this workstream", () => {

@@ -913,6 +913,25 @@ var EXACT_REGISTRY = {
     lifecycle: "active"
   },
   // DEFAULT (no constants row)
+  // ── HOME INSIGHT HI-02 (v0.43.0) ──
+  // A homeowner corrects their loan on their Home Insight page ("Loan info
+  // not correct?": balance, rate, payment, lender, or refinanced elsewhere).
+  // Rello records it (POST /api/homeowner/loan-corrections, HI-30; the values
+  // are stored once, in Property Engine's lien overrides) and emits this with
+  // `{ fields[], refinancedElsewhere }` (spec RELLO-HOME-INSIGHT §6 X-10).
+  // Narrative-material: the Lead Story is rebuilt, and refinancedElsewhere
+  // gives the "refinanced elsewhere" reason (HI-58). Rello derives
+  // narrativeMaterial from (category, weight) and reads no override, so
+  // BEHAVIORAL needs weight >= 5; 5 bands to MEDIUM. The one loan signal
+  // (spec H-2): part A's `home-scout.loan_info_updated` is not registered.
+  "home-scout.homeowner_loan_corrected": {
+    type: "home-scout.homeowner_loan_corrected",
+    weight: 5,
+    category: "BEHAVIORAL",
+    priority: "MEDIUM",
+    goalShiftSemantics: true,
+    lifecycle: "active"
+  },
   "home-scout.homeowner_magic_link_issued": {
     type: "home-scout.homeowner_magic_link_issued",
     weight: 3,
@@ -3570,7 +3589,8 @@ var UPSELL_SOURCE_APPS = [
   "open-house-hub",
   "market-intel",
   "pathfinder-pro",
-  "the-drumbeat"
+  "the-drumbeat",
+  "rello"
 ];
 var UPSELL_FAMILIES = UPSELL_SOURCE_APPS.map((slug) => ({
   prefix: `${slug}.upsell.`,
