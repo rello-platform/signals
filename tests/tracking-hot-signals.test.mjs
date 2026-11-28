@@ -57,10 +57,13 @@ describe("tracking.hot.* — registry (v0.42.0 proposed)", () => {
     });
   }
 
-  it("the registry grew by exactly these four keys (378 → 382 exact, 370 → 374 active), families unchanged at 25", () => {
-    assert.equal(Object.keys(pkg.EXACT_REGISTRY).length, 382);
-    assert.equal(pkg.listActiveSignalTypes().length, 374);
-    assert.equal(Object.keys(pkg.FAMILY_REGISTRY).length, 25);
+  it("the registry grew by exactly these four keys (378 → 382 exact, 370 → 374 active), families unchanged at 25; v0.43.0 then 383 / 375 / 26", () => {
+    // v0.42.0: these four keys, so 378 → 382 exact, 370 → 374 active, families 25.
+    // v0.43.0 (Home Insight HI-02, +1 exact, +1 family): home-scout.homeowner_loan_corrected
+    // and the `rello.upsell.` family, so 382 → 383, 374 → 375, 25 → 26.
+    assert.equal(Object.keys(pkg.EXACT_REGISTRY).length, 383);
+    assert.equal(pkg.listActiveSignalTypes().length, 375);
+    assert.equal(Object.keys(pkg.FAMILY_REGISTRY).length, 26);
   });
 
   it("exports the four names, the cta set and the repeat-visit floor", () => {

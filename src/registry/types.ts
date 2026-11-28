@@ -150,6 +150,7 @@ export type ExactCanonicalSignalType =
   | "home-scout.fsbo_net_sheet_requested"
   | "home-scout.home_value_requested"
   | "home-scout.homeowner_hub_viewed"
+  | "home-scout.homeowner_loan_corrected"
   | "home-scout.homeowner_magic_link_issued"
   | "home-scout.homeowner_magic_link_verified"
   | "home-scout.homeready_handoff_exhausted"

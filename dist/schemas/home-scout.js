@@ -188,12 +188,29 @@ var homeScoutRealtorProspectIntakeReceivedDataSchema = z.unknown().superRefine((
     error: E.UNKNOWN_INTENT
   })
 );
+var HOME_SCOUT_HOMEOWNER_LOAN_CORRECTED_SIGNAL_TYPE = "home-scout.homeowner_loan_corrected";
+var HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS = [
+  "balance",
+  "rate",
+  "monthlyPayment",
+  "lender",
+  "newLender",
+  "newRate",
+  "refinancedMonth"
+];
+var homeScoutHomeownerLoanCorrectedDataSchema = z.object({
+  fields: z.array(z.enum(HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS)).min(1, "at least one corrected field").max(HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS.length).refine((f) => new Set(f).size === f.length, { error: "a field name appears twice" }),
+  refinancedElsewhere: z.boolean()
+}).strict();
 export {
+  HOME_SCOUT_HOMEOWNER_LOAN_CORRECTED_SIGNAL_TYPE,
+  HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS,
   HOME_SCOUT_REALTOR_INTAKE_ERRORS,
   HOME_SCOUT_REALTOR_INTAKE_FORBIDDEN_FIELDS,
   HOME_SCOUT_REALTOR_INTAKE_INTENTS,
   HOME_SCOUT_REALTOR_PROSPECT_INTAKE_SIGNAL_TYPE,
   HOME_SCOUT_REALTOR_WORK_FOCUSES,
+  homeScoutHomeownerLoanCorrectedDataSchema,
   homeScoutRealtorProspectIntakeReceivedDataSchema,
   homeScoutRealtorScenarioFactsSchema,
   homeScoutRealtorScenarioRequestSchema,
