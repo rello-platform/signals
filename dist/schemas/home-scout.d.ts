@@ -308,5 +308,22 @@ declare const homeScoutRealtorProspectIntakeReceivedDataSchema: z.ZodPipe<z.ZodU
 type HomeScoutRealtorProspectIntakeReceivedData = z.infer<typeof homeScoutRealtorProspectIntakeReceivedDataSchema>;
 type HomeScoutRealtorUpdatesSignup = z.infer<typeof homeScoutRealtorUpdatesSignupSchema>;
 type HomeScoutRealtorScenarioRequest = z.infer<typeof homeScoutRealtorScenarioRequestSchema>;
+declare const HOME_SCOUT_HOMEOWNER_LOAN_CORRECTED_SIGNAL_TYPE: "home-scout.homeowner_loan_corrected";
+/** X-10's correctable fields, in the spec's order. */
+declare const HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS: readonly ["balance", "rate", "monthlyPayment", "lender", "newLender", "newRate", "refinancedMonth"];
+declare const homeScoutHomeownerLoanCorrectedDataSchema: z.ZodObject<{
+    fields: z.ZodArray<z.ZodEnum<{
+        balance: "balance";
+        rate: "rate";
+        monthlyPayment: "monthlyPayment";
+        lender: "lender";
+        newLender: "newLender";
+        newRate: "newRate";
+        refinancedMonth: "refinancedMonth";
+    }>>;
+    refinancedElsewhere: z.ZodBoolean;
+}, z.core.$strict>;
+type HomeScoutHomeownerLoanCorrectionField = (typeof HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS)[number];
+type HomeScoutHomeownerLoanCorrectedData = z.infer<typeof homeScoutHomeownerLoanCorrectedDataSchema>;
 
-export { HOME_SCOUT_REALTOR_INTAKE_ERRORS, HOME_SCOUT_REALTOR_INTAKE_FORBIDDEN_FIELDS, HOME_SCOUT_REALTOR_INTAKE_INTENTS, HOME_SCOUT_REALTOR_PROSPECT_INTAKE_SIGNAL_TYPE, HOME_SCOUT_REALTOR_WORK_FOCUSES, type HomeScoutRealtorIntakeError, type HomeScoutRealtorIntakeIntent, type HomeScoutRealtorProspectIntakeReceivedData, type HomeScoutRealtorScenarioFacts, type HomeScoutRealtorScenarioRequest, type HomeScoutRealtorUpdatesSignup, type HomeScoutRealtorWorkFocus, type HsLeadMagnetSubmittedData, type HsPfpIntakeDeadData, type HsTourStopRatedData, homeScoutRealtorProspectIntakeReceivedDataSchema, homeScoutRealtorScenarioFactsSchema, homeScoutRealtorScenarioRequestSchema, homeScoutRealtorUpdatesSignupSchema, hsLeadMagnetSubmittedDataSchema, hsPfpIntakeDeadDataSchema, hsTourStopRatedDataSchema };
+export { HOME_SCOUT_HOMEOWNER_LOAN_CORRECTED_SIGNAL_TYPE, HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS, HOME_SCOUT_REALTOR_INTAKE_ERRORS, HOME_SCOUT_REALTOR_INTAKE_FORBIDDEN_FIELDS, HOME_SCOUT_REALTOR_INTAKE_INTENTS, HOME_SCOUT_REALTOR_PROSPECT_INTAKE_SIGNAL_TYPE, HOME_SCOUT_REALTOR_WORK_FOCUSES, type HomeScoutHomeownerLoanCorrectedData, type HomeScoutHomeownerLoanCorrectionField, type HomeScoutRealtorIntakeError, type HomeScoutRealtorIntakeIntent, type HomeScoutRealtorProspectIntakeReceivedData, type HomeScoutRealtorScenarioFacts, type HomeScoutRealtorScenarioRequest, type HomeScoutRealtorUpdatesSignup, type HomeScoutRealtorWorkFocus, type HsLeadMagnetSubmittedData, type HsPfpIntakeDeadData, type HsTourStopRatedData, homeScoutHomeownerLoanCorrectedDataSchema, homeScoutRealtorProspectIntakeReceivedDataSchema, homeScoutRealtorScenarioFactsSchema, homeScoutRealtorScenarioRequestSchema, homeScoutRealtorUpdatesSignupSchema, hsLeadMagnetSubmittedDataSchema, hsPfpIntakeDeadDataSchema, hsTourStopRatedDataSchema };

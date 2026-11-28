@@ -77,3 +77,62 @@ describe("one loan signal (spec H-2): part A's name stays unregistered", () => {
     });
   }
 });
+
+// ── Payload schema (KA ruling on a4-013; spec §6 X-10) ───────────────────────
+// `{ fields, refinancedElsewhere }`, strict. `fields` = the correction fields the
+// homeowner submitted: non-empty, no duplicates, each one of X-10's correctable
+// fields. No loan VALUES ride the signal (L-5: they live in PE's lien overrides).
+import * as pkg from "../dist/index.js";
+
+const FIELDS = ["balance", "rate", "monthlyPayment", "lender", "newLender", "newRate", "refinancedMonth"];
+
+describe("home-scout.homeowner_loan_corrected · payload schema (strict)", () => {
+  const schema = () => {
+    assert.ok(pkg.homeScoutHomeownerLoanCorrectedDataSchema, "schema not exported");
+    return pkg.homeScoutHomeownerLoanCorrectedDataSchema;
+  };
+
+  it("🔴 exports the type constant and the field enum, exactly X-10's correctable fields", () => {
+    assert.equal(pkg.HOME_SCOUT_HOMEOWNER_LOAN_CORRECTED_SIGNAL_TYPE, KEY);
+    assert.deepEqual([...pkg.HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS], FIELDS);
+  });
+
+  it("🔴 a valid payload parses and the parsed value equals the input", () => {
+    for (const p of [
+      { fields: ["balance"], refinancedElsewhere: false },
+      { fields: ["rate", "monthlyPayment"], refinancedElsewhere: false },
+      { fields: ["newLender", "newRate", "refinancedMonth"], refinancedElsewhere: true },
+      { fields: [...FIELDS], refinancedElsewhere: true },
+    ]) {
+      assert.deepEqual(schema().parse(p), p);
+    }
+  });
+
+  it("🔴 an unknown key is refused (strict), including any loan value", () => {
+    for (const extra of [{ balance: 250000 }, { leadId: "l1" }, { tenantId: "t1" }, { x: 1 }]) {
+      assert.equal(schema().safeParse({ fields: ["balance"], refinancedElsewhere: false, ...extra }).success, false, JSON.stringify(extra));
+    }
+  });
+
+  it("🔴 an empty fields array is refused", () => {
+    assert.equal(schema().safeParse({ fields: [], refinancedElsewhere: true }).success, false);
+  });
+
+  it("🔴 a duplicate field name is refused", () => {
+    assert.equal(schema().safeParse({ fields: ["rate", "rate"], refinancedElsewhere: false }).success, false);
+  });
+
+  it("🔴 a field name outside the enum is refused", () => {
+    for (const f of ["originationMonth", "refinancedFrom", "Balance", "interestRate", "", "taxes"]) {
+      assert.equal(schema().safeParse({ fields: [f], refinancedElsewhere: false }).success, false, f);
+    }
+  });
+
+  it("🔴 both keys are required; refinancedElsewhere must be a boolean", () => {
+    assert.equal(schema().safeParse({ fields: ["rate"] }).success, false);
+    assert.equal(schema().safeParse({ refinancedElsewhere: false }).success, false);
+    assert.equal(schema().safeParse({ fields: ["rate"], refinancedElsewhere: "false" }).success, false);
+    assert.equal(schema().safeParse({ fields: "rate", refinancedElsewhere: false }).success, false);
+    assert.equal(schema().safeParse(null).success, false);
+  });
+});

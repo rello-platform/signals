@@ -288,3 +288,45 @@ export type HomeScoutRealtorProspectIntakeReceivedData = z.infer<
 >;
 export type HomeScoutRealtorUpdatesSignup = z.infer<typeof homeScoutRealtorUpdatesSignupSchema>;
 export type HomeScoutRealtorScenarioRequest = z.infer<typeof homeScoutRealtorScenarioRequestSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// `home-scout.homeowner_loan_corrected` (v0.43.0, Home Insight HI-02)
+//
+// A homeowner corrects their loan on their Home Insight page. Rello records the
+// correction (POST /api/homeowner/loan-corrections, HI-30) and emits this with
+// the NAMES of the fields submitted plus the refinanced-elsewhere flag (spec
+// RELLO-HOME-INSIGHT §6 X-10). No loan values ride the signal: they are stored
+// once, in Property Engine's lien overrides (spec L-5).
+//
+// `.strict()`: an unknown key (a loan value, a tenant, a lead id) is refused.
+// `fields` is non-empty and has no duplicates; each name is one of X-10's
+// correctable fields, so the list can never be longer than that enum.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const HOME_SCOUT_HOMEOWNER_LOAN_CORRECTED_SIGNAL_TYPE =
+  "home-scout.homeowner_loan_corrected" as const;
+
+/** X-10's correctable fields, in the spec's order. */
+export const HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS = [
+  "balance",
+  "rate",
+  "monthlyPayment",
+  "lender",
+  "newLender",
+  "newRate",
+  "refinancedMonth",
+] as const;
+
+export const homeScoutHomeownerLoanCorrectedDataSchema = z
+  .object({
+    fields: z
+      .array(z.enum(HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS))
+      .min(1, "at least one corrected field")
+      .max(HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS.length)
+      .refine((f) => new Set(f).size === f.length, { error: "a field name appears twice" }),
+    refinancedElsewhere: z.boolean(),
+  })
+  .strict();
+
+export type HomeScoutHomeownerLoanCorrectionField = (typeof HOME_SCOUT_HOMEOWNER_LOAN_CORRECTION_FIELDS)[number];
+export type HomeScoutHomeownerLoanCorrectedData = z.infer<typeof homeScoutHomeownerLoanCorrectedDataSchema>;
